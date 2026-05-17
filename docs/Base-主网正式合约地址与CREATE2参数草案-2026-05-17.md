@@ -1,0 +1,479 @@
+# Base 主网正式合约地址与 CREATE2 参数草案 - 2026-05-17
+
+本文档只整理公开参数和后续计算顺序，不是主网部署批准。
+
+当前仍然：
+
+```text
+不部署 Base 主网
+不广播交易
+不接真实资金
+不索要私钥
+不把测试网地址当主网地址
+```
+
+## 1. 已确认的公开钱包地址
+
+这 4 个都是普通钱包公开地址，可以写进文档，但仍需最终复核：
+
+```text
+MAINNET_DEPLOYER=0xC0b399aE61d3Fb14EFE865A0304f0FC4b52b7B7b
+MAINNET_ADMIN_WALLET=0xD37BDC458EdCe7006dDd3ce03eEBF29d629B2D6B
+PROTOCOL_BUDGET_WALLET=0x215F1F09b765C0e893E8D7A40d51Bceb40B733F4
+CREATE2_DEPLOYER_OWNER=0xf28020011C5e35329A78Cc4bCb34b2cA20958380
+```
+
+规则：
+
+```text
+PROTOCOL_BUDGET_WALLET 只收协议经费，不做 owner
+MAINNET_ADMIN_WALLET 只做上线配置期临时 owner，配置后放弃
+MAINNET_DEPLOYER 只负责部署和 gas，不保留长期权限
+CREATE2_DEPLOYER_OWNER 只临时控制 CREATE2 Hook 部署工具，不保留长期权限
+```
+
+## 2. 已确认的池参数
+
+```text
+SUN/USDC LP fee = 0.3%
+SUN/USDC tickSpacing = 60
+SUN/USDC Hook fee = 2% USDC
+SUN/USDC initial human price = 1 SUN = 1 USDC
+
+MOON/USDC LP fee = 0.3%
+MOON/USDC tickSpacing = 60
+MOON/USDC Hook fee = 5% USDC
+MOON/USDC initial human price = 1 MOON = 0.24 USDC
+```
+
+注意：`initial human price` 只是人能看懂的价格。真正初始化 Uniswap v4 池时，还必须由脚本根据正式 token 地址排序，换算成 `initialTick` 和 `sqrtPriceX96`。
+
+## 3. 现在还不能填写的正式合约地址
+
+下面这些地址现在不能编造，也不能用 Base Sepolia 地址顶替：
+
+```text
+SUN_TOKEN=待正式部署或正式 dry-run 输出
+MOON_TOKEN=待正式部署或正式 dry-run 输出
+SUN_CURVE=待正式部署或正式 dry-run 输出
+MOON_CURVE=待正式部署或正式 dry-run 输出
+CREATE2_HOOK_DEPLOYER=待正式部署或正式 dry-run 输出
+BASE_SUN_MOON_USDC_FEE_V4_HOOK=待 CREATE2 预测并部署
+```
+
+这些地址之间有依赖关系：
+
+```text
+SUN_TOKEN / MOON_TOKEN / SUN_CURVE 先确定
+CREATE2_HOOK_DEPLOYER 再确定
+Hook initCodeHash 由正式构造参数算出
+HOOK_SALT 由脚本搜索
+PREDICTED_HOOK 由 CREATE2_HOOK_DEPLOYER + HOOK_SALT + initCodeHash 算出
+SUN/USDC poolId 和 MOON/USDC poolId 由 PoolKey.toId() 算出
+initialTick 和 sqrtPriceX96 由初始价格 + token 地址排序算出
+```
+
+### 3.1 已新增：核心合约部署 dry-run 草案
+
+现在已经新增一个只模拟脚本：
+
+```text
+script/PrepareBaseMainnetCoreDeployDryRun.s.sol
+```
+
+它做三件事：
+
+```text
+1. 读取 MAINNET_DEPLOYER 当前 nonce
+2. 按正式部署顺序预测 5 个 CREATE 地址
+3. 在本地/fork 临时环境里模拟部署核心合约，并检查 owner、minter、MoonCurve 绑定、CREATE2 owner 是否正确
+```
+
+预测顺序是：
+
+```text
+nonce + 0 -> SUN_TOKEN
+nonce + 1 -> SUN_CURVE
+nonce + 2 -> MOON_TOKEN
+nonce + 3 -> MOON_CURVE
+nonce + 4 -> CREATE2_HOOK_DEPLOYER
+```
+
+重要说明：
+
+```text
+预测地址只有在 MAINNET_DEPLOYER 没有先发其他交易、且正式部署顺序不变时才成立
+脚本输出的 simulation 地址只是本地临时地址，不是主网正式地址
+脚本不调用 startBroadcast
+脚本会拒绝 EXECUTE_BASE_MAINNET_BROADCAST=1
+脚本不需要 PRIVATE_KEY
+```
+
+未来 Base mainnet fork dry-run 命令草案，不广播：
+
+```powershell
+$env:MAINNET_DEPLOYER="0xC0b399aE61d3Fb14EFE865A0304f0FC4b52b7B7b"
+$env:MAINNET_ADMIN_WALLET="0xD37BDC458EdCe7006dDd3ce03eEBF29d629B2D6B"
+$env:PROTOCOL_BUDGET_WALLET="0x215F1F09b765C0e893E8D7A40d51Bceb40B733F4"
+$env:CREATE2_DEPLOYER_OWNER="0xf28020011C5e35329A78Cc4bCb34b2cA20958380"
+$env:CONFIRM_BASE_MAINNET_CORE_DRY_RUN="1"
+$env:EXECUTE_BASE_MAINNET_BROADCAST="0"
+forge script script/PrepareBaseMainnetCoreDeployDryRun.s.sol --rpc-url $env:BASE_MAINNET_RPC --rpc-timeout 120 --slow
+```
+
+这一步仍然不是主网部署，只是为了把正式核心合约地址从“待填”推进到“可复核的预测值”。
+
+### 3.2 2026-05-17 Base mainnet fork dry-run 输出
+
+已用公开 Base RPC 跑过一次只读 fork dry-run：
+
+```text
+CORE_DRY_RUN_CHAIN_ID=8453
+CORE_DRY_RUN_SIMULATION_ONLY=true
+CORE_DRY_RUN_BROADCAST_REQUESTED=false
+CORE_DRY_RUN_TRANSACTIONS_PLANNED=12
+MAINNET_DEPLOYER_NONCE=0
+USDC_TOKEN=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+USDC_DECIMALS=6
+```
+
+在 `MAINNET_DEPLOYER nonce` 仍为 `0`，且正式部署顺序保持不变时，预测核心地址为：
+
+```text
+PREDICTED_SUN_TOKEN=0xbA010450885AadcDA402358d04be881Bd53E482b
+PREDICTED_SUN_CURVE=0x4104250C9C2E19CCe8625D0c2972c5EaE035D83a
+PREDICTED_MOON_TOKEN=0xf3Bff3b498369022313aD55138ea41B236B61EBf
+PREDICTED_MOON_CURVE=0x5de55E74728f42e0265cd712aA54d9b7D532D38d
+PREDICTED_CREATE2_HOOK_DEPLOYER=0xFdc4c4FC0200ee27345B179E52348bA4a4aC97c0
+```
+
+本次 fork dry-run 的临时模拟地址如下，它们不是主网正式地址：
+
+```text
+SUN_TOKEN_SIMULATION=0x7FaED17238fBD438EE82Aeb15FA117b2c17C4Bdd
+SUN_CURVE_SIMULATION=0x23e3E730c19971C7FF241aF7c0E89FbB9200fE1f
+MOON_TOKEN_SIMULATION=0x2C018CD36A9E538805aEe2a36aD9b4DcD212c87C
+MOON_CURVE_SIMULATION=0x3983D0C9Be0d8C4035A95a27205F8294504028e8
+CREATE2_HOOK_DEPLOYER_SIMULATION=0xee8c04B29dBEd3AB4403901600bc9675FEC68F10
+```
+
+硬性提醒：
+
+```text
+这些 PREDICTED_* 地址还不是已部署地址
+只要 MAINNET_DEPLOYER 先发出任何一笔交易，nonce 就会变化，预测地址必须重算
+只要正式部署顺序改变，预测地址必须重算
+本次没有 --broadcast，没有 PRIVATE_KEY，没有真实资金
+```
+
+## 4. Hook 构造参数必须长这样
+
+新版统一 Hook 是 `BaseSunMoonUsdcFeeV4Hook`。
+
+正式构造参数草案：
+
+```text
+poolManager = BASE_MAINNET_POOL_MANAGER
+sunToken = SUN_TOKEN
+moonToken = MOON_TOKEN
+usdc = BASE_MAINNET_USDC
+sunCurve = SUN_CURVE
+protocolBudget = PROTOCOL_BUDGET_WALLET
+initialOwner = MAINNET_ADMIN_WALLET
+```
+
+硬性检查：
+
+```text
+expectedHookMask = 204
+uint160(PREDICTED_HOOK) & 0x3fff == 204
+PREDICTED_HOOK == DEPLOYED_HOOK
+BaseSunMoonUsdcFeeV4Hook(PREDICTED_HOOK).expectedHookMask() == 204
+```
+
+## 5. CREATE2 参数草案
+
+这些值必须由脚本输出，不能手填猜测：
+
+```text
+CREATE2_HOOK_DEPLOYER=脚本或正式部署输出
+INIT_CODE_HASH=脚本输出
+HOOK_SALT_START=建议从 0 开始，最终由 owner 复核
+HOOK_MAX_SALT_SEARCH=建议从 200000 开始，找不到再扩大
+HOOK_SALT=脚本输出
+PREDICTED_HOOK=脚本输出
+DEPLOYED_HOOK=部署后链上复核输出
+```
+
+### 5.1 2026-05-17 Hook salt dry-run 输出
+
+已用上面 Stage 0 的预测核心地址，在 Base mainnet fork 上跑过一次只读 Hook salt dry-run：
+
+```text
+HOOK_SALT_DRY_RUN_CHAIN_ID=8453
+HOOK_SALT_DRY_RUN_SIMULATION_ONLY=true
+HOOK_SALT_DRY_RUN_BROADCAST_REQUESTED=false
+CREATE2_HOOK_DEPLOYER=0xFdc4c4FC0200ee27345B179E52348bA4a4aC97c0
+POOL_MANAGER=0x498581fF718922c3f8e6A244956aF099B2652b2b
+SUN_TOKEN=0xbA010450885AadcDA402358d04be881Bd53E482b
+MOON_TOKEN=0xf3Bff3b498369022313aD55138ea41B236B61EBf
+USDC_TOKEN=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+USDC_DECIMALS=6
+SUN_CURVE=0x4104250C9C2E19CCe8625D0c2972c5EaE035D83a
+INIT_CODE_HASH=0x5429970db38722cd42a8728003452178fd22f9df318261160bcc97702b5823f1
+HOOK_SALT_START=0
+HOOK_MAX_SALT_SEARCH=200000
+HOOK_SALT=0x0000000000000000000000000000000000000000000000000000000000001f79
+PREDICTED_HOOK=0x04f968dE5cd57B1EB8215a9a488dC32508Fb80cc
+EXPECTED_HOOK_MASK=204
+ACTUAL_LOW_14_BITS=204
+```
+
+硬性提醒：
+
+```text
+PREDICTED_HOOK 仍然只是预测地址，不是已部署地址
+CREATE2_HOOK_DEPLOYER 本身也仍然只是 Stage 0 预测地址，未部署
+只要 MAINNET_DEPLOYER nonce、正式部署顺序、Hook 代码或构造参数变化，HOOK_SALT 和 PREDICTED_HOOK 都必须重算
+本次没有 --broadcast，没有 PRIVATE_KEY，没有真实资金
+```
+
+## 6. poolId 与初始化价格参数
+
+两个项目支持池：
+
+```text
+SUN/USDC v4 Hook pool
+MOON/USDC v4 Hook pool
+```
+
+必须由脚本计算：
+
+```text
+SUN_USDC_CURRENCY0
+SUN_USDC_CURRENCY1
+SUN_USDC_POOL_ID
+SUN_USDC_INITIAL_TICK
+SUN_USDC_SQRT_PRICE_X96
+
+MOON_USDC_CURRENCY0
+MOON_USDC_CURRENCY1
+MOON_USDC_POOL_ID
+MOON_USDC_INITIAL_TICK
+MOON_USDC_SQRT_PRICE_X96
+```
+
+不能手填 `poolId`，也不能只按肉眼拼 token 地址。
+
+### 6.1 2026-05-17 poolId 与初始化价格计算输出
+
+已用预测核心地址、预测 Hook 地址和 owner 确认的初始价格运行本地计算脚本：
+
+```text
+HOOK_ADDRESS=0x04f968dE5cd57B1EB8215a9a488dC32508Fb80cc
+SUN_TOKEN=0xbA010450885AadcDA402358d04be881Bd53E482b
+MOON_TOKEN=0xf3Bff3b498369022313aD55138ea41B236B61EBf
+USDC_TOKEN=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+```
+
+`SUN/USDC`：
+
+```text
+SUN_USDC_CURRENCY0=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+SUN_USDC_CURRENCY1=0xbA010450885AadcDA402358d04be881Bd53E482b
+SUN_USDC_POOL_FEE=3000
+SUN_USDC_TICK_SPACING=60
+SUN_USDC_INITIAL_TOKEN_AMOUNT=1000000000000000000
+SUN_USDC_INITIAL_USDC_AMOUNT=1000000
+SUN_USDC_INITIAL_TICK=276324
+SUN_USDC_SQRT_PRICE_X96=79228162514264337593543950336000000
+SUN_USDC_POOL_ID=0xf0006d5dde476ffd2b43648468d5c6a6a8cf1f40bcac5c0c7d070491587e075a
+```
+
+`MOON/USDC`：
+
+```text
+MOON_USDC_CURRENCY0=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+MOON_USDC_CURRENCY1=0xf3Bff3b498369022313aD55138ea41B236B61EBf
+MOON_USDC_POOL_FEE=3000
+MOON_USDC_TICK_SPACING=60
+MOON_USDC_INITIAL_TOKEN_AMOUNT=1000000000000000000
+MOON_USDC_INITIAL_USDC_AMOUNT=240000
+MOON_USDC_INITIAL_TICK=290595
+MOON_USDC_SQRT_PRICE_X96=161723809515207654377831473576838109
+MOON_USDC_POOL_ID=0xcf29a02432e947fe9240fe4378cb871b24691f7cd85e7e8c72464ff89c1c6735
+```
+
+说明：
+
+```text
+这些仍是基于预测地址的计算结果，不是已部署池
+只要 SUN_TOKEN、MOON_TOKEN、PREDICTED_HOOK 或池参数变化，poolId 和初始化价格参数都必须重算
+initialTick 是由 sqrtPriceX96 推导出的池当前 tick，不要求是 tickSpacing=60 的倍数
+后续 LP 仓位的 tickLower / tickUpper 才必须遵守 tickSpacing=60
+本次没有 --broadcast，没有 PRIVATE_KEY，没有真实资金
+```
+
+## 7. 后续本地命令草案
+
+### A. 本地 CREATE2 预演
+
+用途：用正式参数模拟搜索 Hook salt 和预测 Hook 地址。
+
+```powershell
+$env:CREATE2_DEPLOYER_OWNER="0xf28020011C5e35329A78Cc4bCb34b2cA20958380"
+$env:HOOK_OWNER="0xD37BDC458EdCe7006dDd3ce03eEBF29d629B2D6B"
+$env:POOL_MANAGER="0x498581fF718922c3f8e6A244956aF099B2652b2b"
+$env:USDC_TOKEN="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+$env:PROTOCOL_BUDGET_ADDRESS="0x215F1F09b765C0e893E8D7A40d51Bceb40B733F4"
+$env:SUN_TOKEN="待正式地址"
+$env:MOON_TOKEN="待正式地址"
+$env:SUN_CURVE="待正式地址"
+$env:HOOK_SALT_START="0"
+$env:HOOK_MAX_SALT_SEARCH="200000"
+forge script script/RehearseBaseSunMoonUsdcFeeV4Hook.s.sol
+```
+
+说明：
+
+```text
+不加 --broadcast
+不填 PRIVATE_KEY
+SUN_TOKEN / MOON_TOKEN / SUN_CURVE 必须使用已复核的预测地址或正式地址，不能用待填值或测试网地址
+```
+
+在运行本地 CREATE2 预演前，应先查看 `PrepareBaseMainnetCoreDeployDryRun.s.sol` 输出的：
+
+```text
+SUN_TOKEN
+MOON_TOKEN
+SUN_CURVE
+CREATE2_HOOK_DEPLOYER
+```
+
+这些值仍需 owner 最终复核，不能把本地 simulation 地址当正式地址。
+
+### A.1 Base mainnet fork Hook salt dry-run
+
+用途：用 Stage 0 的预测核心地址，在 Base mainnet fork 上只读复核 Hook salt 和预测 Hook 地址。
+
+```powershell
+$env:MAINNET_ADMIN_WALLET="0xD37BDC458EdCe7006dDd3ce03eEBF29d629B2D6B"
+$env:PROTOCOL_BUDGET_WALLET="0x215F1F09b765C0e893E8D7A40d51Bceb40B733F4"
+$env:CREATE2_HOOK_DEPLOYER="0xFdc4c4FC0200ee27345B179E52348bA4a4aC97c0"
+$env:POOL_MANAGER="0x498581fF718922c3f8e6A244956aF099B2652b2b"
+$env:SUN_TOKEN="0xbA010450885AadcDA402358d04be881Bd53E482b"
+$env:MOON_TOKEN="0xf3Bff3b498369022313aD55138ea41B236B61EBf"
+$env:USDC_TOKEN="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+$env:SUN_CURVE="0x4104250C9C2E19CCe8625D0c2972c5EaE035D83a"
+$env:HOOK_SALT_START="0"
+$env:HOOK_MAX_SALT_SEARCH="200000"
+$env:CONFIRM_BASE_MAINNET_HOOK_SALT_DRY_RUN="1"
+$env:EXECUTE_BASE_MAINNET_BROADCAST="0"
+forge script script/ComputeBaseMainnetSunMoonUsdcHookSalt.s.sol --rpc-url $env:BASE_MAINNET_RPC --rpc-timeout 120 --slow
+```
+
+说明：这一步只计算和复核，不部署 Hook；输出的 `PREDICTED_HOOK` 只有在上游预测地址仍成立时才成立。
+
+### B. poolId 计算
+
+用途：在 `PREDICTED_HOOK` 或正式 Hook 地址出来后，计算两个池的 poolId。
+
+```powershell
+$env:HOOK_ADDRESS="待 PREDICTED_HOOK"
+$env:SUN_TOKEN="待正式地址"
+$env:MOON_TOKEN="待正式地址"
+$env:USDC_TOKEN="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+$env:SUN_USDC_POOL_FEE="3000"
+$env:SUN_USDC_POOL_TICK_SPACING="60"
+$env:MOON_USDC_POOL_FEE="3000"
+$env:MOON_USDC_POOL_TICK_SPACING="60"
+$env:SUN_USDC_INITIAL_TOKEN_AMOUNT="1000000000000000000"
+$env:SUN_USDC_INITIAL_USDC_AMOUNT="1000000"
+$env:MOON_USDC_INITIAL_TOKEN_AMOUNT="1000000000000000000"
+$env:MOON_USDC_INITIAL_USDC_AMOUNT="240000"
+forge script script/ComputeBaseSunMoonUsdcPoolIds.s.sol
+```
+
+说明：
+
+```text
+只计算
+不授权
+不广播
+不需要私钥
+```
+
+### C. Hook/fork 总 mainnet fork dry-run
+
+用途：用已确认公开参数和预测地址，在本地 Base mainnet fork 里模拟 CREATE2 Hook 部署、白名单、两个池初始化、renounce 和安全边界。
+
+```powershell
+$env:CONFIRM_BASE_MAINNET_SUN_MOON_FORK_DRY_RUN="1"
+$env:EXECUTE_BASE_MAINNET_BROADCAST="0"
+forge script script/PrepareBaseMainnetSunMoonUsdcForkDryRun.s.sol --rpc-url $env:BASE_MAINNET_RPC --rpc-timeout 120 --slow
+```
+
+说明：
+
+```text
+仍然不加 --broadcast
+仍然不填 PRIVATE_KEY
+BASE_MAINNET_RPC 只放本地环境变量，不写进文档
+```
+
+2026-05-17 已用公开 Base RPC 跑通过一次，只模拟、不广播：
+
+```text
+chainId=8453
+simulationOnly=true
+broadcastRequested=false
+transactionsPlanned=6
+create2DeployerSimulated=true
+predictedHook=0x04f968dE5cd57B1EB8215a9a488dC32508Fb80cc
+deployedHookSimulation=0x04f968dE5cd57B1EB8215a9a488dC32508Fb80cc
+SUN_USDC_POOL_ID=0xf0006d5dde476ffd2b43648468d5c6a6a8cf1f40bcac5c0c7d070491587e075a
+SUN_USDC_INITIAL_TICK=276324
+SUN_USDC_SQRT_PRICE_X96=79228162514264337593543950336000000
+MOON_USDC_POOL_ID=0xcf29a02432e947fe9240fe4378cb871b24691f7cd85e7e8c72464ff89c1c6735
+MOON_USDC_INITIAL_TICK=290595
+MOON_USDC_SQRT_PRICE_X96=161723809515207654377831473576838109
+ownerAfterRenounce=0x0000000000000000000000000000000000000000
+renounceBlocksSunAllowlist=true
+renounceBlocksMoonAllowlist=true
+renounceBlocksProtocolBudget=true
+```
+
+说明：`create2DeployerSimulated=true` 表示 `CREATE2_HOOK_DEPLOYER` 主网上还没有代码，脚本只在本地 fork 里临时模拟它，方便验证后续步骤。
+
+## 8. 停止条件
+
+出现任意一条，立即停止：
+
+```text
+有人要求提供私钥、助记词或恢复词
+有人要求加 --broadcast
+有人要求用 Base Sepolia 地址顶替 Base mainnet 地址
+有人要求手填 poolId / HOOK_SALT / PREDICTED_HOOK
+Hook 地址低 14 位不是 204
+PREDICTED_HOOK 和 DEPLOYED_HOOK 不相等
+PROTOCOL_BUDGET_WALLET 被填成任何 owner 或管理员
+renounce 后仍能新增白名单或修改协议经费地址
+```
+
+## 9. 当前结论
+
+```text
+四个角色钱包公开地址已填写，待最终复核
+两个 v4 Hook 池的人类可读初始价格已确认
+核心合约部署 dry-run 已用 Base mainnet fork 跑通，已输出 PREDICTED_* 地址
+Hook/fork 总 dry-run 已用 Base mainnet fork 只模拟跑通
+正式合约地址仍未部署，当前只有 PREDICTED_* 地址
+CREATE2_HOOK_DEPLOYER 仍待正式部署；当前只有 PREDICTED_CREATE2_HOOK_DEPLOYER
+HOOK_SALT / PREDICTED_HOOK 已由 Base mainnet fork dry-run 输出预测值，但仍未部署
+poolId / initialTick / sqrtPriceX96 已由脚本按预测地址算出，并在本地 fork 里模拟初始化复核 slot0；主网上仍未创建池
+不部署主网
+不广播交易
+不接真实资金
+不索要私钥
+```

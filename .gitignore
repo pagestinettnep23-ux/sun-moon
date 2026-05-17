@@ -1,0 +1,36 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Foundry output
+out/
+cache/
+broadcast/
+
+# Dependencies
+lib/
+node_modules/
+
+# Frontend build output
+frontend/dist/
+frontend/.vite/
+frontend/tsconfig.tsbuildinfo
+
+# Local frontend backups generated during design iterations
+frontend/*.backup-*.html
+frontend/*.before-*.html
+frontend-backup-before-pencil-*/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
