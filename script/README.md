@@ -313,6 +313,58 @@ renounceBlocksProtocolBudget=true
 - 真正广播前仍需要 owner 单独明确批准。
 - 不要把私钥、助记词或完整 RPC key 写进命令、文档或聊天。
 
+### `PrepareBaseSepoliaRc3SunMoonUsdcBroadcastDraft.s.sol`
+
+用途：
+
+- 为 rc3 最新统一 Hook 方案准备 Base Sepolia 测试网广播草案。
+- 只生成分阶段计划，不执行广播。
+- 复用 rc3 dry-run，输出预测核心地址、Hook salt、预测 Hook、两个 poolId 和初始化参数。
+- 默认 `broadcastAllowed=false`。
+- 拒绝 Base 主网、拒绝 `EXECUTE_BASE_SEPOLIA_RC3_BROADCAST=1`、拒绝非空 `PRIVATE_KEY`。
+
+本地草案命令，不需要 RPC、不需要私钥、不广播：
+
+```powershell
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcBroadcastDraft.s.sol
+```
+
+Base Sepolia fork 只读草案命令，不广播：
+
+```powershell
+$env:CONFIRM_BASE_SEPOLIA_RC3_BROADCAST_DRAFT="1"
+$env:EXECUTE_BASE_SEPOLIA_RC3_BROADCAST="0"
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcBroadcastDraft.s.sol --rpc-url https://sepolia.base.org --rpc-timeout 120 --slow
+```
+
+对应回归测试：
+
+```powershell
+forge test --match-path test/hooks/base/BaseSepoliaRc3SunMoonUsdcBroadcastDraft.t.sol --threads 1 --isolate
+```
+
+2026-05-18 本地专项测试结果：
+
+```text
+9 passed, 0 failed
+```
+
+2026-05-18 本地草案脚本结果：
+
+```text
+Script ran successfully
+broadcastAllowed=false
+simulationOnly=true
+totalTransactionsPlanned=19
+```
+
+说明：
+
+- 这是广播草案，不是测试网广播批准。
+- 不要添加 `--broadcast`。
+- 不要设置 `PRIVATE_KEY`。
+- 真正测试网广播前仍需要 owner 单独明确批准。
+
 2026-05-17 使用 Base mainnet 预测地址运行本地计算，不广播：
 
 ```text

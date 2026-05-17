@@ -33,7 +33,7 @@
 candidate=rc3
 commit=4ffcdbe6dd13103aaf1cba2e085d4c1c3ec87623
 tag=audit-sun-moon-base-contracts-2026-05-17-rc3
-latest_full_test=317 passed, 0 failed
+latest_full_test=326 passed, 0 failed
 ```
 
 ### 3. 当前 Base Sepolia 状态说明
@@ -106,7 +106,7 @@ doc=docs/Base-Sepolia-rc3-dry-run草案-2026-05-17.md
 test=test/hooks/base/BaseSepoliaRc3SunMoonUsdcDryRunPreparation.t.sol
 local_script_result=Script ran successfully
 test_result=10 passed, 0 failed
-latest_full_test=317 passed, 0 failed
+latest_full_test=326 passed, 0 failed
 mainnet_broadcast=false
 testnet_broadcast=false
 private_key_requested=false
@@ -178,6 +178,53 @@ private_key_requested=false
 上面的 predictedHook 和 poolId 是 fork dry-run 模拟结果，不是已经部署的测试网地址。
 这一步证明脚本能在 Base Sepolia 官方环境里模拟通过。
 下一步如果要把 rc3 真正部署到 Base Sepolia，必须另写广播脚本，并由 owner 单独明确批准。
+```
+
+## Day 1 补充 - rc3 测试网广播草案
+
+### 1. 本次目标
+
+只创建 Base Sepolia rc3 测试网广播草案，仍不执行广播。
+
+新增：
+
+```text
+script/PrepareBaseSepoliaRc3SunMoonUsdcBroadcastDraft.s.sol
+test/hooks/base/BaseSepoliaRc3SunMoonUsdcBroadcastDraft.t.sol
+docs/Base-Sepolia-rc3-测试网广播草案-2026-05-18.md
+```
+
+### 2. 草案边界
+
+```text
+broadcastAllowed=false
+simulationOnly=true
+EXECUTE_BASE_SEPOLIA_RC3_BROADCAST=1 会被拒绝
+PRIVATE_KEY 非空会被拒绝
+Base mainnet chainId=8453 会被拒绝
+```
+
+### 3. 本地验证
+
+```text
+forge test --match-path test/hooks/base/BaseSepoliaRc3SunMoonUsdcBroadcastDraft.t.sol --threads 1 --isolate
+9 passed, 0 failed
+
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcBroadcastDraft.s.sol
+Script ran successfully
+totalTransactionsPlanned=19
+
+forge test --threads 1 --isolate
+326 passed, 0 failed
+```
+
+### 4. 当前结论
+
+```text
+rc3 测试网广播草案已准备
+尚未允许测试网广播
+尚未允许主网广播
+下一步只能做 Base Sepolia fork 只读广播草案检查
 ```
 
 ### 6. 停止条件
