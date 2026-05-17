@@ -380,6 +380,61 @@ MOON_USDC_POOL_ID=0xa0a6f00c435fe448d3de1a3e095dfef63c8fc689c98841a95b445b37b0d7
 - 不要设置 `PRIVATE_KEY`。
 - 真正测试网广播前仍需要 owner 单独明确批准。
 
+### `PrepareBaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft.s.sol`
+
+用途：
+
+- 为 rc3 Base Sepolia 真正广播顺序准备分阶段脚本草案。
+- 拆分 Stage 1 / Stage 2 / Stage 3。
+- 只输出计划和地址冲突检查，不执行广播。
+- 默认 `executionBlocked=true`。
+- 拒绝 Base 主网、拒绝 `EXECUTE_BASE_SEPOLIA_RC3_STAGE=1`、拒绝非空 `PRIVATE_KEY`。
+
+本地总览命令：
+
+```powershell
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft.s.sol
+```
+
+本地单阶段命令：
+
+```powershell
+$env:BASE_SEPOLIA_RC3_BROADCAST_STAGE="1"
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft.s.sol
+```
+
+Base Sepolia fork 只读命令，不广播：
+
+```powershell
+$env:CONFIRM_BASE_SEPOLIA_RC3_STAGED_BROADCAST_DRAFT="1"
+$env:BASE_SEPOLIA_RC3_BROADCAST_STAGE="0"
+$env:EXECUTE_BASE_SEPOLIA_RC3_STAGE="0"
+$env:PRIVATE_KEY=""
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft.s.sol --rpc-url https://sepolia.base.org --rpc-timeout 120 --slow
+```
+
+对应回归测试：
+
+```powershell
+forge test --match-path test/hooks/base/BaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft.t.sol --threads 1 --isolate
+```
+
+2026-05-18 本地专项测试结果：
+
+```text
+8 passed, 0 failed
+```
+
+2026-05-18 本地脚本结果：
+
+```text
+Script ran successfully
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+totalTransactionsPlanned=19
+```
+
 2026-05-17 使用 Base mainnet 预测地址运行本地计算，不广播：
 
 ```text

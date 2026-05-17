@@ -42,7 +42,8 @@
 - 2026-05-18 已跑通 Base Sepolia rc3 fork 只读 dry-run：`chainId=84532`、`broadcastRequested=false`、`simulationOnly=true`、两个池初始化和 renounce 锁定检查通过；未广播、未部署、未用私钥。
 - Base Sepolia rc3 测试网广播草案已新增：`PrepareBaseSepoliaRc3SunMoonUsdcBroadcastDraft`，只生成分阶段计划，默认 `broadcastAllowed=false`，拒绝 `PRIVATE_KEY` 和执行开关；专项测试 9 passed，0 failed。
 - 2026-05-18 已跑通 Base Sepolia rc3 广播草案 fork 只读检查：`chainId=84532`、`broadcastAllowed=false`、`executeRequested=false`、`privateKeyPresent=false`、`totalTransactionsPlanned=19`；未广播、未部署、未用私钥。
-- rc3 测试网广播草案新增后，最新全量 Foundry 测试已更新为 `326 passed, 0 failed`。
+- Base Sepolia rc3 分阶段广播脚本草案已新增：`PrepareBaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft`，把未来测试网广播拆成 Stage 1/2/3，默认 `executionBlocked=true`，不调用广播；专项测试 8 passed，0 failed。
+- rc3 分阶段广播脚本草案新增后，最新全量 Foundry 测试已更新为 `334 passed, 0 failed`。
 - 2026-05-16 方向已更新：SUN/MOON 都保持自由转账，不再试图在合约层禁止市场自行创建 AMM 池；项目只对明确支持的 Uniswap v4 Hook 池提供费用逻辑。
 - 新的 Hook 池目标：`SUN/USDC` v4 Hook 池 swap 收 `2% USDC`，其中 `1.5%` 注入 `SunCurve`、`0.5%` 进入协议经费；`MOON/USDC` v4 Hook 池 swap 收 `5% USDC`，其中 `3%` 注入 `SunCurve`、`2%` 进入协议经费。
 - 本地已新增 `BaseSunMoonUsdcFeeV4Hook`，统一支持 `SUN/USDC` 和 `MOON/USDC` 两类 USDC 计费 v4 Hook 池，并覆盖自由转账、SunCurve/MoonCurve mint/burn 兼容、2%/5% 收费、白名单和 renounce 后配置锁定测试。
@@ -173,7 +174,7 @@ ASSET_TRANSACTIONS_EXECUTED=0
 
 ```text
 forge test --threads 1 --isolate
-326 passed, 0 failed
+334 passed, 0 failed
 ```
 
 ## 项目结构
@@ -224,6 +225,7 @@ forge fmt
 - `docs/演练记录-Base-Sepolia-长期-2026-05.md`
 - `docs/Base-Sepolia-rc3-dry-run草案-2026-05-17.md`
 - `docs/Base-Sepolia-rc3-测试网广播草案-2026-05-18.md`
+- `docs/Base-Sepolia-rc3-分阶段广播脚本草案-2026-05-18.md`
 - `docs/Base-主网上线前人工复核清单-2026-05-17.md`
 - `docs/Base-主网角色钱包与多签方案-草案-2026-05-15.md`（历史方案，已被普通钱包方案取代）
 - `docs/Base-主网上线后最小权限与放弃管理权方案-2026-05-15.md`

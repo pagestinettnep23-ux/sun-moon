@@ -33,7 +33,7 @@
 candidate=rc3
 commit=4ffcdbe6dd13103aaf1cba2e085d4c1c3ec87623
 tag=audit-sun-moon-base-contracts-2026-05-17-rc3
-latest_full_test=326 passed, 0 failed
+latest_full_test=334 passed, 0 failed
 ```
 
 ### 3. 当前 Base Sepolia 状态说明
@@ -106,7 +106,7 @@ doc=docs/Base-Sepolia-rc3-dry-run草案-2026-05-17.md
 test=test/hooks/base/BaseSepoliaRc3SunMoonUsdcDryRunPreparation.t.sol
 local_script_result=Script ran successfully
 test_result=10 passed, 0 failed
-latest_full_test=326 passed, 0 failed
+latest_full_test=334 passed, 0 failed
 mainnet_broadcast=false
 testnet_broadcast=false
 private_key_requested=false
@@ -286,6 +286,64 @@ private_key_requested=false
 这些 predicted 地址和 poolId 是 fork 草案检查结果，不是已经部署地址。
 这一步只证明广播草案在 Base Sepolia 官方环境里能模拟生成计划。
 下一步如果继续，应先人工复核草案结果；仍不能直接广播。
+```
+
+## Day 1 补充 - rc3 分阶段广播脚本草案
+
+### 1. 本次目标
+
+创建更接近真正测试网广播顺序的分阶段脚本草案，但仍不执行广播。
+
+新增：
+
+```text
+script/PrepareBaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft.s.sol
+test/hooks/base/BaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft.t.sol
+docs/Base-Sepolia-rc3-分阶段广播脚本草案-2026-05-18.md
+```
+
+### 2. 阶段拆分
+
+```text
+Stage 1: 核心合约部署和基础配置，12 笔
+Stage 2: Hook、两个池白名单、两个池初始化，6 笔
+Stage 3: renounce Hook owner，1 笔
+totalTransactionsPlanned=19
+```
+
+### 3. 防呆状态
+
+```text
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+EXECUTE_BASE_SEPOLIA_RC3_STAGE=1 会被拒绝
+PRIVATE_KEY 非空会被拒绝
+Base mainnet chainId=8453 会被拒绝
+```
+
+### 4. 本地验证
+
+```text
+forge test --match-path test/hooks/base/BaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft.t.sol --threads 1 --isolate
+8 passed, 0 failed
+
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft.s.sol
+Script ran successfully
+stage1AddressCollision=false
+stage2HookCollision=false
+
+forge test --threads 1 --isolate
+334 passed, 0 failed
+```
+
+### 5. 当前结论
+
+```text
+分阶段广播脚本草案已准备
+尚未允许测试网广播
+尚未允许主网广播
+下一步只能做 Base Sepolia fork 只读分阶段草案检查
 ```
 
 ### 6. 停止条件
