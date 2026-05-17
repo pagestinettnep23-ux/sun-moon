@@ -435,6 +435,29 @@ simulationOnly=true
 totalTransactionsPlanned=19
 ```
 
+2026-05-18 Base Sepolia fork 只读分阶段草案检查结果：
+
+```text
+Script ran successfully
+chainId=84532
+stagedDraftConfirmed=true
+selectedStage=0
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+executeRequested=false
+privateKeyPresent=false
+stage1CoreDeploymentTxs=12
+stage2HookAndPoolTxs=6
+stage3RenounceTxs=1
+totalTransactionsPlanned=19
+PREDICTED_HOOK=0x675D7a468d4d3b8d02d530539867F9e5feEFc0cc
+SUN_USDC_POOL_ID=0xdbf2bf05916b4f79d43e3ee74fa48b36301e8e8c13805335e186648b792451dc
+MOON_USDC_POOL_ID=0x5b2a79878be8e421c919a9acb8d853731d6d61b8053aa25bd32e0c994130bdfd
+stage1AddressCollision=false
+stage2HookCollision=false
+```
+
 2026-05-17 使用 Base mainnet 预测地址运行本地计算，不广播：
 
 ```text

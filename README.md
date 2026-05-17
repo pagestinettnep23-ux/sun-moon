@@ -43,6 +43,7 @@
 - Base Sepolia rc3 测试网广播草案已新增：`PrepareBaseSepoliaRc3SunMoonUsdcBroadcastDraft`，只生成分阶段计划，默认 `broadcastAllowed=false`，拒绝 `PRIVATE_KEY` 和执行开关；专项测试 9 passed，0 failed。
 - 2026-05-18 已跑通 Base Sepolia rc3 广播草案 fork 只读检查：`chainId=84532`、`broadcastAllowed=false`、`executeRequested=false`、`privateKeyPresent=false`、`totalTransactionsPlanned=19`；未广播、未部署、未用私钥。
 - Base Sepolia rc3 分阶段广播脚本草案已新增：`PrepareBaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft`，把未来测试网广播拆成 Stage 1/2/3，默认 `executionBlocked=true`，不调用广播；专项测试 8 passed，0 failed。
+- 2026-05-18 已跑通 Base Sepolia rc3 分阶段广播草案 fork 只读检查：`chainId=84532`、`broadcastAllowed=false`、`executionBlocked=true`、`privateKeyPresent=false`、`totalTransactionsPlanned=19`、`stage1AddressCollision=false`、`stage2HookCollision=false`；未广播、未部署、未用私钥。
 - rc3 分阶段广播脚本草案新增后，最新全量 Foundry 测试已更新为 `334 passed, 0 failed`。
 - 2026-05-16 方向已更新：SUN/MOON 都保持自由转账，不再试图在合约层禁止市场自行创建 AMM 池；项目只对明确支持的 Uniswap v4 Hook 池提供费用逻辑。
 - 新的 Hook 池目标：`SUN/USDC` v4 Hook 池 swap 收 `2% USDC`，其中 `1.5%` 注入 `SunCurve`、`0.5%` 进入协议经费；`MOON/USDC` v4 Hook 池 swap 收 `5% USDC`，其中 `3%` 注入 `SunCurve`、`2%` 进入协议经费。
@@ -168,7 +169,7 @@ ASSET_TRANSACTIONS_PLANNED=9
 ASSET_TRANSACTIONS_EXECUTED=0
 ```
 
-下一步不是主网。Hook 已部署并链上复核通过，adapter 授权和 `SunCurve.moonAMM` 绑定也已完成并复核通过。受控 `MOON/USDC` 测试池 poolId 已算出，`setAllowedMoonPool(poolId, true)` 和 `PoolManager.initialize(poolKey, sqrtPriceX96)` 都已在用户明确批准后广播成功，链上复核 `allowedMoonPools(poolId)=true` 且 `slot0.tick=276300`。极小额流动性/交换演练准备、资产/Permit2 授权、报价预检、真实小额加流动性和 `0.1 USDC -> MOON` swap 都已完成。2026-05-16 后主网前方案改为：SUN/MOON 自由转账，市场可自行建池；本地已新增统一 v4 Hook 池费用逻辑，`SUN/USDC` 收 `2% USDC`、`MOON/USDC` 收 `5% USDC`，并新增只计算两类新池 `PoolKey -> poolId`、`initialTick`、`sqrtPriceX96` 的 dry-run 脚本。2026-05-17 已跑通 Base mainnet fork 只模拟总 dry-run；2026-05-18 已跑通 Base Sepolia rc3 fork 只读 dry-run。仍不进入 Base 主网部署，也不接真实资金。
+下一步不是主网。Hook 已部署并链上复核通过，adapter 授权和 `SunCurve.moonAMM` 绑定也已完成并复核通过。受控 `MOON/USDC` 测试池 poolId 已算出，`setAllowedMoonPool(poolId, true)` 和 `PoolManager.initialize(poolKey, sqrtPriceX96)` 都已在用户明确批准后广播成功，链上复核 `allowedMoonPools(poolId)=true` 且 `slot0.tick=276300`。极小额流动性/交换演练准备、资产/Permit2 授权、报价预检、真实小额加流动性和 `0.1 USDC -> MOON` swap 都已完成。2026-05-16 后主网前方案改为：SUN/MOON 自由转账，市场可自行建池；本地已新增统一 v4 Hook 池费用逻辑，`SUN/USDC` 收 `2% USDC`、`MOON/USDC` 收 `5% USDC`，并新增只计算两类新池 `PoolKey -> poolId`、`initialTick`、`sqrtPriceX96` 的 dry-run 脚本。2026-05-17 已跑通 Base mainnet fork 只模拟总 dry-run；2026-05-18 已跑通 Base Sepolia rc3 fork 只读 dry-run、广播草案 fork 只读检查、分阶段广播草案 fork 只读检查。仍不进入 Base 主网部署，也不接真实资金。
 
 最新全量 Foundry 测试记录：
 
