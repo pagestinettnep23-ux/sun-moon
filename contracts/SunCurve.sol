@@ -10,6 +10,7 @@ import { SunToken } from "./SunToken.sol";
 
 contract SunCurve is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20Metadata;
+    using SafeERC20 for SunToken;
 
     uint256 public constant BPS = 10_000;
     uint256 public constant FEE_TO_CURVE_BPS = 150;
@@ -197,7 +198,7 @@ contract SunCurve is Ownable, ReentrancyGuard {
 
         curveReserve -= usdtOut + feeToProtocol;
 
-        sunToken.transferFrom(payer, address(this), sunIn);
+        sunToken.safeTransferFrom(payer, address(this), sunIn);
         sunToken.burn(address(this), sunIn);
         usdt.safeTransfer(protocolBudget, feeToProtocol);
         usdt.safeTransfer(receiver, usdtOut);
