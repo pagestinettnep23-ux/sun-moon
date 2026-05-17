@@ -35,6 +35,8 @@
 - Base 主网审计输入包和上线前人工复核清单已新增并更新到 `rc2`；下一步是外部审计或安全 review，不是主网广播。
 - Base 主网审计版本已冻结为本地合约审计候选：`audit-sun-moon-base-contracts-2026-05-17-rc2`，commit `6b136193590bc981eb4689b822b8c921206d9d37`；前端暂未纳入本轮合约审计范围。
 - Slither 免费工具预审已完成，主范围发现已修复并形成报告：`docs/Base-主网免费工具审查报告-2026-05-17.md` 和 `docs/slither-report-2026-05-17.json`。
+- 免费审计替代流程阶段 A 已完成：新增 SUN/MOON 曲线 fuzz、invariant 安全测试，并增强统一 v4 Hook 费用和 renounce fuzz 测试；全量测试更新为 `307 passed, 0 failed`。
+- 在没有正式审计预算且暂时跳过社区 review 的前提下，已新增 Base Sepolia 长期演练计划；建议至少观察 14 天，仍不进入主网部署。
 - 2026-05-16 方向已更新：SUN/MOON 都保持自由转账，不再试图在合约层禁止市场自行创建 AMM 池；项目只对明确支持的 Uniswap v4 Hook 池提供费用逻辑。
 - 新的 Hook 池目标：`SUN/USDC` v4 Hook 池 swap 收 `2% USDC`，其中 `1.5%` 注入 `SunCurve`、`0.5%` 进入协议经费；`MOON/USDC` v4 Hook 池 swap 收 `5% USDC`，其中 `3%` 注入 `SunCurve`、`2%` 进入协议经费。
 - 本地已新增 `BaseSunMoonUsdcFeeV4Hook`，统一支持 `SUN/USDC` 和 `MOON/USDC` 两类 USDC 计费 v4 Hook 池，并覆盖自由转账、SunCurve/MoonCurve mint/burn 兼容、2%/5% 收费、白名单和 renounce 后配置锁定测试。
@@ -165,7 +167,7 @@ ASSET_TRANSACTIONS_EXECUTED=0
 
 ```text
 forge test --threads 1 --isolate
-296 passed, 0 failed
+307 passed, 0 failed
 ```
 
 ## 项目结构
@@ -211,6 +213,8 @@ forge fmt
 - `docs/Base-主网mainnet-fork-dry-run草案-2026-05-16.md`
 - `docs/Base-主网审计输入包-2026-05-17.md`
 - `docs/Base-主网免费工具审查报告-2026-05-17.md`
+- `docs/Base-主网免费审计替代流程-阶段A-2026-05-17.md`
+- `docs/Base-Sepolia-长期演练计划-2026-05-17.md`
 - `docs/Base-主网上线前人工复核清单-2026-05-17.md`
 - `docs/Base-主网角色钱包与多签方案-草案-2026-05-15.md`（历史方案，已被普通钱包方案取代）
 - `docs/Base-主网上线后最小权限与放弃管理权方案-2026-05-15.md`

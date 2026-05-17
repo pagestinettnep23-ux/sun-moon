@@ -215,6 +215,33 @@ contract BaseSunMoonUsdcFeeV4HookTest is Deployers {
         assertEq(usdc.balanceOf(address(hook)), 0);
     }
 
+    function testFuzzSpecifiedUsdcInputFeeSplits(uint256 sunUsdcSeed, uint256 moonUsdcSeed) public {
+        uint256 sunUsdcIn = bound(sunUsdcSeed, 10_000, 1_000_000);
+        uint256 moonUsdcIn = bound(moonUsdcSeed, 10_000, 1_000_000);
+
+        uint256 reserveBefore = sunCurve.curveReserve();
+        uint256 budgetBefore = usdc.balanceOf(protocolBudget);
+        uint256 expectedSunFeeToCurve = sunUsdcIn * SUN_FEE_TO_CURVE_BPS / BPS;
+        uint256 expectedSunFeeToProtocol = sunUsdcIn * SUN_FEE_TO_PROTOCOL_BPS / BPS;
+
+        _swapExactUsdcInput(sunUsdcKey, sunUsdcIn, expectedSunFeeToCurve);
+
+        assertEq(sunCurve.curveReserve() - reserveBefore, expectedSunFeeToCurve);
+        assertEq(usdc.balanceOf(protocolBudget) - budgetBefore, expectedSunFeeToProtocol);
+        assertEq(usdc.balanceOf(address(hook)), 0);
+
+        reserveBefore = sunCurve.curveReserve();
+        budgetBefore = usdc.balanceOf(protocolBudget);
+        uint256 expectedMoonFeeToCurve = moonUsdcIn * MOON_FEE_TO_CURVE_BPS / BPS;
+        uint256 expectedMoonFeeToProtocol = moonUsdcIn * MOON_FEE_TO_PROTOCOL_BPS / BPS;
+
+        _swapExactUsdcInput(moonUsdcKey, moonUsdcIn, expectedMoonFeeToCurve);
+
+        assertEq(sunCurve.curveReserve() - reserveBefore, expectedMoonFeeToCurve);
+        assertEq(usdc.balanceOf(protocolBudget) - budgetBefore, expectedMoonFeeToProtocol);
+        assertEq(usdc.balanceOf(address(hook)), 0);
+    }
+
     function testSunUsdcPoolCollectsTwoPercentWhenUsdcIsUnspecifiedOutput() public {
         uint256 reserveBefore = sunCurve.curveReserve();
         uint256 budgetBefore = usdc.balanceOf(protocolBudget);
@@ -289,6 +316,42 @@ contract BaseSunMoonUsdcFeeV4HookTest is Deployers {
         assertEq(beforeSelector, hook.beforeSwap.selector);
         assertEq(afterSelector, hook.afterSwap.selector);
         assertEq(hookDelta, 0);
+    }
+
+    function testFuzzRenouncePermanentlyBlocksConfiguration(
+        bytes32 sunPoolSeed,
+        bytes32 moonPoolSeed,
+        address callerSeed
+    ) public {
+        bytes32 sunPoolId = sunPoolSeed == bytes32(0)
+            ? keccak256("fuzzSunPoolAfterRenounce")
+            : sunPoolSeed;
+        bytes32 moonPoolId =
+            moonPoolSeed == bytes32(0) ? keccak256("fuzzMoonPoolAfterRenounce") : moonPoolSeed;
+        address caller = callerSeed == address(0) ? alice : callerSeed;
+
+        vm.prank(owner);
+        hook.renounceOwnership();
+        assertEq(hook.owner(), address(0));
+
+        vm.startPrank(caller);
+
+        vm.expectRevert(BaseSunMoonUsdcFeeV4Hook.NotOwner.selector);
+        hook.setAllowedSunUsdcPool(sunPoolId, true);
+
+        vm.expectRevert(BaseSunMoonUsdcFeeV4Hook.NotOwner.selector);
+        hook.setAllowedMoonUsdcPool(moonPoolId, true);
+
+        vm.expectRevert(BaseSunMoonUsdcFeeV4Hook.NotOwner.selector);
+        hook.setProtocolBudget(makeAddr("fuzzBudgetAfterRenounce"));
+
+        vm.expectRevert(BaseSunMoonUsdcFeeV4Hook.NotOwner.selector);
+        hook.setPaused(true);
+
+        vm.expectRevert(BaseSunMoonUsdcFeeV4Hook.NotOwner.selector);
+        hook.transferOwnership(makeAddr("fuzzOwnerAfterRenounce"));
+
+        vm.stopPrank();
     }
 
     function testTransferAndRenounceOwnershipLocksConfiguration() public {
