@@ -358,6 +358,21 @@ simulationOnly=true
 totalTransactionsPlanned=19
 ```
 
+2026-05-18 Base Sepolia fork 只读广播草案检查结果：
+
+```text
+Script ran successfully
+chainId=84532
+broadcastAllowed=false
+executeRequested=false
+privateKeyPresent=false
+simulationOnly=true
+totalTransactionsPlanned=19
+PREDICTED_HOOK=0xa7b9302FABcf263D95Ed1cC526Dc9d73831bC0cC
+SUN_USDC_POOL_ID=0xada206761935bad228030e12dbde37a46d58391fd755889c6ce5d3bf9d24c0ac
+MOON_USDC_POOL_ID=0xa0a6f00c435fe448d3de1a3e095dfef63c8fc689c98841a95b445b37b0d72d8f
+```
+
 说明：
 
 - 这是广播草案，不是测试网广播批准。

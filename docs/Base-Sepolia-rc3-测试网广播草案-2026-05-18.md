@@ -178,21 +178,63 @@ forge test --threads 1 --isolate
 326 passed, 0 failed
 ```
 
+Base Sepolia fork 只读广播草案检查：
+
+```text
+date=2026-05-18
+command=forge script script/PrepareBaseSepoliaRc3SunMoonUsdcBroadcastDraft.s.sol --rpc-url https://sepolia.base.org --rpc-timeout 120 --slow
+script_result=Script ran successfully
+chainId=84532
+baseSepoliaDraftConfirmed=true
+executeRequested=false
+privateKeyPresent=false
+broadcastAllowed=false
+simulationOnly=true
+stage1CoreDeploymentTxs=12
+stage2HookAndPoolTxs=6
+stage3RenounceTxs=1
+totalTransactionsPlanned=19
+PREDICTED_SUN_TOKEN=0xb5287fBbAD0e25B12f18497209fDac7e0ACf7293
+PREDICTED_SUN_CURVE=0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4
+PREDICTED_MOON_TOKEN=0x92dC3B8056cA62A7dbc5c1C339891B45463bEe71
+PREDICTED_MOON_CURVE=0x095c91aB279121300Ac16c57D1ecebB9ceEa1cd8
+PREDICTED_CREATE2_HOOK_DEPLOYER=0x6E34D98e1925eaf6680941213E49741b8764DdfE
+HOOK_SALT=0x00000000000000000000000000000000000000000000000000000000000063fb
+PREDICTED_HOOK=0xa7b9302FABcf263D95Ed1cC526Dc9d73831bC0cC
+SUN_USDC_POOL_ID=0xada206761935bad228030e12dbde37a46d58391fd755889c6ce5d3bf9d24c0ac
+SUN_USDC_INITIAL_TICK=276324
+SUN_USDC_SQRT_PRICE_X96=79228162514264337593543950336000000
+MOON_USDC_POOL_ID=0xa0a6f00c435fe448d3de1a3e095dfef63c8fc689c98841a95b445b37b0d72d8f
+MOON_USDC_INITIAL_TICK=290595
+MOON_USDC_SQRT_PRICE_X96=161723809515207654377831473576838109
+sunUsdcAllowedAfterDryRun=true
+moonUsdcAllowedAfterDryRun=true
+renounceBlocksSunAllowlist=true
+renounceBlocksMoonAllowlist=true
+renounceBlocksProtocolBudget=true
+mainnet_broadcast=false
+testnet_broadcast=false
+private_key_requested=false
+```
+
+这些地址和 poolId 是 fork 草案检查结果，不代表 rc3 已经部署到 Base Sepolia。
+
 ## 8. 当前结论
 
 ```text
 rc3 Base Sepolia 测试网广播草案已准备
-当前只允许 review 草案和跑 fork 只读草案
+Base Sepolia fork 只读广播草案检查已通过
 尚未允许测试网广播
 尚未允许主网广播
 ```
 
-下一步如果继续，也不是广播。
+下一步如果继续，应先人工复核这份草案结果，仍不是广播。
 
 建议下一步只做：
 
 ```text
-Base Sepolia fork 只读广播草案检查
+人工复核预测地址、两池 poolId、交易阶段和停止条件
+确认是否需要先拆分真正广播脚本
 仍不加 --broadcast
 仍不使用 PRIVATE_KEY
 ```

@@ -227,6 +227,67 @@ rc3 测试网广播草案已准备
 下一步只能做 Base Sepolia fork 只读广播草案检查
 ```
 
+## Day 1 补充 - rc3 广播草案 fork 只读检查
+
+### 1. 本次目标
+
+只在 Base Sepolia fork 环境跑广播草案检查，确认草案在官方测试网 v4 / USDC 地址下仍然能生成计划。
+
+本次不执行：
+
+```text
+不加 --broadcast
+不部署测试网合约
+不部署主网合约
+不使用真实资金
+不索要私钥
+```
+
+### 2. 执行命令
+
+```powershell
+$env:CONFIRM_BASE_SEPOLIA_RC3_BROADCAST_DRAFT="1"
+$env:EXECUTE_BASE_SEPOLIA_RC3_BROADCAST="0"
+$env:PRIVATE_KEY=""
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcBroadcastDraft.s.sol --rpc-url https://sepolia.base.org --rpc-timeout 120 --slow
+```
+
+### 3. 结果记录
+
+```text
+script_result=Script ran successfully
+chainId=84532
+baseSepoliaDraftConfirmed=true
+executeRequested=false
+privateKeyPresent=false
+broadcastAllowed=false
+simulationOnly=true
+stage1CoreDeploymentTxs=12
+stage2HookAndPoolTxs=6
+stage3RenounceTxs=1
+totalTransactionsPlanned=19
+PREDICTED_SUN_TOKEN=0xb5287fBbAD0e25B12f18497209fDac7e0ACf7293
+PREDICTED_SUN_CURVE=0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4
+PREDICTED_MOON_TOKEN=0x92dC3B8056cA62A7dbc5c1C339891B45463bEe71
+PREDICTED_MOON_CURVE=0x095c91aB279121300Ac16c57D1ecebB9ceEa1cd8
+PREDICTED_CREATE2_HOOK_DEPLOYER=0x6E34D98e1925eaf6680941213E49741b8764DdfE
+HOOK_SALT=0x00000000000000000000000000000000000000000000000000000000000063fb
+PREDICTED_HOOK=0xa7b9302FABcf263D95Ed1cC526Dc9d73831bC0cC
+SUN_USDC_POOL_ID=0xada206761935bad228030e12dbde37a46d58391fd755889c6ce5d3bf9d24c0ac
+MOON_USDC_POOL_ID=0xa0a6f00c435fe448d3de1a3e095dfef63c8fc689c98841a95b445b37b0d72d8f
+mainnet_broadcast=false
+testnet_broadcast=false
+private_key_requested=false
+```
+
+### 4. 重要说明
+
+```text
+这些 predicted 地址和 poolId 是 fork 草案检查结果，不是已经部署地址。
+这一步只证明广播草案在 Base Sepolia 官方环境里能模拟生成计划。
+下一步如果继续，应先人工复核草案结果；仍不能直接广播。
+```
+
 ### 6. 停止条件
 
 出现任一情况立即停止：
