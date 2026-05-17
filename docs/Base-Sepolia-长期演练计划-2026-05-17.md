@@ -205,7 +205,34 @@ renounce 后还能改配置
 重新开始观察周期
 ```
 
-## 10. 当前建议
+## 10. Day 0 范围澄清
+
+Base Sepolia 上已经完成过一轮历史 `MOON/USDC` 小额演练，但它主要验证的是旧版 `BaseMoonAmmFeeV4Hook` 路径。
+
+当前 rc3 主网候选范围已经更新为：
+
+```text
+BaseSunMoonUsdcFeeV4Hook
+SUN/USDC v4 Hook 池收 2% USDC
+MOON/USDC v4 Hook 池收 5% USDC
+SUN/MOON 都保持自由转账
+市场可以自行创建第三方池，项目只支持指定 v4 Hook 池
+```
+
+所以长期演练要分清楚两件事：
+
+```text
+历史 Base Sepolia MOON/USDC 池可以继续作为旧路径观察样本
+rc3 最新方案如果要做完整测试网观察，需要另起一轮 rc3 Base Sepolia 演练
+```
+
+Day 0 启动记录见：
+
+```text
+docs/演练记录-Base-Sepolia-长期-2026-05.md
+```
+
+## 11. 当前建议
 
 在没有正式审计预算、也跳过社区 review 的前提下，建议至少做：
 
@@ -215,4 +242,3 @@ renounce 后还能改配置
 每次复核都写记录
 任何异常都先修复，不进入主网讨论
 ```
-
