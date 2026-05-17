@@ -232,6 +232,13 @@ Day 0 启动记录见：
 docs/演练记录-Base-Sepolia-长期-2026-05.md
 ```
 
+rc3 dry-run 草案见：
+
+```text
+docs/Base-Sepolia-rc3-dry-run草案-2026-05-17.md
+script/PrepareBaseSepoliaRc3SunMoonUsdcDryRun.s.sol
+```
+
 ## 11. 当前建议
 
 在没有正式审计预算、也跳过社区 review 的前提下，建议至少做：

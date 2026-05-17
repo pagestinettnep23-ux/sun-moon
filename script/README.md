@@ -230,6 +230,74 @@ MOON_USDC_INITIAL_USDC_AMOUNT=240000
 - `MOON_USDC_INITIAL_TOKEN_AMOUNT=1e18` 与 `MOON_USDC_INITIAL_USDC_AMOUNT=240000` 表示 `1 MOON = 0.24 USDC`。
 - `PoolManager.initialize(poolKey, sqrtPriceX96)` 可以使用精确价格对应的 `sqrtPriceX96`；输出的 `initialTick` 是 v4 根据该价格推导出的 tick，不要求是 `tickSpacing=60` 的倍数。后续 LP 仓位的 `tickLower/tickUpper` 才必须遵守 tick spacing。
 
+### `PrepareBaseSepoliaRc3SunMoonUsdcDryRun.s.sol`
+
+用途：
+
+- 为 rc3 最新统一 Hook 方案准备 Base Sepolia dry-run。
+- 本地或 Base Sepolia fork 中模拟部署新的测试版 `SunToken`、`SunCurve`、`MoonToken`、`MoonCurve`、`Create2HookDeployer`。
+- 通过 CREATE2 模拟部署 `BaseSunMoonUsdcFeeV4Hook`，并检查 Hook 低 14 位权限 bit。
+- 计算并初始化 `SUN/USDC` 与 `MOON/USDC` 两个测试池。
+- 模拟白名单、`SunCurve.moonAMM` 绑定和 `renounceOwnership()` 后配置锁定。
+- 拒绝 Base 主网 chainId，拒绝 `EXECUTE_BASE_SEPOLIA_RC3_BROADCAST=1`。
+
+本地模拟命令，不需要 RPC、不需要私钥、不广播：
+
+```powershell
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcDryRun.s.sol
+```
+
+Base Sepolia fork 只模拟命令，不广播：
+
+```powershell
+$env:CONFIRM_BASE_SEPOLIA_RC3_DRY_RUN="1"
+$env:EXECUTE_BASE_SEPOLIA_RC3_BROADCAST="0"
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcDryRun.s.sol --rpc-url https://sepolia.base.org --rpc-timeout 120 --slow
+```
+
+可选环境变量：
+
+```text
+SEPOLIA_DEPLOYER=
+SEPOLIA_ADMIN_WALLET=
+SEPOLIA_PROTOCOL_BUDGET_WALLET=
+SEPOLIA_CREATE2_DEPLOYER_OWNER=
+POOL_MANAGER=
+STATE_VIEW=
+USDC_TOKEN=
+MOON_LAUNCH_DELAY=0
+SUN_USDC_POOL_FEE=3000
+SUN_USDC_POOL_TICK_SPACING=60
+SUN_USDC_INITIAL_TOKEN_AMOUNT=1000000000000000000
+SUN_USDC_INITIAL_USDC_AMOUNT=1000000
+MOON_USDC_POOL_FEE=3000
+MOON_USDC_POOL_TICK_SPACING=60
+MOON_USDC_INITIAL_TOKEN_AMOUNT=1000000000000000000
+MOON_USDC_INITIAL_USDC_AMOUNT=240000
+HOOK_SALT_START=0
+HOOK_MAX_SALT_SEARCH=300000
+CONFIRM_BASE_SEPOLIA_RC3_DRY_RUN=0
+EXECUTE_BASE_SEPOLIA_RC3_BROADCAST=0
+```
+
+对应回归测试：
+
+```powershell
+forge test --match-path test/hooks/base/BaseSepoliaRc3SunMoonUsdcDryRunPreparation.t.sol -vvv
+```
+
+2026-05-17 本地专项测试结果：
+
+```text
+10 passed, 0 failed
+```
+
+说明：
+
+- 这是 rc3 Base Sepolia 测试网演练草案，不是测试网广播批准。
+- 真正广播前仍需要 owner 单独明确批准。
+- 不要把私钥、助记词或完整 RPC key 写进命令、文档或聊天。
+
 2026-05-17 使用 Base mainnet 预测地址运行本地计算，不广播：
 
 ```text

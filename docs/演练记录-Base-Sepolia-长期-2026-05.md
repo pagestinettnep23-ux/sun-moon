@@ -33,7 +33,7 @@
 candidate=rc3
 commit=4ffcdbe6dd13103aaf1cba2e085d4c1c3ec87623
 tag=audit-sun-moon-base-contracts-2026-05-17-rc3
-latest_full_test=307 passed, 0 failed
+latest_full_test=317 passed, 0 failed
 ```
 
 ### 3. 当前 Base Sepolia 状态说明
@@ -98,6 +98,22 @@ forge script script/PrepareBaseSepoliaTinyMoonUsdcRehearsal.s.sol --rpc-url http
 只在用户明确批准后才允许 Base Sepolia 测试网广播
 ```
 
+当前已经新增 rc3 dry-run 草案：
+
+```text
+script=script/PrepareBaseSepoliaRc3SunMoonUsdcDryRun.s.sol
+doc=docs/Base-Sepolia-rc3-dry-run草案-2026-05-17.md
+test=test/hooks/base/BaseSepoliaRc3SunMoonUsdcDryRunPreparation.t.sol
+local_script_result=Script ran successfully
+test_result=10 passed, 0 failed
+latest_full_test=317 passed, 0 failed
+mainnet_broadcast=false
+testnet_broadcast=false
+private_key_requested=false
+```
+
+这一步只是本地 / fork 模拟准备，尚未把 rc3 真正部署到 Base Sepolia。
+
 ### 6. 停止条件
 
 出现任一情况立即停止：
@@ -109,4 +125,3 @@ forge script script/PrepareBaseSepoliaTinyMoonUsdcRehearsal.s.sol --rpc-url http
 测试网地址和主网预测地址混用
 旧版 MOON/USDC 演练结果被当成 rc3 全范围通过
 ```
-
