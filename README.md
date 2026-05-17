@@ -39,6 +39,7 @@
 - 在没有正式审计预算且暂时跳过社区 review 的前提下，已新增 Base Sepolia 长期演练计划；建议至少观察 14 天，仍不进入主网部署。
 - Base Sepolia 长期演练 Day 0 记录已创建，明确历史 `MOON/USDC` 测试池只能作为旧路径观察样本；rc3 最新统一 Hook 方案如果要完整验证，需要另起一轮 rc3 Base Sepolia dry-run / 测试网演练。
 - Base Sepolia rc3 dry-run 草案脚本已新增：`PrepareBaseSepoliaRc3SunMoonUsdcDryRun`，可本地模拟新核心合约、统一 Hook、`SUN/USDC` 与 `MOON/USDC` 两个池、白名单、初始化和 renounce；脚本拒绝 Base 主网和广播开关。
+- 2026-05-18 已跑通 Base Sepolia rc3 fork 只读 dry-run：`chainId=84532`、`broadcastRequested=false`、`simulationOnly=true`、两个池初始化和 renounce 锁定检查通过；未广播、未部署、未用私钥。
 - rc3 dry-run 草案新增后，最新全量 Foundry 测试已更新为 `317 passed, 0 failed`。
 - 2026-05-16 方向已更新：SUN/MOON 都保持自由转账，不再试图在合约层禁止市场自行创建 AMM 池；项目只对明确支持的 Uniswap v4 Hook 池提供费用逻辑。
 - 新的 Hook 池目标：`SUN/USDC` v4 Hook 池 swap 收 `2% USDC`，其中 `1.5%` 注入 `SunCurve`、`0.5%` 进入协议经费；`MOON/USDC` v4 Hook 池 swap 收 `5% USDC`，其中 `3%` 注入 `SunCurve`、`2%` 进入协议经费。
@@ -164,7 +165,7 @@ ASSET_TRANSACTIONS_PLANNED=9
 ASSET_TRANSACTIONS_EXECUTED=0
 ```
 
-下一步不是主网。Hook 已部署并链上复核通过，adapter 授权和 `SunCurve.moonAMM` 绑定也已完成并复核通过。受控 `MOON/USDC` 测试池 poolId 已算出，`setAllowedMoonPool(poolId, true)` 和 `PoolManager.initialize(poolKey, sqrtPriceX96)` 都已在用户明确批准后广播成功，链上复核 `allowedMoonPools(poolId)=true` 且 `slot0.tick=276300`。极小额流动性/交换演练准备、资产/Permit2 授权、报价预检、真实小额加流动性和 `0.1 USDC -> MOON` swap 都已完成。2026-05-16 后主网前方案改为：SUN/MOON 自由转账，市场可自行建池；本地已新增统一 v4 Hook 池费用逻辑，`SUN/USDC` 收 `2% USDC`、`MOON/USDC` 收 `5% USDC`，并新增只计算两类新池 `PoolKey -> poolId`、`initialTick`、`sqrtPriceX96` 的 dry-run 脚本。2026-05-17 已跑通 Base mainnet fork 只模拟总 dry-run，但仍不进入 Base 主网部署，也不接真实资金。
+下一步不是主网。Hook 已部署并链上复核通过，adapter 授权和 `SunCurve.moonAMM` 绑定也已完成并复核通过。受控 `MOON/USDC` 测试池 poolId 已算出，`setAllowedMoonPool(poolId, true)` 和 `PoolManager.initialize(poolKey, sqrtPriceX96)` 都已在用户明确批准后广播成功，链上复核 `allowedMoonPools(poolId)=true` 且 `slot0.tick=276300`。极小额流动性/交换演练准备、资产/Permit2 授权、报价预检、真实小额加流动性和 `0.1 USDC -> MOON` swap 都已完成。2026-05-16 后主网前方案改为：SUN/MOON 自由转账，市场可自行建池；本地已新增统一 v4 Hook 池费用逻辑，`SUN/USDC` 收 `2% USDC`、`MOON/USDC` 收 `5% USDC`，并新增只计算两类新池 `PoolKey -> poolId`、`initialTick`、`sqrtPriceX96` 的 dry-run 脚本。2026-05-17 已跑通 Base mainnet fork 只模拟总 dry-run；2026-05-18 已跑通 Base Sepolia rc3 fork 只读 dry-run。仍不进入 Base 主网部署，也不接真实资金。
 
 最新全量 Foundry 测试记录：
 

@@ -114,6 +114,72 @@ private_key_requested=false
 
 这一步只是本地 / fork 模拟准备，尚未把 rc3 真正部署到 Base Sepolia。
 
+## Day 1 - 2026-05-18
+
+### 1. 本次目标
+
+本次只跑 Base Sepolia fork 只读 dry-run，验证 rc3 最新统一 Hook 方案在 Base Sepolia 官方 v4 / USDC 地址环境下可以模拟通过。
+
+本次不执行：
+
+```text
+不加 --broadcast
+不部署测试网合约
+不部署主网合约
+不使用真实资金
+不索要私钥
+```
+
+### 2. 执行命令
+
+```powershell
+$env:CONFIRM_BASE_SEPOLIA_RC3_DRY_RUN="1"
+$env:EXECUTE_BASE_SEPOLIA_RC3_BROADCAST="0"
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcDryRun.s.sol --rpc-url https://sepolia.base.org --rpc-timeout 120 --slow
+```
+
+### 3. 结果记录
+
+```text
+script_result=Script ran successfully
+chainId=84532
+baseSepoliaConfirmed=true
+broadcastRequested=false
+simulationOnly=true
+simulatedActionsPlanned=19
+POOL_MANAGER=0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408
+STATE_VIEW=0x571291b572ed32ce6751a2Cb2486EbEe8DEfB9B4
+USDC_TOKEN=0x036CbD53842c5426634e7929541eC2318f3dCF7e
+USDC_DECIMALS=6
+actualLow14Bits=204
+hookSalt=0x00000000000000000000000000000000000000000000000000000000000095c0
+predictedHook=0xcceD1a6C6f7E8210B9cEF6Ab8B3B59d62e2480Cc
+deployedHookSimulation=0xcceD1a6C6f7E8210B9cEF6Ab8B3B59d62e2480Cc
+SUN_USDC_POOL_ID=0xfce32214da284681d65059fa87ab5cf5dbf3af53e1d7afdcd78e9d7a6aad4a43
+SUN_USDC_INITIAL_TICK=276324
+SUN_USDC_SQRT_PRICE_X96=79228162514264337593543950336000000
+MOON_USDC_POOL_ID=0x1377ffa0adbb4dcd0be26eb97d703b4f590adee9a7ad72411ec7e75b6bfddf4a
+MOON_USDC_INITIAL_TICK=290595
+MOON_USDC_SQRT_PRICE_X96=161723809515207654377831473576838109
+sunUsdcAllowedAfter=true
+moonUsdcAllowedAfter=true
+ownerAfterRenounce=0x0000000000000000000000000000000000000000
+renounceBlocksSunAllowlist=true
+renounceBlocksMoonAllowlist=true
+renounceBlocksProtocolBudget=true
+mainnet_broadcast=false
+testnet_broadcast=false
+private_key_requested=false
+```
+
+### 4. 重要说明
+
+```text
+上面的 predictedHook 和 poolId 是 fork dry-run 模拟结果，不是已经部署的测试网地址。
+这一步证明脚本能在 Base Sepolia 官方环境里模拟通过。
+下一步如果要把 rc3 真正部署到 Base Sepolia，必须另写广播脚本，并由 owner 单独明确批准。
+```
+
 ### 6. 停止条件
 
 出现任一情况立即停止：

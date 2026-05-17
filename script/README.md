@@ -292,6 +292,21 @@ forge test --match-path test/hooks/base/BaseSepoliaRc3SunMoonUsdcDryRunPreparati
 10 passed, 0 failed
 ```
 
+2026-05-18 Base Sepolia fork 只读 dry-run 结果：
+
+```text
+Script ran successfully
+chainId=84532
+broadcastRequested=false
+simulationOnly=true
+predictedHook=0xcceD1a6C6f7E8210B9cEF6Ab8B3B59d62e2480Cc
+SUN_USDC_POOL_ID=0xfce32214da284681d65059fa87ab5cf5dbf3af53e1d7afdcd78e9d7a6aad4a43
+MOON_USDC_POOL_ID=0x1377ffa0adbb4dcd0be26eb97d703b4f590adee9a7ad72411ec7e75b6bfddf4a
+renounceBlocksSunAllowlist=true
+renounceBlocksMoonAllowlist=true
+renounceBlocksProtocolBudget=true
+```
+
 说明：
 
 - 这是 rc3 Base Sepolia 测试网演练草案，不是测试网广播批准。

@@ -180,6 +180,38 @@ forge test --threads 1 --isolate
 317 passed, 0 failed
 ```
 
+Base Sepolia fork 只读 dry-run 记录：
+
+```text
+date=2026-05-18
+command=forge script script/PrepareBaseSepoliaRc3SunMoonUsdcDryRun.s.sol --rpc-url https://sepolia.base.org --rpc-timeout 120 --slow
+script_result=Script ran successfully
+chainId=84532
+baseSepoliaConfirmed=true
+broadcastRequested=false
+simulationOnly=true
+POOL_MANAGER=0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408
+STATE_VIEW=0x571291b572ed32ce6751a2Cb2486EbEe8DEfB9B4
+USDC_TOKEN=0x036CbD53842c5426634e7929541eC2318f3dCF7e
+USDC_DECIMALS=6
+actualLow14Bits=204
+hookSalt=0x00000000000000000000000000000000000000000000000000000000000095c0
+predictedHook=0xcceD1a6C6f7E8210B9cEF6Ab8B3B59d62e2480Cc
+SUN_USDC_POOL_ID=0xfce32214da284681d65059fa87ab5cf5dbf3af53e1d7afdcd78e9d7a6aad4a43
+MOON_USDC_POOL_ID=0x1377ffa0adbb4dcd0be26eb97d703b4f590adee9a7ad72411ec7e75b6bfddf4a
+sunUsdcAllowedAfter=true
+moonUsdcAllowedAfter=true
+ownerAfterRenounce=0x0000000000000000000000000000000000000000
+renounceBlocksSunAllowlist=true
+renounceBlocksMoonAllowlist=true
+renounceBlocksProtocolBudget=true
+mainnet_broadcast=false
+testnet_broadcast=false
+private_key_requested=false
+```
+
+这些地址和 poolId 是 fork 模拟结果，不代表 rc3 已经部署到 Base Sepolia。
+
 ## 7. 小白理解版结论
 
 这一步相当于：

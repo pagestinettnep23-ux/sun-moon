@@ -239,6 +239,18 @@ docs/Base-Sepolia-rc3-dry-run草案-2026-05-17.md
 script/PrepareBaseSepoliaRc3SunMoonUsdcDryRun.s.sol
 ```
 
+2026-05-18 已完成 Base Sepolia rc3 fork 只读 dry-run：
+
+```text
+chainId=84532
+broadcastRequested=false
+simulationOnly=true
+script_result=Script ran successfully
+mainnet_broadcast=false
+testnet_broadcast=false
+private_key_requested=false
+```
+
 ## 11. 当前建议
 
 在没有正式审计预算、也跳过社区 review 的前提下，建议至少做：
