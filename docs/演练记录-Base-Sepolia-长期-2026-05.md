@@ -1343,6 +1343,42 @@ Foundry 输出中的 WARN 属于 trace/cache/etherscan/source 信息提示，不
 最终判断以 Script ran successfully、selectedStage=1、broadcastAllowed=false、executionBlocked=true、privateKeyPresent=false 为准。
 ```
 
+## Day 1 补充 - rc3 Stage 1 执行版命令审阅清单
+
+### 1. 本次目标
+
+准备一份给 owner 和未来操作员看的执行版命令审阅清单，用于在任何可执行命令出现前，确认 Stage 1 边界、禁止项、签名边界和后复核要求。当前仍不广播、不部署、不需要私钥。
+
+### 2. 新增文档
+
+```text
+docs/Base-Sepolia-rc3-Stage1-执行版命令审阅清单-2026-05-18.md
+```
+
+### 3. 覆盖内容
+
+```text
+当前状态和最近一次 Stage 1-only 只读检查结果
+本文不提供可复制执行命令
+未来执行版命令最多只能覆盖 12 笔 Stage 1 测试网交易
+未来执行版命令必须禁止 Stage 2/3、Base 主网、真实资金、私钥明文、Hook、建池、流动性、swap、renounce
+执行版命令出现前的最后确认项
+操作员本地签名边界
+Stage 1 成功后的第一件事必须是后复核
+owner 新的人工确认语句模板
+```
+
+### 4. 当前结论
+
+```text
+Stage 1 执行版命令审阅清单已创建
+当前仍不是执行版
+当前没有广播
+当前没有部署
+当前没有使用私钥
+当前没有使用真实资金
+```
+
 ## 停止条件
 
 出现任一情况立即停止：
