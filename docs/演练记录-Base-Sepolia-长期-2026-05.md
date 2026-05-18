@@ -987,7 +987,7 @@ docs/Base-Sepolia-rc3-Stage1-广播指令草案-非执行版-2026-05-18.md
 ```text
 当前脚本仍然 broadcastAllowed=false、executionBlocked=true
 本文不提供可复制广播命令
-本文不包含 --broadcast、cast send 或私钥写法
+本文不包含 --broadcast、cast send 或私钥非空写法
 Stage 1 未来如果被批准，只能覆盖 12 笔核心部署和基础配置交易
 Stage 1 不能包含 Hook、建池、流动性、swap、renounce、Stage 2/3 或 Base 主网
 ```
@@ -1002,6 +1002,70 @@ private_key_requested=false
 real_funds_used=false
 下一步只建议 owner 人工阅读非执行版指令草案
 如需继续，也应先重新跑 Base Sepolia fork 只读检查
+```
+
+## Day 1 补充 - rc3 Stage 1 非执行版后 fork 只读复查
+
+### 1. 本次目标
+
+按 Stage 1 广播指令草案（非执行版）的要求，重新跑一次 Base Sepolia fork 只读检查，确认预测地址、阶段交易数和安全开关仍然成立。
+
+### 2. 执行边界
+
+```text
+不加 --broadcast
+不部署
+不进入 Base 主网
+不使用真实资金
+不使用私钥
+PRIVATE_KEY=""
+```
+
+### 3. 关键输出
+
+```text
+Script ran successfully
+chainId=84532
+selectedStage=0
+selectedStageTxs=19
+totalTransactionsPlanned=19
+SEPOLIA_DEPLOYER nonce=16
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+executeRequested=false
+privateKeyPresent=false
+stage1AddressCollision=false
+stage2HookCollision=false
+PREDICTED_SUN_TOKEN=0xb5287fBbAD0e25B12f18497209fDac7e0ACf7293
+PREDICTED_SUN_CURVE=0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4
+PREDICTED_MOON_TOKEN=0x92dC3B8056cA62A7dbc5c1C339891B45463bEe71
+PREDICTED_MOON_CURVE=0x095c91aB279121300Ac16c57D1ecebB9ceEa1cd8
+PREDICTED_CREATE2_HOOK_DEPLOYER=0x6E34D98e1925eaf6680941213E49741b8764DdfE
+PREDICTED_HOOK=0x675D7a468d4d3b8d02d530539867F9e5feEFc0cc
+SUN_USDC_POOL_ID=0xdbf2bf05916b4f79d43e3ee74fa48b36301e8e8c13805335e186648b792451dc
+MOON_USDC_POOL_ID=0x5b2a79878be8e421c919a9acb8d853731d6d61b8053aa25bd32e0c994130bdfd
+```
+
+### 4. 当前结论
+
+```text
+Stage 1 非执行版后 fork 只读复查已通过
+部署钱包 nonce 仍为 16
+Stage 1 预测地址仍可用
+Stage 2 Hook 预测地址仍可用
+执行仍然被锁住
+尚未允许测试网广播
+尚未允许主网广播
+private_key_requested=false
+real_funds_used=false
+```
+
+说明：
+
+```text
+命令输出中的 Foundry WARN 是源码 trace/cache/etherscan 信息提示，不影响本次脚本成功结论。
+最终判断以 Script ran successfully 和返回的安全开关为准。
 ```
 
 ## 停止条件

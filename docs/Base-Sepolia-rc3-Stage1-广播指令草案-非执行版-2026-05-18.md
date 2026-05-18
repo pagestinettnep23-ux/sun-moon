@@ -245,14 +245,53 @@ SEPOLIA_DEPLOYER nonce 与文档不一致且未更新
 有人把预测地址说成已经部署地址
 ```
 
-## 11. 下一步建议
+## 11. 非执行版后只读复查
+
+2026-05-18 已按本文要求重新跑 Base Sepolia fork 只读检查。
+
+复查结果：
+
+```text
+Script ran successfully
+chainId=84532
+selectedStage=0
+selectedStageTxs=19
+totalTransactionsPlanned=19
+SEPOLIA_DEPLOYER nonce=16
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+executeRequested=false
+privateKeyPresent=false
+stage1AddressCollision=false
+stage2HookCollision=false
+```
+
+结论：
+
+```text
+非执行版后的只读复查已通过
+仍未允许测试网广播
+仍未允许主网广播
+未部署
+未使用私钥
+未使用真实资金
+```
+
+Foundry WARN 说明：
+
+```text
+命令输出中的 Foundry WARN 是源码 trace/cache/etherscan 信息提示。
+最终判断以 Script ran successfully 和安全开关输出为准。
+```
+
+## 12. 下一步建议
 
 下一步仍然不是广播。
 
 建议下一步只做：
 
 ```text
-owner 人工阅读本非执行版广播指令草案
-如果仍想继续，再重新跑 Base Sepolia fork 只读检查
+owner 人工复核本非执行版广播指令草案和本次只读复查结果
 然后再决定是否需要准备“Stage 1 最终广播指令”
 ```
