@@ -270,7 +270,10 @@ docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md
 Stage 1 操作员执行说明草案已经准备完成：
 docs/Base-Sepolia-rc3-Stage1-操作员执行说明草案-2026-05-18.md
 
-owner 人工阅读本确认单和操作员执行说明草案
-如果仍想继续，再重新跑 Base Sepolia fork 只读检查
-然后再单独讨论是否需要准备 Stage 1 广播指令草案
+Stage 1 广播指令草案（非执行版）已经准备完成：
+docs/Base-Sepolia-rc3-Stage1-广播指令草案-非执行版-2026-05-18.md
+
+owner 人工阅读本确认单、操作员执行说明草案和非执行版指令草案
+如果仍想继续，下一步先重新跑 Base Sepolia fork 只读检查
+然后再单独讨论是否需要准备 Stage 1 最终广播指令
 ```

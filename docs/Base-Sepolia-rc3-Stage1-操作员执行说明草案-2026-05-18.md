@@ -68,10 +68,11 @@ Base 主网广播=false
 | 2 | `docs/Base-Sepolia-rc3-Stage1-测试网广播草案-2026-05-18.md` | Stage 1 12 笔交易说明 |
 | 3 | `docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md` | Stage 1 成功后复核表 |
 | 4 | `docs/Base-Sepolia-rc3-Stage1-2-3-总闸门清单-2026-05-18.md` | 三阶段总闸门 |
+| 5 | `docs/Base-Sepolia-rc3-Stage1-广播指令草案-非执行版-2026-05-18.md` | 非执行版指令边界 |
 
 人工确认：
 
-- [ ] 操作员已读完上面 4 份文档。
+- [ ] 操作员已读完上面 5 份文档。
 - [ ] 操作员理解本文不是广播批准。
 - [ ] 操作员理解 Stage 1 批准不等于 Stage 2/3 批准。
 
@@ -187,8 +188,9 @@ cast send ...
 特别说明：
 
 ```text
-本文不提供 Stage 1 广播命令。
-如果 owner 未来明确批准测试网 Stage 1，必须另写一份“Stage 1 广播指令草案”，并再次人工复核。
+本文不提供可直接复制执行的 Stage 1 广播命令。
+Stage 1 广播指令草案（非执行版）已经创建，但它只是人工复核材料，不是广播批准，也不包含 `--broadcast`、`cast send` 或私钥写法。
+如果 owner 未来明确批准测试网 Stage 1，仍必须另写最终广播指令，并再次人工复核。
 ```
 
 ## 7. 如果未来 owner 批准 Stage 1
@@ -289,7 +291,10 @@ stage1AddressCollision=true
 建议下一步只做：
 
 ```text
-owner 人工阅读本操作员执行说明草案
-如果仍想继续，再重新跑 Base Sepolia fork 只读检查
-然后再单独讨论是否需要准备 Stage 1 广播指令草案
+Stage 1 广播指令草案（非执行版）已经准备完成：
+docs/Base-Sepolia-rc3-Stage1-广播指令草案-非执行版-2026-05-18.md
+
+owner 人工阅读本操作员执行说明草案和非执行版指令草案
+如果仍想继续，下一步先重新跑 Base Sepolia fork 只读检查
+然后再单独讨论是否需要准备 Stage 1 最终广播指令
 ```

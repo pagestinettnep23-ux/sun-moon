@@ -48,6 +48,7 @@
 - Base Sepolia rc3 Stage 1 测试网广播草案已新增，把核心合约部署的 12 笔交易拆成小白清单；当前仍不广播、不部署、不需要私钥。
 - Base Sepolia rc3 Stage 1 广播前最终确认单已新增，把 Stage 1 做什么、不做什么、预测地址、最后只读检查、批准边界和停止条件整理成 owner 按钮前确认单；当前仍未批准广播。
 - Base Sepolia rc3 Stage 1 操作员执行说明草案已新增，规定未来操作员只能先跑只读检查、记录公开输出，不能从该文档直接广播、不能使用私钥、不能碰主网；当前仍未批准广播。
+- Base Sepolia rc3 Stage 1 广播指令草案（非执行版）已新增，明确当前不提供可复制广播命令；未来如需 Stage 1 广播必须另写最终指令并再次复核，仍不包含私钥或主网动作；当前仍未批准广播。
 - 2026-05-18 已按 Stage 1 确认单和操作员说明重新跑通 Base Sepolia rc3 Stage 1 前 fork 只读检查：`chainId=84532`、`SEPOLIA_DEPLOYER nonce=16`、`broadcastAllowed=false`、`executionBlocked=true`、`privateKeyPresent=false`、`stage1AddressCollision=false`；未广播、未部署、未用私钥。
 - Base Sepolia rc3 Stage 1 广播后复核清单草案已新增，列出未来如果 Stage 1 真的广播成功后需要只读检查的 code、owner、minter、曲线配置和停止条件；当前仍未广播。
 - Base Sepolia rc3 Stage 2 测试网广播草案已新增，把 Hook 部署、SunCurve 绑定、两个池白名单和两个池初始化拆成 6 笔小白清单；当前仍不广播、不部署、不需要私钥。
@@ -243,6 +244,7 @@ forge fmt
 - `docs/Base-Sepolia-rc3-Stage1-测试网广播草案-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage1-广播前最终确认单-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage1-操作员执行说明草案-2026-05-18.md`
+- `docs/Base-Sepolia-rc3-Stage1-广播指令草案-非执行版-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage2-测试网广播草案-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage2-广播后复核清单草案-2026-05-18.md`

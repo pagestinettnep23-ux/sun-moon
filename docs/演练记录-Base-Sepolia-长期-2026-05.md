@@ -970,6 +970,40 @@ real_funds_used=false
 最终判断以 Script ran successfully 和返回的安全开关为准。
 ```
 
+## Day 1 补充 - rc3 Stage 1 广播指令草案（非执行版）
+
+### 1. 本次目标
+
+准备一份给 owner 人工阅读的 Stage 1 广播指令边界说明，但当前仍不广播、不部署、不需要私钥。
+
+### 2. 新增文档
+
+```text
+docs/Base-Sepolia-rc3-Stage1-广播指令草案-非执行版-2026-05-18.md
+```
+
+### 3. 覆盖内容
+
+```text
+当前脚本仍然 broadcastAllowed=false、executionBlocked=true
+本文不提供可复制广播命令
+本文不包含 --broadcast、cast send 或私钥写法
+Stage 1 未来如果被批准，只能覆盖 12 笔核心部署和基础配置交易
+Stage 1 不能包含 Hook、建池、流动性、swap、renounce、Stage 2/3 或 Base 主网
+```
+
+### 4. 当前结论
+
+```text
+Stage 1 广播指令草案（非执行版）已创建
+仍未允许测试网广播
+仍未允许主网广播
+private_key_requested=false
+real_funds_used=false
+下一步只建议 owner 人工阅读非执行版指令草案
+如需继续，也应先重新跑 Base Sepolia fork 只读检查
+```
+
 ## 停止条件
 
 出现任一情况立即停止：
