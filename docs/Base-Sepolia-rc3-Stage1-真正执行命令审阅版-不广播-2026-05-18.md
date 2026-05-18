@@ -257,38 +257,128 @@ Stage 1 后复核没有全部通过：
 不能准备 Stage 2。
 ```
 
-## 10. 下一步确认语句
+## 10. 最终执行前只读复查结果
 
-如果 owner 想继续，下一步也仍然不是广播。
+2026-05-18，owner 说“开始”后，已跑最终执行前只读复查。
 
-下一步只能明确要求：
+执行边界：
 
 ```text
-我已阅读 Base Sepolia rc3 Stage 1 真正执行命令审阅版。
-请只跑最终执行前只读复查。
 不广播。
-不包含私钥。
-不包含 --private-key。
-不包含 Stage 2。
-不包含 Stage 3。
-不包含 Base 主网。
+不部署。
+不使用私钥。
 不使用真实资金。
+EXECUTE_BASE_SEPOLIA_RC3_STAGE1=0
+PRIVATE_KEY=""
+```
+
+关键输出：
+
+```text
+Script ran successfully
+chainId=84532
+stage1ExecutionConfirmed=true
+executeRequested=false
+privateKeyPresent=false
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+stage1TransactionsPlanned=12
+stage1CoreDeployerNonce=16
+stage1AddressCollision=false
+DEPLOYED_SUN_TOKEN=0x0000000000000000000000000000000000000000
+DEPLOYED_SUN_CURVE=0x0000000000000000000000000000000000000000
+DEPLOYED_MOON_TOKEN=0x0000000000000000000000000000000000000000
+DEPLOYED_MOON_CURVE=0x0000000000000000000000000000000000000000
+DEPLOYED_CREATE2_HOOK_DEPLOYER=0x0000000000000000000000000000000000000000
+```
+
+结论：
+
+```text
+最终执行前只读复查已通过
+当前没有广播
+当前没有部署
+当前没有使用私钥
+当前没有使用真实资金
+```
+
+## 11. 最简最终可运行命令草案（本轮不运行）
+
+下面是未来如果 owner 明确批准 Base Sepolia 测试网 Stage 1 执行时，才可以使用的命令草案。
+
+本轮不运行。
+本轮不广播。
+
+```powershell
+# DO NOT RUN until owner explicitly approves Base Sepolia rc3 Stage 1 broadcast
+# Base Sepolia only
+# Stage 1 only
+# No Base mainnet
+# No real funds
+# No private key in this command
+# No private-key command-line flag
+
+$env:CONFIRM_BASE_SEPOLIA_RC3_STAGE1_EXECUTION_DRAFT='1'
+$env:EXECUTE_BASE_SEPOLIA_RC3_STAGE1='1'
+$env:PRIVATE_KEY=''
+
+forge script script/PrepareBaseSepoliaRc3Stage1ExecutionDraft.s.sol `
+  --rpc-url https://sepolia.base.org `
+  --rpc-timeout 120 `
+  --slow `
+  --sender 0x2F6E887c6058deE520f9468a1022E3480A6334D3 `
+  --broadcast `
+  --browser `
+  --browser-port 9545
+```
+
+为什么这条命令不包含私钥：
+
+```text
+PRIVATE_KEY=''
+没有 --private-key
+使用 --browser，让本地浏览器钱包弹窗签名
+私钥只留在 owner 自己的钱包里
+```
+
+运行前人工检查：
+
+- [ ] 浏览器钱包账户必须是 `0x2F6E887c6058deE520f9468a1022E3480A6334D3`。
+- [ ] 浏览器钱包网络必须是 Base Sepolia，不是 Base 主网。
+- [ ] 钱包弹窗里不能出现 Stage 2、Stage 3、Hook、建池、流动性、swap 或 renounce。
+- [ ] 如果钱包显示的账户、网络或交易内容不对，立即拒绝签名。
+
+## 12. 下一步确认语句
+
+如果 owner 想真的执行测试网 Stage 1，下一步必须明确说：
+
+```text
+我批准只在 Base Sepolia 测试网执行 rc3 Stage 1。
+我理解这会广播 12 笔测试网交易。
+不执行 Stage 2。
+不执行 Stage 3。
+不执行 Base 主网。
+不使用真实资金。
+不提供私钥、助记词或恢复词。
+不使用 --private-key。
 ```
 
 没有这条明确确认：
 
 ```text
 停止。
-不跑最终执行前只读复查。
-不准备真正可运行命令。
+不运行最终可运行命令。
 不广播。
 ```
 
-## 11. 当前结论
+## 13. 当前结论
 
 ```text
 Base Sepolia rc3 Stage 1 真正执行命令审阅版=已准备
-当前不是可运行执行命令
+最终执行前只读复查=已通过
+最终可运行命令草案=已准备
+当前没有运行最终可运行命令
 当前没有广播
 当前没有部署
 当前没有使用私钥
@@ -296,5 +386,5 @@ Base Sepolia rc3 Stage 1 真正执行命令审阅版=已准备
 当前没有进入 Stage 2
 当前没有进入 Stage 3
 当前没有进入 Base 主网
-下一步只能由 owner 决定是否跑最终执行前只读复查
+下一步只能由 owner 决定是否真的执行 Base Sepolia 测试网 Stage 1
 ```
