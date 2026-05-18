@@ -76,6 +76,7 @@
 - Base Sepolia rc3 Stage 1 recovery 真正广播前最终人工批准页已新增：`docs/Base-Sepolia-rc3-Stage1-recovery真正广播前最终人工批准-2026-05-18.md`；列出 owner 需要完整发送的批准语句。当前仍未批准 recovery 广播，仍不广播、不部署、不需要私钥。
 - owner 已给出完整 recovery 批准语句；Base Sepolia rc3 Stage 1 recovery 真正执行命令审阅版（不广播）已新增：`docs/Base-Sepolia-rc3-Stage1-recovery真正执行命令审阅版-不广播-2026-05-18.md`；当前只准备命令审阅版，本轮未广播、未部署、未用私钥。
 - 2026-05-18 recovery 浏览器钱包执行再次中断后，链上确认 recovery 第 1 笔已完成：`MOON_TOKEN=0x92dC3B8056cA62A7dbc5c1C339891B45463bEe71`，交易 `0x8b5d7b459c9eaa2d5e25236749d96e498a97a8407f3bd6c8e8556ecfce237e31` 成功；`SEPOLIA_DEPLOYER nonce=19`。已新增 `PrepareBaseSepoliaRc3Stage1RecoveryContinuationDraft` 只恢复剩余 9 笔，原 10 笔 recovery 脚本不得重跑；continuation 只读检查通过，未继续广播、未用私钥。
+- 2026-05-18 已确认 Stage 1 不能一次跑完的原因是 `forge --browser` 浏览器钱包多笔连续签名流程不稳定：链上交易可成功，但当前环境只稳定推出第一笔。已新增 `PrepareBaseSepoliaRc3Stage1SingleStepDraft`，把剩余 9 笔拆成 9 个单步，每次只允许一笔测试网交易；专项测试 6 passed，0 failed；Base Sepolia Step 1 只读预检通过：`nonce=19`、`ready=true`、`executeRequested=false`、`broadcastAllowed=false`，未广播、未部署、未用私钥。
 - 2026-05-16 方向已更新：SUN/MOON 都保持自由转账，不再试图在合约层禁止市场自行创建 AMM 池；项目只对明确支持的 Uniswap v4 Hook 池提供费用逻辑。
 - 新的 Hook 池目标：`SUN/USDC` v4 Hook 池 swap 收 `2% USDC`，其中 `1.5%` 注入 `SunCurve`、`0.5%` 进入协议经费；`MOON/USDC` v4 Hook 池 swap 收 `5% USDC`，其中 `3%` 注入 `SunCurve`、`2%` 进入协议经费。
 - 本地已新增 `BaseSunMoonUsdcFeeV4Hook`，统一支持 `SUN/USDC` 和 `MOON/USDC` 两类 USDC 计费 v4 Hook 池，并覆盖自由转账、SunCurve/MoonCurve mint/burn 兼容、2%/5% 收费、白名单和 renounce 后配置锁定测试。
