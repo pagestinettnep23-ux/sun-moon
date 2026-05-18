@@ -2,7 +2,7 @@
 
 本文是 owner 在未来决定是否批准 Base Sepolia 测试网 Stage 1 前看的人工批准表。
 
-当前不填写批准，当前不广播，当前不需要私钥。
+当前已记录 Stage 1-only 人工批准语句，但当前仍不广播，当前不需要私钥。
 
 固定边界：
 
@@ -29,7 +29,7 @@
 ## 1. 当前状态
 
 ```text
-Base Sepolia Stage 1 广播批准=待填
+Base Sepolia Stage 1-only 人工批准=已形成
 Base Sepolia Stage 1 广播执行=false
 Base 主网广播=false
 真实资金=false
@@ -163,18 +163,18 @@ owner 确认：
 
 ## 7. 批准语句填写区
 
-当前保持待填。
+当前已收到 owner 精确批准语句，但本文仍不是执行版命令。
 
 | 项目 | 填写 |
 | --- | --- |
-| owner 是否批准 Base Sepolia rc3 Stage 1 | 待填 |
-| owner 是否明确不批准 Stage 2 | 待填 |
-| owner 是否明确不批准 Stage 3 | 待填 |
-| owner 是否明确不批准 Base 主网 | 待填 |
-| owner 是否明确不批准真实资金操作 | 待填 |
-| owner 是否确认不会提供私钥、助记词或恢复词 | 待填 |
-| 日期 | 待填 |
-| 备注 | 待填 |
+| owner 是否批准 Base Sepolia rc3 Stage 1 | 已批准，仅限 Base Sepolia 测试网 rc3 Stage 1 |
+| owner 是否明确不批准 Stage 2 | 已明确不批准 |
+| owner 是否明确不批准 Stage 3 | 已明确不批准 |
+| owner 是否明确不批准 Base 主网 | 已明确不批准 |
+| owner 是否明确不批准真实资金操作 | 已明确不批准 |
+| owner 是否确认不会提供私钥、助记词或恢复词 | 已确认 |
+| 日期 | 2026-05-18 |
+| 备注 | 只形成 Stage 1-only 人工批准；仍不是执行版，仍不广播，执行前必须重新只读复查 |
 
 如果未来 owner 决定批准，批准语句必须清楚写成：
 
@@ -187,7 +187,8 @@ owner 确认：
 我不会在聊天或文档里提供私钥、助记词或恢复词。
 ```
 
-当前没有填写上面语句，所以当前不是批准。
+当前已经收到上面精确语句，所以 Stage 1-only 人工批准已形成。
+但这仍然不是执行版命令，不允许跳过只读复查直接广播。
 
 ## 8. Owner 当前回复记录
 
@@ -213,12 +214,12 @@ owner 确认：
 它缺少“不批准 Stage 3”。
 ```
 
-因此当前状态仍然是：
+因此在这条宽泛回复之后，当时状态仍然是：
 
 ```text
-Base Sepolia Stage 1 执行批准=未形成
-Stage 2 批准=未形成
-Stage 3 批准=未形成
+当时 Base Sepolia Stage 1 执行批准=未形成
+当时 Stage 2 批准=未形成
+当时 Stage 3 批准=未形成
 Base 主网批准=false
 真实资金批准=false
 私钥请求=false
@@ -243,7 +244,40 @@ Base 主网批准=false
 不广播。
 ```
 
-## 9. 操作员执行前必须再次检查
+## 9. Owner 精确批准记录
+
+2026-05-18，owner 已给出精确批准语句：
+
+```text
+我只批准 Base Sepolia 测试网 rc3 Stage 1。
+我不批准 Stage 2。
+我不批准 Stage 3。
+我不批准 Base 主网。
+我不批准真实资金操作。
+我不会在聊天或文档里提供私钥、助记词或恢复词。
+```
+
+人工判断：
+
+```text
+Stage 1-only 人工批准已形成
+批准范围仅限 Base Sepolia 测试网 rc3 Stage 1
+Stage 2=false
+Stage 3=false
+Base 主网=false
+真实资金=false
+私钥请求=false
+```
+
+重要限制：
+
+```text
+这不是执行版命令。
+这不允许直接广播。
+下一步必须先重新跑 Base Sepolia fork 只读检查。
+```
+
+## 10. 操作员执行前必须再次检查
 
 即使本表未来被 owner 填写，也不能直接执行。
 
@@ -266,7 +300,7 @@ Base 主网批准=false
 不进入执行版。
 ```
 
-## 10. Stage 1 如果未来成功，必须先复核
+## 11. Stage 1 如果未来成功，必须先复核
 
 Stage 1 如果未来真的广播成功，下一步不是 Stage 2。
 
@@ -291,7 +325,7 @@ Stage 1 后复核没有全部通过：
 不能准备 Stage 2。
 ```
 
-## 11. 绝对停止条件
+## 12. 绝对停止条件
 
 出现任一情况立即停止：
 
@@ -309,12 +343,12 @@ stage1AddressCollision=true
 privateKeyPresent=true
 ```
 
-## 12. 当前结论
+## 13. 当前结论
 
 ```text
 Stage 1 最终广播前人工批准表已准备
 owner 已确认不批准 Base 主网、真实资金和私钥提供
-当前 Stage 1 执行批准=未形成
+当前 Stage 1-only 人工批准=已形成
 当前不是执行版
 当前没有广播
 当前没有部署
@@ -322,13 +356,13 @@ owner 已确认不批准 Base 主网、真实资金和私钥提供
 当前没有使用真实资金
 ```
 
-## 13. 下一步建议
+## 14. 下一步建议
 
 下一步仍然不是广播。
 
 建议下一步只做：
 
 ```text
-owner 人工阅读本回复记录
-如果 owner 想继续，必须给出 Stage 1 精确批准语句
+重新跑 Base Sepolia rc3 Stage 1 最终广播前只读检查
+确认 nonce、预测地址、安全开关仍然正确
 ```

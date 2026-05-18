@@ -1239,6 +1239,46 @@ private_key_requested=false
 我不会在聊天或文档里提供私钥、助记词或恢复词。
 ```
 
+## Day 1 补充 - rc3 Stage 1 owner 精确批准记录
+
+### 1. 本次目标
+
+记录 owner 已给出的 Stage 1-only 精确批准语句。当前仍不广播、不部署、不需要私钥。
+
+### 2. owner 精确批准语句
+
+```text
+我只批准 Base Sepolia 测试网 rc3 Stage 1。
+我不批准 Stage 2。
+我不批准 Stage 3。
+我不批准 Base 主网。
+我不批准真实资金操作。
+我不会在聊天或文档里提供私钥、助记词或恢复词。
+```
+
+### 3. 人工判断
+
+```text
+Stage 1-only 人工批准已形成
+批准范围仅限 Base Sepolia 测试网 rc3 Stage 1
+Stage 2=false
+Stage 3=false
+Base 主网=false
+真实资金=false
+private_key_requested=false
+```
+
+### 4. 当前结论
+
+```text
+当前仍不是执行版命令
+当前没有广播
+当前没有部署
+当前没有使用私钥
+当前没有使用真实资金
+下一步必须先重新跑 Base Sepolia fork 只读检查
+```
+
 ## 停止条件
 
 出现任一情况立即停止：
