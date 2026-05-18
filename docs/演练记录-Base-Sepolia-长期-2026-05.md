@@ -489,6 +489,39 @@ Stage 1 测试网广播草案已创建
 下一步只建议准备 Stage 1 后复核清单草案
 ```
 
+## Day 1 补充 - rc3 Stage 1 广播后复核清单草案
+
+### 1. 本次目标
+
+准备 Stage 1 未来如果真的广播成功后的只读复核清单，但当前仍不广播。
+
+新增：
+
+```text
+docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md
+```
+
+### 2. 复核清单覆盖内容
+
+```text
+12 笔 Stage 1 交易哈希记录区
+5 个合约 code 是否存在
+SUN/MOON name、symbol、owner、minter、minterLocked
+SunCurve owner、USDC、protocolBudget、moonCurve、moonAMM
+MoonCurve owner、token 地址、k/s、launchTime、timeUntilLaunch
+Create2HookDeployer owner
+Stage 1 后仍未部署 Hook、未建池、未加流动性、未 renounce
+```
+
+### 3. 当前结论
+
+```text
+Stage 1 广播后复核清单草案已创建
+仍未允许测试网广播
+仍未允许主网广播
+下一步只建议准备 Stage 2 测试网广播草案文档
+```
+
 ## 停止条件
 
 出现任一情况立即停止：
