@@ -1557,6 +1557,76 @@ Foundry 输出中的 WARN 属于 trace/cache/etherscan/source 信息提示，不
 最终判断以 Script ran successfully、executeRequested=false、privateKeyPresent=false、broadcastAllowed=false、executionBlocked=true、DEPLOYED_*=0 为准。
 ```
 
+## Day 1 补充 - rc3 Stage 1 真正广播前最终人工闸门
+
+### 1. 目标
+
+根据 owner 指令“进入真正 Stage 1 广播前最终人工闸门”，创建最终闸门记录，并重新跑一次 Base Sepolia 只读预检。
+
+当前仍不广播、不部署、不需要私钥、不使用真实资金。
+
+### 2. 新增文档
+
+```text
+docs/Base-Sepolia-rc3-Stage1-真正广播前最终人工闸门-2026-05-18.md
+```
+
+这份文档记录：
+
+```text
+进入闸门不等于批准广播
+当前真正广播命令仍未生成
+最新只读预检已通过
+Stage 1 只允许 12 笔核心部署和基础配置交易
+Stage 1 不包含 Hook、建池、流动性、swap、renounce、Stage 2/3、Base 主网或真实资金
+下一步仍必须由 owner 明确决定是否只准备真正执行命令审阅版
+```
+
+### 3. 闸门入口只读预检
+
+边界：
+
+```text
+不加 --broadcast
+EXECUTE_BASE_SEPOLIA_RC3_STAGE1=0
+PRIVATE_KEY=""
+```
+
+关键输出：
+
+```text
+Script ran successfully
+chainId=84532
+stage1ExecutionConfirmed=true
+executeRequested=false
+privateKeyPresent=false
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+stage1TransactionsPlanned=12
+stage1CoreDeployerNonce=16
+stage1AddressCollision=false
+DEPLOYED_SUN_TOKEN=0x0000000000000000000000000000000000000000
+DEPLOYED_SUN_CURVE=0x0000000000000000000000000000000000000000
+DEPLOYED_MOON_TOKEN=0x0000000000000000000000000000000000000000
+DEPLOYED_MOON_CURVE=0x0000000000000000000000000000000000000000
+DEPLOYED_CREATE2_HOOK_DEPLOYER=0x0000000000000000000000000000000000000000
+```
+
+### 4. 当前结论
+
+```text
+真正 Stage 1 广播前最终人工闸门已进入
+闸门入口只读预检已通过
+当前没有广播
+当前没有部署
+当前没有使用私钥
+当前没有使用真实资金
+当前不生成真正广播命令
+```
+
+下一步只建议 owner 人工阅读最终闸门文件，并决定是否只准备真正执行命令审阅版。
+
 ## 停止条件
 
 出现任一情况立即停止：

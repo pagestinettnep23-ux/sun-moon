@@ -395,6 +395,7 @@ owner 已确认不批准 Base 主网、真实资金和私钥提供
 当前 Stage 1-only 人工批准=已形成
 Stage 1 最终广播前只读检查=已通过
 Stage 1-only 执行脚本草案只读预检=已通过
+真正 Stage 1 广播前最终人工闸门=已进入
 当前不是执行版
 当前没有广播
 当前没有部署
@@ -409,7 +410,7 @@ Stage 1-only 执行脚本草案只读预检=已通过
 建议下一步只做：
 
 ```text
-owner 人工阅读 Stage 1-only 执行脚本草案只读预检结果
-决定是否进入真正 Stage 1 广播前最终人工闸门
+owner 人工阅读 docs/Base-Sepolia-rc3-Stage1-真正广播前最终人工闸门-2026-05-18.md
+决定是否只准备 Base Sepolia rc3 Stage 1 真正执行命令审阅版
 在新的明确确认前，不生成真正广播命令
 ```
