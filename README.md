@@ -74,6 +74,7 @@
 - 2026-05-18 Base Sepolia rc3 Stage 1 浏览器钱包执行中断后，链上确认前 2 笔已完成：`SUN_TOKEN=0xb5287fBbAD0e25B12f18497209fDac7e0ACf7293`、`SUN_CURVE=0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4`；`SEPOLIA_DEPLOYER nonce=18`。已新增 `PrepareBaseSepoliaRc3Stage1RecoveryDraft` 只恢复剩余 10 笔，原 12 笔脚本不得重跑；恢复草案只读检查通过，未广播、未用私钥。
 - Base Sepolia rc3 Stage 1 recovery 执行前审阅版（不广播）已新增：`docs/Base-Sepolia-rc3-Stage1-recovery执行前审阅版-不广播-2026-05-18.md`；记录剩余 10 笔范围、禁止项、最新只读结果和停止条件，当前仍不广播、不部署、不需要私钥。
 - Base Sepolia rc3 Stage 1 recovery 真正广播前最终人工批准页已新增：`docs/Base-Sepolia-rc3-Stage1-recovery真正广播前最终人工批准-2026-05-18.md`；列出 owner 需要完整发送的批准语句。当前仍未批准 recovery 广播，仍不广播、不部署、不需要私钥。
+- owner 已给出完整 recovery 批准语句；Base Sepolia rc3 Stage 1 recovery 真正执行命令审阅版（不广播）已新增：`docs/Base-Sepolia-rc3-Stage1-recovery真正执行命令审阅版-不广播-2026-05-18.md`；当前只准备命令审阅版，本轮未广播、未部署、未用私钥。
 - 2026-05-16 方向已更新：SUN/MOON 都保持自由转账，不再试图在合约层禁止市场自行创建 AMM 池；项目只对明确支持的 Uniswap v4 Hook 池提供费用逻辑。
 - 新的 Hook 池目标：`SUN/USDC` v4 Hook 池 swap 收 `2% USDC`，其中 `1.5%` 注入 `SunCurve`、`0.5%` 进入协议经费；`MOON/USDC` v4 Hook 池 swap 收 `5% USDC`，其中 `3%` 注入 `SunCurve`、`2%` 进入协议经费。
 - 本地已新增 `BaseSunMoonUsdcFeeV4Hook`，统一支持 `SUN/USDC` 和 `MOON/USDC` 两类 USDC 计费 v4 Hook 池，并覆盖自由转账、SunCurve/MoonCurve mint/burn 兼容、2%/5% 收费、白名单和 renounce 后配置锁定测试。
@@ -267,6 +268,7 @@ forge fmt
 - `docs/Base-Sepolia-rc3-Stage1-真正执行命令审阅版-不广播-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage1-recovery执行前审阅版-不广播-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage1-recovery真正广播前最终人工批准-2026-05-18.md`
+- `docs/Base-Sepolia-rc3-Stage1-recovery真正执行命令审阅版-不广播-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage2-测试网广播草案-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage2-广播后复核清单草案-2026-05-18.md`
