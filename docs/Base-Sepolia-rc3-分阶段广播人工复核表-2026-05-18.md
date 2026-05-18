@@ -170,9 +170,10 @@ Uniswap LP fee=0.3%
 建议下一步只做：
 
 ```text
-Stage 1/2/3 测试网广播草案和广播后复核清单已经准备完成
-下一步只建议准备 rc3 Stage 1/2/3 总闸门清单
-把广播前确认、广播后复核、停止条件合并成一张最终人工审批表
+Stage 1/2/3 测试网广播草案、广播后复核清单和总闸门清单已经准备完成
+下一步只建议 owner 人工阅读总闸门清单
+如需继续，也应先重新跑 Base Sepolia fork 只读检查
+再单独讨论是否允许测试网 Stage 1 广播
 继续保持执行锁定
 不加 --broadcast
 不需要私钥
@@ -189,4 +190,5 @@ docs/Base-Sepolia-rc3-Stage2-测试网广播草案-2026-05-18.md
 docs/Base-Sepolia-rc3-Stage2-广播后复核清单草案-2026-05-18.md
 docs/Base-Sepolia-rc3-Stage3-测试网广播草案-2026-05-18.md
 docs/Base-Sepolia-rc3-Stage3-广播后复核清单草案-2026-05-18.md
+docs/Base-Sepolia-rc3-Stage1-2-3-总闸门清单-2026-05-18.md
 ```

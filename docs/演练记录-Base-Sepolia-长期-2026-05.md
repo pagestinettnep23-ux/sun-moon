@@ -670,6 +670,43 @@ Stage 3 广播后复核清单草案已创建
 下一步只建议准备 rc3 Stage 1/2/3 总闸门清单
 ```
 
+## Day 1 补充 - rc3 Stage 1/2/3 总闸门清单
+
+### 1. 本次目标
+
+把 Stage 1/2/3 的广播前确认、广播后复核、owner 单独批准区和绝对停止条件合并成一张最终人工审批表，但当前仍不广播。
+
+新增：
+
+```text
+docs/Base-Sepolia-rc3-Stage1-2-3-总闸门清单-2026-05-18.md
+```
+
+### 2. 总闸门覆盖内容
+
+```text
+当前状态：三阶段均为草案，未广播
+固定测试网参数：Base Sepolia chain-id=84532
+三阶段总览：Stage 1 12 笔、Stage 2 6 笔、Stage 3 1 笔
+当前 fork 只读检查输出和预测地址记录
+SUN/USDC 与 MOON/USDC 两个项目支持 v4 Hook 池参数
+Stage 1 前闸门和 Stage 1 后闸门
+Stage 2 前闸门和 Stage 2 后闸门
+Stage 3 前闸门和 Stage 3 后闸门
+绝对停止条件
+owner 最终确认区
+```
+
+### 3. 当前结论
+
+```text
+Stage 1/2/3 总闸门清单已创建
+仍未允许测试网广播
+仍未允许主网广播
+下一步只建议 owner 人工阅读总闸门清单
+如需继续，也应先重新跑 Base Sepolia fork 只读检查
+```
+
 ## 停止条件
 
 出现任一情况立即停止：
