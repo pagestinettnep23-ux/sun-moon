@@ -270,3 +270,9 @@ Stage 2 后复核清单草案
 列出如果未来 Stage 2 真的广播成功后，要用 cast/code/owner/slot0 查询哪些结果
 继续保持不广播、不索要私钥
 ```
+
+Stage 2 后复核清单草案：
+
+```text
+docs/Base-Sepolia-rc3-Stage2-广播后复核清单草案-2026-05-18.md
+```

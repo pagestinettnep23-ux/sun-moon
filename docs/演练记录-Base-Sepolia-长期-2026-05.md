@@ -562,6 +562,39 @@ Stage 2 测试网广播草案已创建
 下一步只建议准备 Stage 2 后复核清单草案
 ```
 
+## Day 1 补充 - rc3 Stage 2 广播后复核清单草案
+
+### 1. 本次目标
+
+准备 Stage 2 未来如果真的广播成功后的只读复核清单，但当前仍不广播。
+
+新增：
+
+```text
+docs/Base-Sepolia-rc3-Stage2-广播后复核清单草案-2026-05-18.md
+```
+
+### 2. 复核清单覆盖内容
+
+```text
+6 笔 Stage 2 交易哈希记录区
+Hook code、owner、poolManager、token、USDC、SunCurve、protocolBudget、paused、expectedHookMask
+SunCurve.moonAMM 是否等于 Hook
+SUN/USDC 和 MOON/USDC 白名单是否为 true
+SUN/USDC 和 MOON/USDC slot0 的 sqrtPriceX96、tick、protocolFee、lpFee
+两个池 liquidity 是否仍为 0
+Stage 2 后仍未添加流动性、未 swap、未 renounce
+```
+
+### 3. 当前结论
+
+```text
+Stage 2 广播后复核清单草案已创建
+仍未允许测试网广播
+仍未允许主网广播
+下一步只建议准备 Stage 3 测试网广播草案文档
+```
+
 ## 停止条件
 
 出现任一情况立即停止：
