@@ -42,8 +42,9 @@ Base 主网广播=false
 ```text
 Script ran successfully
 chainId=84532
-selectedStage=0
-selectedStageTxs=19
+selectedStage=1
+selectedStageTxs=12
+stage1CoreDeploymentTxs=12
 totalTransactionsPlanned=19
 SEPOLIA_DEPLOYER nonce=16
 broadcastAllowed=false
@@ -277,7 +278,47 @@ Base 主网=false
 下一步必须先重新跑 Base Sepolia fork 只读检查。
 ```
 
-## 10. 操作员执行前必须再次检查
+## 10. Stage 1 最终广播前只读检查结果
+
+2026-05-18，已按 Stage 1-only 人工批准后的要求，重新跑 Base Sepolia rc3 Stage 1 最终广播前只读检查。
+
+```text
+Script ran successfully
+chainId=84532
+selectedStage=1
+selectedStageTxs=12
+stage1CoreDeploymentTxs=12
+totalTransactionsPlanned=19
+SEPOLIA_DEPLOYER nonce=16
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+executeRequested=false
+privateKeyPresent=false
+stage1AddressCollision=false
+stage2HookCollision=false
+predictedSunTokenHasCode=false
+predictedSunCurveHasCode=false
+predictedMoonTokenHasCode=false
+predictedMoonCurveHasCode=false
+predictedCreate2HookDeployerHasCode=false
+predictedHookHasCode=false
+```
+
+人工结论：
+
+```text
+Stage 1 最终广播前只读检查已通过
+当前仍不是执行版命令
+当前没有广播
+当前没有部署
+当前没有使用私钥
+当前没有使用真实资金
+```
+
+Foundry 输出中的 WARN 属于 trace/cache/etherscan/source 信息提示；本次结论以 `Script ran successfully` 和安全开关为准。
+
+## 11. 操作员执行前必须再次检查
 
 即使本表未来被 owner 填写，也不能直接执行。
 
@@ -300,7 +341,7 @@ Base 主网=false
 不进入执行版。
 ```
 
-## 11. Stage 1 如果未来成功，必须先复核
+## 12. Stage 1 如果未来成功，必须先复核
 
 Stage 1 如果未来真的广播成功，下一步不是 Stage 2。
 
@@ -325,7 +366,7 @@ Stage 1 后复核没有全部通过：
 不能准备 Stage 2。
 ```
 
-## 12. 绝对停止条件
+## 13. 绝对停止条件
 
 出现任一情况立即停止：
 
@@ -343,12 +384,13 @@ stage1AddressCollision=true
 privateKeyPresent=true
 ```
 
-## 13. 当前结论
+## 14. 当前结论
 
 ```text
 Stage 1 最终广播前人工批准表已准备
 owner 已确认不批准 Base 主网、真实资金和私钥提供
 当前 Stage 1-only 人工批准=已形成
+Stage 1 最终广播前只读检查=已通过
 当前不是执行版
 当前没有广播
 当前没有部署
@@ -356,13 +398,16 @@ owner 已确认不批准 Base 主网、真实资金和私钥提供
 当前没有使用真实资金
 ```
 
-## 14. 下一步建议
+## 15. 下一步建议
 
 下一步仍然不是广播。
 
 建议下一步只做：
 
 ```text
-重新跑 Base Sepolia rc3 Stage 1 最终广播前只读检查
-确认 nonce、预测地址、安全开关仍然正确
+准备 Stage 1 执行版命令审阅清单
+仍然不执行
+仍然不包含私钥
+仍然不碰 Base 主网
+仍然不使用真实资金
 ```

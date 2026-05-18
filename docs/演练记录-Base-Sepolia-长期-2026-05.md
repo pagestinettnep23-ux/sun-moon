@@ -1279,6 +1279,70 @@ private_key_requested=false
 下一步必须先重新跑 Base Sepolia fork 只读检查
 ```
 
+## Day 1 补充 - rc3 Stage 1-only 批准后最终广播前只读检查
+
+### 1. 本次目标
+
+按 owner 的 Stage 1-only 精确批准边界，重新跑 Base Sepolia rc3 Stage 1 最终广播前只读检查。当前仍不广播、不部署、不需要私钥。
+
+### 2. 执行边界
+
+```text
+不加 --broadcast
+不进入 Base 主网
+不使用真实资金
+不使用私钥
+PRIVATE_KEY=""
+EXECUTE_BASE_SEPOLIA_RC3_STAGE=0
+BASE_SEPOLIA_RC3_BROADCAST_STAGE=1
+```
+
+### 3. 关键输出
+
+```text
+Script ran successfully
+chainId=84532
+selectedStage=1
+selectedStageTxs=12
+stage1CoreDeploymentTxs=12
+totalTransactionsPlanned=19
+SEPOLIA_DEPLOYER nonce=16
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+executeRequested=false
+privateKeyPresent=false
+stage1AddressCollision=false
+stage2HookCollision=false
+PREDICTED_SUN_TOKEN=0xb5287fBbAD0e25B12f18497209fDac7e0ACf7293
+PREDICTED_SUN_CURVE=0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4
+PREDICTED_MOON_TOKEN=0x92dC3B8056cA62A7dbc5c1C339891B45463bEe71
+PREDICTED_MOON_CURVE=0x095c91aB279121300Ac16c57D1ecebB9ceEa1cd8
+PREDICTED_CREATE2_HOOK_DEPLOYER=0x6E34D98e1925eaf6680941213E49741b8764DdfE
+PREDICTED_HOOK=0x675D7a468d4d3b8d02d530539867F9e5feEFc0cc
+SUN_USDC_POOL_ID=0xdbf2bf05916b4f79d43e3ee74fa48b36301e8e8c13805335e186648b792451dc
+MOON_USDC_POOL_ID=0x5b2a79878be8e421c919a9acb8d853731d6d61b8053aa25bd32e0c994130bdfd
+```
+
+### 4. 当前结论
+
+```text
+Stage 1-only 批准后的最终广播前只读检查已通过
+当前选择阶段为 Stage 1
+当前只覆盖 12 笔 Stage 1 核心部署计划
+当前没有广播
+当前没有部署
+当前没有使用私钥
+当前没有使用真实资金
+```
+
+说明：
+
+```text
+Foundry 输出中的 WARN 属于 trace/cache/etherscan/source 信息提示，不影响本次脚本成功结论。
+最终判断以 Script ran successfully、selectedStage=1、broadcastAllowed=false、executionBlocked=true、privateKeyPresent=false 为准。
+```
+
 ## 停止条件
 
 出现任一情况立即停止：
