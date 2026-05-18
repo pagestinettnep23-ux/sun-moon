@@ -54,6 +54,7 @@
 - Base Sepolia rc3 Stage 1 最终广播指令草案（审阅版，不执行）已新增，整理 owner 批准语句、12 笔 Stage 1 交易边界、本地签名边界、交易哈希记录区和停止条件；当前仍不提供可执行广播命令，仍未批准广播。
 - Base Sepolia rc3 Stage 1 最终广播前人工批准表已新增，所有批准项保持 `待填`，用于 owner 未来人工确认是否只批准测试网 Stage 1；当前仍不广播、不部署、不需要私钥。
 - Stage 1 批准表中的 `0x2F6E...`、`0x6E22...`、`0x277b...` 三个钱包地址已明确标注为 Base Sepolia 测试网地址，不是 Base 主网正式地址。
+- owner 已回复“不批准 Base 主网、不批准真实资金、不提供私钥/助记词/恢复词”，但“其他都批准”过宽，未形成 Stage 1 执行批准；如需继续，必须另给“只批准 Base Sepolia rc3 Stage 1，且不批准 Stage 2/3”的精确语句。
 - Base Sepolia rc3 Stage 1 广播后复核清单草案已新增，列出未来如果 Stage 1 真的广播成功后需要只读检查的 code、owner、minter、曲线配置和停止条件；当前仍未广播。
 - Base Sepolia rc3 Stage 2 测试网广播草案已新增，把 Hook 部署、SunCurve 绑定、两个池白名单和两个池初始化拆成 6 笔小白清单；当前仍不广播、不部署、不需要私钥。
 - Base Sepolia rc3 Stage 2 广播后复核清单草案已新增，列出未来如果 Stage 2 真的广播成功后需要只读检查的 Hook 配置、白名单、slot0 和 liquidity；当前仍未广播。
