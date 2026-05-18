@@ -104,7 +104,66 @@ forge test --match-contract BaseSepoliaRc3Stage1ExecutionDraftTest --threads 1 -
 未来也不允许使用 --private-key 这类把私钥明文放进命令行的写法。
 ```
 
-## 3. 本轮允许出现的命令
+## 3. Stage 1-only 执行脚本草案只读预检结果
+
+2026-05-18，已在 Base Sepolia 上跑通只读预检。
+
+执行边界：
+
+```text
+不加 --broadcast
+EXECUTE_BASE_SEPOLIA_RC3_STAGE1=0
+PRIVATE_KEY=""
+不使用真实资金
+不部署任何合约
+```
+
+关键输出：
+
+```text
+Script ran successfully
+chainId=84532
+stage1ExecutionConfirmed=true
+executeRequested=false
+privateKeyPresent=false
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+stage1TransactionsPlanned=12
+stage1CoreDeployer=0x2F6E887c6058deE520f9468a1022E3480A6334D3
+stage1CoreDeployerNonce=16
+stage1AdminWallet=0x6E22b2e6fFAA30Fe75B71d53d1eC469b4e97A986
+stage1ProtocolBudgetWallet=0x277ba3Cf597CdAaF958C301db3cF6a631F793039
+stage1Create2DeployerOwner=0x6E22b2e6fFAA30Fe75B71d53d1eC469b4e97A986
+usdcToken=0x036CbD53842c5426634e7929541eC2318f3dCF7e
+usdcDecimals=6
+PREDICTED_SUN_TOKEN=0xb5287fBbAD0e25B12f18497209fDac7e0ACf7293
+PREDICTED_SUN_CURVE=0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4
+PREDICTED_MOON_TOKEN=0x92dC3B8056cA62A7dbc5c1C339891B45463bEe71
+PREDICTED_MOON_CURVE=0x095c91aB279121300Ac16c57D1ecebB9ceEa1cd8
+PREDICTED_CREATE2_HOOK_DEPLOYER=0x6E34D98e1925eaf6680941213E49741b8764DdfE
+stage1AddressCollision=false
+DEPLOYED_SUN_TOKEN=0x0000000000000000000000000000000000000000
+DEPLOYED_SUN_CURVE=0x0000000000000000000000000000000000000000
+DEPLOYED_MOON_TOKEN=0x0000000000000000000000000000000000000000
+DEPLOYED_MOON_CURVE=0x0000000000000000000000000000000000000000
+DEPLOYED_CREATE2_HOOK_DEPLOYER=0x0000000000000000000000000000000000000000
+```
+
+人工结论：
+
+```text
+Stage 1-only 执行脚本草案只读预检已通过
+当前没有广播
+当前没有部署
+当前没有使用私钥
+当前没有使用真实资金
+所有 DEPLOYED_* 均为零地址，说明没有创建任何链上合约
+```
+
+Foundry 输出中的 WARN 属于 trace/cache/etherscan/source 信息提示；本次结论以 `Script ran successfully` 和安全开关为准。
+
+## 4. 本轮允许出现的命令
 
 本轮只允许准备只读复核命令。
 这条命令不广播，只用于确认 Stage 1 的 12 笔计划和安全开关。
@@ -139,7 +198,7 @@ stage1AddressCollision=false
 停止。不准备真正执行版。
 ```
 
-## 4. 未来真正执行版不能直接复用当前 staged draft 脚本
+## 5. 未来真正执行版不能直接复用当前 staged draft 脚本
 
 未来如果要真正执行 Base Sepolia rc3 Stage 1，不能直接把当前 staged draft 脚本改个环境变量就运行。
 
@@ -156,7 +215,7 @@ stage1AddressCollision=false
 未来真正执行版必须另行准备、另行审阅、另行批准。
 在新的执行版脚本或命令出现前，不能广播。
 
-## 5. 未来真正执行版必须满足的字段
+## 6. 未来真正执行版必须满足的字段
 
 未来真正执行版如果被单独准备，必须满足：
 
@@ -175,7 +234,7 @@ stage1AddressCollision=false
 | 真实资金 | 不允许 |
 | 私钥、助记词、恢复词 | 不允许出现在聊天、文档或命令文本里 |
 
-## 6. 未来真正执行版最多只能做的 12 笔交易
+## 7. 未来真正执行版最多只能做的 12 笔交易
 
 | 顺序 | 操作 | 是否允许进入 Stage 1 |
 | ---: | --- | --- |
@@ -194,7 +253,7 @@ stage1AddressCollision=false
 
 Stage 1 之外的任何动作都不允许混入。
 
-## 7. 未来真正执行版必须禁止的内容
+## 8. 未来真正执行版必须禁止的内容
 
 如果未来命令或脚本出现以下任意内容，立即停止：
 
@@ -219,7 +278,7 @@ renounce
 --private-key
 ```
 
-## 8. 签名边界
+## 9. 签名边界
 
 Codex 不会做以下事情：
 
@@ -236,7 +295,7 @@ Codex 不会做以下事情：
 未来如果真的广播测试网 Stage 1，签名只能发生在操作员自己的本地钱包环境中。
 本文件不记录任何签名秘密。
 
-## 9. 未来真正执行版出现前的最后人工确认
+## 10. 未来真正执行版出现前的最后人工确认
 
 未来真正执行版出现前，owner 必须再次明确确认：
 
@@ -256,7 +315,7 @@ Codex 不会做以下事情：
 停止。不准备真正执行版。
 ```
 
-## 10. Stage 1 如果未来成功后的第一件事
+## 11. Stage 1 如果未来成功后的第一件事
 
 如果未来 Stage 1 真的广播成功，第一件事不是 Stage 2。
 
@@ -280,11 +339,12 @@ Stage 1 后复核没有全部通过：
 停止。不能准备 Stage 2。
 ```
 
-## 11. 当前结论
+## 12. 当前结论
 
 ```text
 Stage 1 执行版命令草案（不广播）已准备
 Stage 1-only 执行脚本草案已准备
+Stage 1-only 执行脚本草案只读预检已通过
 当前只提供不广播的只读复核命令
 当前不提供真正广播命令
 当前没有广播
@@ -293,15 +353,14 @@ Stage 1-only 执行脚本草案已准备
 当前没有使用真实资金
 ```
 
-## 12. 下一步建议
+## 13. 下一步建议
 
 下一步仍然不是广播。
 
 建议下一步只做：
 
 ```text
-运行 Stage 1-only 执行脚本草案的 Base Sepolia 只读预检
-不加 --broadcast
-不启用执行开关
-不使用私钥
+owner 人工阅读 Stage 1-only 执行脚本草案只读预检结果
+决定是否进入真正 Stage 1 广播前最终人工闸门
+在新的明确确认前，不生成真正广播命令
 ```

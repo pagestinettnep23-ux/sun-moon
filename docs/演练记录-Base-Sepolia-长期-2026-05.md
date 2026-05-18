@@ -1491,6 +1491,72 @@ Stage 1-only 执行脚本草案已创建
 下一步只能先跑 Base Sepolia 只读预检
 ```
 
+## Day 1 补充 - rc3 Stage 1-only 执行脚本草案 Base Sepolia 只读预检
+
+### 1. 本次目标
+
+对 `PrepareBaseSepoliaRc3Stage1ExecutionDraft` 跑 Base Sepolia 只读预检，确认脚本草案在不启用执行开关时仍然不会广播、不会部署、不会使用私钥。
+
+### 2. 执行边界
+
+```text
+不加 --broadcast
+EXECUTE_BASE_SEPOLIA_RC3_STAGE1=0
+PRIVATE_KEY=""
+不使用真实资金
+不部署任何合约
+```
+
+### 3. 关键输出
+
+```text
+Script ran successfully
+chainId=84532
+stage1ExecutionConfirmed=true
+executeRequested=false
+privateKeyPresent=false
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+stage1TransactionsPlanned=12
+stage1CoreDeployer=0x2F6E887c6058deE520f9468a1022E3480A6334D3
+stage1CoreDeployerNonce=16
+stage1AdminWallet=0x6E22b2e6fFAA30Fe75B71d53d1eC469b4e97A986
+stage1ProtocolBudgetWallet=0x277ba3Cf597CdAaF958C301db3cF6a631F793039
+stage1Create2DeployerOwner=0x6E22b2e6fFAA30Fe75B71d53d1eC469b4e97A986
+usdcToken=0x036CbD53842c5426634e7929541eC2318f3dCF7e
+usdcDecimals=6
+PREDICTED_SUN_TOKEN=0xb5287fBbAD0e25B12f18497209fDac7e0ACf7293
+PREDICTED_SUN_CURVE=0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4
+PREDICTED_MOON_TOKEN=0x92dC3B8056cA62A7dbc5c1C339891B45463bEe71
+PREDICTED_MOON_CURVE=0x095c91aB279121300Ac16c57D1ecebB9ceEa1cd8
+PREDICTED_CREATE2_HOOK_DEPLOYER=0x6E34D98e1925eaf6680941213E49741b8764DdfE
+stage1AddressCollision=false
+DEPLOYED_SUN_TOKEN=0x0000000000000000000000000000000000000000
+DEPLOYED_SUN_CURVE=0x0000000000000000000000000000000000000000
+DEPLOYED_MOON_TOKEN=0x0000000000000000000000000000000000000000
+DEPLOYED_MOON_CURVE=0x0000000000000000000000000000000000000000
+DEPLOYED_CREATE2_HOOK_DEPLOYER=0x0000000000000000000000000000000000000000
+```
+
+### 4. 当前结论
+
+```text
+Stage 1-only 执行脚本草案 Base Sepolia 只读预检已通过
+当前没有广播
+当前没有部署
+当前没有使用私钥
+当前没有使用真实资金
+所有 DEPLOYED_* 均为零地址，说明没有创建任何链上合约
+```
+
+说明：
+
+```text
+Foundry 输出中的 WARN 属于 trace/cache/etherscan/source 信息提示，不影响本次脚本成功结论。
+最终判断以 Script ran successfully、executeRequested=false、privateKeyPresent=false、broadcastAllowed=false、executionBlocked=true、DEPLOYED_*=0 为准。
+```
+
 ## 停止条件
 
 出现任一情况立即停止：
