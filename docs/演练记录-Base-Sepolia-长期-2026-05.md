@@ -806,6 +806,45 @@ real_funds_used=false
 最终判断以 Script ran successfully 和返回的安全开关为准。
 ```
 
+## Day 1 补充 - rc3 Stage 1 广播前最终确认单
+
+### 1. 本次目标
+
+准备给 owner 在未来决定是否进入 Base Sepolia 测试网 Stage 1 前看的最终确认单，但当前仍不广播。
+
+新增：
+
+```text
+docs/Base-Sepolia-rc3-Stage1-广播前最终确认单-2026-05-18.md
+```
+
+### 2. 确认单覆盖内容
+
+```text
+当前状态：Stage 1/2/3 均未广播
+Stage 1 预计 12 笔测试网交易
+Stage 1 只部署核心合约和基础配置
+Stage 1 不部署 Hook、不建池、不加流动性、不 swap、不 renounce
+测试网公开地址确认
+最近一次 fork 只读检查结果
+当前预测地址和 nonce 风险
+Stage 1 前最后必须再跑的只读检查
+Stage 1 批准边界
+Stage 1 后必须先做广播后复核
+绝对停止条件
+owner 最终签字区
+```
+
+### 3. 当前结论
+
+```text
+Stage 1 广播前最终确认单已创建
+仍未允许测试网广播
+仍未允许主网广播
+下一步只建议 owner 人工阅读确认单
+如需继续，也应先重新跑 Base Sepolia fork 只读检查
+```
+
 ## 停止条件
 
 出现任一情况立即停止：

@@ -231,13 +231,13 @@ Hook owner renounce
 建议下一步只做：
 
 ```text
-Stage 1 后复核清单草案
-列出如果未来 Stage 1 真的广播成功后，要用 cast/code/owner/minter 查询哪些结果
-继续保持不广播、不索要私钥
-```
+Stage 1 广播前最终确认单已经准备完成：
+docs/Base-Sepolia-rc3-Stage1-广播前最终确认单-2026-05-18.md
 
-Stage 1 后复核清单草案：
-
-```text
+Stage 1 后复核清单草案也已经准备完成：
 docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md
+
+下一步只建议 owner 人工阅读 Stage 1 广播前最终确认单
+如需继续，也应先重新跑 Base Sepolia fork 只读检查
+再单独讨论是否允许测试网 Stage 1 广播
 ```
