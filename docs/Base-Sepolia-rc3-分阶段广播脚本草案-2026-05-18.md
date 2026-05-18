@@ -197,6 +197,12 @@ private_key_requested=false
 
 说明：这些 predicted 地址和 poolId 是 fork 只读检查结果，不是已经部署地址。
 
+人工复核表：
+
+```text
+docs/Base-Sepolia-rc3-分阶段广播人工复核表-2026-05-18.md
+```
+
 ## 7. 当前结论
 
 ```text
@@ -206,4 +212,4 @@ private_key_requested=false
 尚未允许主网广播
 ```
 
-下一步建议只做人工复核；仍不能直接广播。
+人工复核表已创建；下一步只建议准备 Stage 1 测试网广播草案文档。仍不能直接广播。

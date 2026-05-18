@@ -416,6 +416,39 @@ private_key_requested=false
 
 这些 predicted 地址和 poolId 是 fork 只读检查结果，不是已经部署地址。
 
+## Day 1 补充 - rc3 分阶段广播人工复核表
+
+### 1. 本次目标
+
+把 rc3 分阶段广播草案 fork 只读检查结果整理成人工复核表，方便 owner 逐项确认。
+
+新增：
+
+```text
+docs/Base-Sepolia-rc3-分阶段广播人工复核表-2026-05-18.md
+```
+
+### 2. 复核表覆盖内容
+
+```text
+安全边界：不广播、不部署、不用真实资金、不读取 PRIVATE_KEY
+三阶段拆分：Stage 1/2/3 和预计交易数
+公开钱包：每个阶段的执行钱包公开地址
+预测地址：SUN、SunCurve、MOON、MoonCurve、CREATE2 deployer、Hook
+两个 poolId：SUN/USDC 与 MOON/USDC
+费用和价格：LP fee、Hook fee、初始价格
+停止条件：出现 --broadcast、私钥、真实资金、主网广播等立即停止
+```
+
+### 3. 当前结论
+
+```text
+人工复核表已创建
+仍未允许测试网广播
+仍未允许主网广播
+下一步只建议准备 Stage 1 测试网广播草案文档
+```
+
 ## 停止条件
 
 出现任一情况立即停止：
