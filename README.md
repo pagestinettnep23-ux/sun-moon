@@ -47,6 +47,7 @@
 - Base Sepolia rc3 分阶段广播人工复核表已新增，把 3 个阶段、预测地址、两个 poolId 和停止条件整理成小白可打勾清单；当前仍只是人工复核，不是广播批准。
 - Base Sepolia rc3 Stage 1 测试网广播草案已新增，把核心合约部署的 12 笔交易拆成小白清单；当前仍不广播、不部署、不需要私钥。
 - Base Sepolia rc3 Stage 1 广播后复核清单草案已新增，列出未来如果 Stage 1 真的广播成功后需要只读检查的 code、owner、minter、曲线配置和停止条件；当前仍未广播。
+- Base Sepolia rc3 Stage 2 测试网广播草案已新增，把 Hook 部署、SunCurve 绑定、两个池白名单和两个池初始化拆成 6 笔小白清单；当前仍不广播、不部署、不需要私钥。
 - rc3 分阶段广播脚本草案新增后，最新全量 Foundry 测试已更新为 `334 passed, 0 failed`。
 - 2026-05-16 方向已更新：SUN/MOON 都保持自由转账，不再试图在合约层禁止市场自行创建 AMM 池；项目只对明确支持的 Uniswap v4 Hook 池提供费用逻辑。
 - 新的 Hook 池目标：`SUN/USDC` v4 Hook 池 swap 收 `2% USDC`，其中 `1.5%` 注入 `SunCurve`、`0.5%` 进入协议经费；`MOON/USDC` v4 Hook 池 swap 收 `5% USDC`，其中 `3%` 注入 `SunCurve`、`2%` 进入协议经费。
@@ -233,6 +234,7 @@ forge fmt
 - `docs/Base-Sepolia-rc3-分阶段广播人工复核表-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage1-测试网广播草案-2026-05-18.md`
 - `docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md`
+- `docs/Base-Sepolia-rc3-Stage2-测试网广播草案-2026-05-18.md`
 - `docs/Base-主网上线前人工复核清单-2026-05-17.md`
 - `docs/Base-主网角色钱包与多签方案-草案-2026-05-15.md`（历史方案，已被普通钱包方案取代）
 - `docs/Base-主网上线后最小权限与放弃管理权方案-2026-05-15.md`

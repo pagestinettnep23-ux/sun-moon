@@ -522,6 +522,46 @@ Stage 1 广播后复核清单草案已创建
 下一步只建议准备 Stage 2 测试网广播草案文档
 ```
 
+## Day 1 补充 - rc3 Stage 2 测试网广播草案
+
+### 1. 本次目标
+
+把 Stage 2 的 6 笔 Hook 和池准备交易拆成小白可读清单，但仍不广播。
+
+新增：
+
+```text
+docs/Base-Sepolia-rc3-Stage2-测试网广播草案-2026-05-18.md
+```
+
+### 2. Stage 2 覆盖内容
+
+```text
+1 笔 Hook 部署：Create2HookDeployer.deployHook
+1 笔绑定：SunCurve.setMoonAMM(Hook)
+2 笔白名单：SUN/USDC 和 MOON/USDC poolId
+2 笔初始化：SUN/USDC 和 MOON/USDC v4 池初始价格
+```
+
+### 3. Stage 2 不覆盖内容
+
+```text
+不添加流动性
+不 swap
+不 renounce Hook owner
+不触碰 Base 主网
+不使用真实资金
+```
+
+### 4. 当前结论
+
+```text
+Stage 2 测试网广播草案已创建
+仍未允许测试网广播
+仍未允许主网广播
+下一步只建议准备 Stage 2 后复核清单草案
+```
+
 ## 停止条件
 
 出现任一情况立即停止：
