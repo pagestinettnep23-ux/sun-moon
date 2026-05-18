@@ -54,7 +54,8 @@ contract BaseMainnetCoreDeployDryRunPreparationTest is Test {
     function testRunLoadsPublicMainnetRoleEnvWithoutBroadcast() public {
         vm.chainId(31_337);
         vm.setNonce(mainnetDeployer, 7);
-        _setRunEnv(address(0), "0", "0");
+        MockUSDT usdc = new MockUSDT("Run Env USDC", "USDC", 6);
+        _setRunEnv(address(usdc), "0", "0");
 
         PrepareBaseMainnetCoreDeployDryRun script = new PrepareBaseMainnetCoreDeployDryRun();
         PrepareBaseMainnetCoreDeployDryRun.CoreDeployPlan memory plan = script.run();
@@ -63,6 +64,7 @@ contract BaseMainnetCoreDeployDryRunPreparationTest is Test {
         assertEq(plan.mainnetAdminWallet, mainnetAdminWallet);
         assertEq(plan.protocolBudgetWallet, protocolBudgetWallet);
         assertEq(plan.create2DeployerOwner, create2DeployerOwner);
+        assertEq(plan.usdcToken, address(usdc));
         assertEq(plan.mainnetDeployerNonce, 7);
         _assertPredictedAddresses(plan, 7);
         _assertSimulation(plan);

@@ -70,7 +70,8 @@
 - Base Sepolia rc3 Stage 3 广播后复核清单草案已新增，列出未来如果 Stage 3 真的广播成功后需要只读确认的 `owner=0`、关键配置、白名单、slot0、liquidity 和管理员函数锁死检查；当前仍未广播。
 - Base Sepolia rc3 Stage 1/2/3 总闸门清单已新增，把三阶段的广播前确认、广播后复核、owner 单独批准区和绝对停止条件合并成最终人工审批表；当前仍不广播、不部署、不需要私钥。
 - 2026-05-18 已按总闸门要求重新跑通 Base Sepolia rc3 分阶段 fork 只读复查：`chainId=84532`、`broadcastAllowed=false`、`executionBlocked=true`、`privateKeyPresent=false`、`totalTransactionsPlanned=19`、`stage1AddressCollision=false`、`stage2HookCollision=false`；未广播、未部署、未用私钥。
-- rc3 分阶段广播脚本草案新增后，最新全量 Foundry 测试已更新为 `334 passed, 0 failed`。
+- rc3 Stage 1 recovery 草案新增后，最新单线程全量 Foundry 测试已更新为 `346 passed, 0 failed`；含大量 `vm.setEnv` 的脚本测试应使用 `forge test --threads 1` 验证，避免默认并行测试互相污染环境变量。
+- 2026-05-18 Base Sepolia rc3 Stage 1 浏览器钱包执行中断后，链上确认前 2 笔已完成：`SUN_TOKEN=0xb5287fBbAD0e25B12f18497209fDac7e0ACf7293`、`SUN_CURVE=0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4`；`SEPOLIA_DEPLOYER nonce=18`。已新增 `PrepareBaseSepoliaRc3Stage1RecoveryDraft` 只恢复剩余 10 笔，原 12 笔脚本不得重跑；恢复草案只读检查通过，未广播、未用私钥。
 - 2026-05-16 方向已更新：SUN/MOON 都保持自由转账，不再试图在合约层禁止市场自行创建 AMM 池；项目只对明确支持的 Uniswap v4 Hook 池提供费用逻辑。
 - 新的 Hook 池目标：`SUN/USDC` v4 Hook 池 swap 收 `2% USDC`，其中 `1.5%` 注入 `SunCurve`、`0.5%` 进入协议经费；`MOON/USDC` v4 Hook 池 swap 收 `5% USDC`，其中 `3%` 注入 `SunCurve`、`2%` 进入协议经费。
 - 本地已新增 `BaseSunMoonUsdcFeeV4Hook`，统一支持 `SUN/USDC` 和 `MOON/USDC` 两类 USDC 计费 v4 Hook 池，并覆盖自由转账、SunCurve/MoonCurve mint/burn 兼容、2%/5% 收费、白名单和 renounce 后配置锁定测试。
