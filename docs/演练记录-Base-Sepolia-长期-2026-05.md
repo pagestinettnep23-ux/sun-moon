@@ -595,6 +595,46 @@ Stage 2 广播后复核清单草案已创建
 下一步只建议准备 Stage 3 测试网广播草案文档
 ```
 
+## Day 1 补充 - rc3 Stage 3 测试网广播草案
+
+### 1. 本次目标
+
+把 Stage 3 的 1 笔 renounce Hook owner 交易拆成小白可读清单，但仍不广播。
+
+新增：
+
+```text
+docs/Base-Sepolia-rc3-Stage3-测试网广播草案-2026-05-18.md
+```
+
+### 2. Stage 3 覆盖内容
+
+```text
+1 笔交易：Hook.renounceOwnership()
+目标：Hook.owner 变为 0x0000000000000000000000000000000000000000
+风险：之后不能再改白名单、protocolBudget、paused 或 owner
+```
+
+### 3. Stage 3 不覆盖内容
+
+```text
+不部署合约
+不创建池
+不初始化池
+不添加流动性
+不 swap
+不触碰 Base 主网
+```
+
+### 4. 当前结论
+
+```text
+Stage 3 测试网广播草案已创建
+仍未允许测试网广播
+仍未允许主网广播
+下一步只建议准备 Stage 3 后复核清单草案
+```
+
 ## 停止条件
 
 出现任一情况立即停止：

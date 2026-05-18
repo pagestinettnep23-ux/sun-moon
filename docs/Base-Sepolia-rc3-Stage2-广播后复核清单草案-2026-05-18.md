@@ -286,3 +286,9 @@ Stage 3 测试网广播草案文档
 把 renounce Hook owner 拆成小白清单
 继续保持不广播、不索要私钥
 ```
+
+Stage 3 草案文档：
+
+```text
+docs/Base-Sepolia-rc3-Stage3-测试网广播草案-2026-05-18.md
+```
