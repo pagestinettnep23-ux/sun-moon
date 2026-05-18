@@ -635,6 +635,41 @@ Stage 3 测试网广播草案已创建
 下一步只建议准备 Stage 3 后复核清单草案
 ```
 
+## Day 1 补充 - rc3 Stage 3 广播后复核清单草案
+
+### 1. 本次目标
+
+准备 Stage 3 未来如果真的广播成功后的只读复核清单，但当前仍不广播。
+
+新增：
+
+```text
+docs/Base-Sepolia-rc3-Stage3-广播后复核清单草案-2026-05-18.md
+```
+
+### 2. 复核清单覆盖内容
+
+```text
+1 笔 Stage 3 交易哈希记录区
+确认 receipt status=1 且 chain-id=84532
+确认 Hook code 不是 0x
+确认 Hook.owner 已变成零地址
+确认 Hook poolManager、token、USDC、SunCurve、protocolBudget、paused、expectedHookMask 不变
+确认 SunCurve.moonAMM 仍等于 Hook
+确认 SUN/USDC 和 MOON/USDC 白名单仍为 true
+确认两个池 slot0 和 liquidity 仍符合预期
+用 cast call 只读模拟确认 owner-only 函数已经不能再改参数
+```
+
+### 3. 当前结论
+
+```text
+Stage 3 广播后复核清单草案已创建
+仍未允许测试网广播
+仍未允许主网广播
+下一步只建议准备 rc3 Stage 1/2/3 总闸门清单
+```
+
 ## 停止条件
 
 出现任一情况立即停止：

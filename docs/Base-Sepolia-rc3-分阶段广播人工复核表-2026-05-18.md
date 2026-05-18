@@ -170,8 +170,9 @@ Uniswap LP fee=0.3%
 建议下一步只做：
 
 ```text
-准备 Stage 1 测试网广播草案文档
-把 Stage 1 需要做的 12 笔交易拆成小白可读清单
+Stage 1/2/3 测试网广播草案和广播后复核清单已经准备完成
+下一步只建议准备 rc3 Stage 1/2/3 总闸门清单
+把广播前确认、广播后复核、停止条件合并成一张最终人工审批表
 继续保持执行锁定
 不加 --broadcast
 不需要私钥
@@ -179,8 +180,13 @@ Uniswap LP fee=0.3%
 
 只有当 owner 明确批准“测试网 Stage 1 广播”，才进入真实 Base Sepolia 测试网广播准备。主网仍然不进入。
 
-Stage 1 草案文档：
+已准备文档：
 
 ```text
 docs/Base-Sepolia-rc3-Stage1-测试网广播草案-2026-05-18.md
+docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md
+docs/Base-Sepolia-rc3-Stage2-测试网广播草案-2026-05-18.md
+docs/Base-Sepolia-rc3-Stage2-广播后复核清单草案-2026-05-18.md
+docs/Base-Sepolia-rc3-Stage3-测试网广播草案-2026-05-18.md
+docs/Base-Sepolia-rc3-Stage3-广播后复核清单草案-2026-05-18.md
 ```
