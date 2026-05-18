@@ -49,6 +49,7 @@ Stage 1 批准不等于 Stage 2/3 也批准。
 | Stage 1 最终广播指令草案（审阅版，不执行） | `docs/Base-Sepolia-rc3-Stage1-最终广播指令草案-审阅版-2026-05-18.md` |
 | Stage 1 最终广播前人工批准表 | `docs/Base-Sepolia-rc3-Stage1-最终广播前人工批准表-2026-05-18.md` |
 | Stage 1 真正广播前最终人工闸门 | `docs/Base-Sepolia-rc3-Stage1-真正广播前最终人工闸门-2026-05-18.md` |
+| Stage 1 真正执行命令审阅版（不广播） | `docs/Base-Sepolia-rc3-Stage1-真正执行命令审阅版-不广播-2026-05-18.md` |
 | Stage 1 广播后复核 | `docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md` |
 | Stage 2 广播草案 | `docs/Base-Sepolia-rc3-Stage2-测试网广播草案-2026-05-18.md` |
 | Stage 2 广播后复核 | `docs/Base-Sepolia-rc3-Stage2-广播后复核清单草案-2026-05-18.md` |
@@ -385,7 +386,10 @@ docs/Base-Sepolia-rc3-Stage1-最终广播前人工批准表-2026-05-18.md
 Stage 1 真正广播前最终人工闸门已经进入：
 docs/Base-Sepolia-rc3-Stage1-真正广播前最终人工闸门-2026-05-18.md
 
-等待 owner 人工阅读最终人工闸门文件
-如果 owner 后续想继续，下一步由 owner 决定是否只准备真正执行命令审阅版
+Stage 1 真正执行命令审阅版已经准备完成：
+docs/Base-Sepolia-rc3-Stage1-真正执行命令审阅版-不广播-2026-05-18.md
+
+等待 owner 人工阅读真正执行命令审阅版
+如果 owner 后续想继续，下一步由 owner 决定是否只跑最终执行前只读复查
 主网仍然不进入
 ```
