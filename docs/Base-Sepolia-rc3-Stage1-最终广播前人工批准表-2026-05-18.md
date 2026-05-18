@@ -69,6 +69,7 @@ owner 在任何批准前，必须人工读完：
 | [ ] | `docs/Base-Sepolia-rc3-Stage1-最终广播指令草案-审阅版-2026-05-18.md` |
 | [ ] | `docs/Base-Sepolia-rc3-Stage1-执行版命令审阅清单-2026-05-18.md` |
 | [ ] | `docs/Base-Sepolia-rc3-Stage1-执行版命令草案-不广播-2026-05-18.md` |
+| [ ] | `script/PrepareBaseSepoliaRc3Stage1ExecutionDraft.s.sol` |
 | [ ] | `docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md` |
 | [ ] | `docs/Base-Sepolia-rc3-Stage1-2-3-总闸门清单-2026-05-18.md` |
 
@@ -407,7 +408,8 @@ Stage 1 最终广播前只读检查=已通过
 建议下一步只做：
 
 ```text
-owner 人工阅读 Stage 1 执行版命令草案（不广播）
-决定是否只准备真正 Stage 1 执行版脚本/命令
-在新的明确确认前，不生成真正广播命令
+运行 Stage 1-only 执行脚本草案的 Base Sepolia 只读预检
+不加 --broadcast
+不启用执行开关
+不使用私钥
 ```

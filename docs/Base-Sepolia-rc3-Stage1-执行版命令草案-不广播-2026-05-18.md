@@ -45,7 +45,66 @@ simulationOnly=true
 所以，当前不能把这份脚本当成真正执行版。
 本文件只能记录“未来执行版应该长什么样”和“现在允许复核什么”。
 
-## 2. 本轮允许出现的命令
+## 2. Stage 1-only 执行脚本草案
+
+已新增脚本草案：
+
+```text
+script/PrepareBaseSepoliaRc3Stage1ExecutionDraft.s.sol
+```
+
+配套测试：
+
+```text
+test/hooks/base/BaseSepoliaRc3Stage1ExecutionDraft.t.sol
+```
+
+脚本边界：
+
+```text
+只覆盖 Stage 1
+计划交易数=12
+不包含 Stage 2
+不包含 Stage 3
+不部署 Hook
+不建池
+不初始化池
+不加流动性
+不 swap
+不 renounce
+拒绝 Base 主网
+拒绝 PRIVATE_KEY 环境变量非空
+拒绝未确认执行
+```
+
+默认状态：
+
+```text
+executeRequested=false
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+```
+
+测试结果：
+
+```text
+forge test --match-contract BaseSepoliaRc3Stage1ExecutionDraftTest --threads 1 --isolate
+7 passed, 0 failed
+```
+
+重要说明：
+
+```text
+当前只是脚本草案已经创建。
+当前没有运行 Base Sepolia 广播。
+当前没有部署任何 rc3 Stage 1 合约。
+当前没有使用私钥。
+未来即使进入真正广播，也不能把私钥、助记词或恢复词写进聊天、文档、.env 或命令文本。
+未来也不允许使用 --private-key 这类把私钥明文放进命令行的写法。
+```
+
+## 3. 本轮允许出现的命令
 
 本轮只允许准备只读复核命令。
 这条命令不广播，只用于确认 Stage 1 的 12 笔计划和安全开关。
@@ -80,7 +139,7 @@ stage1AddressCollision=false
 停止。不准备真正执行版。
 ```
 
-## 3. 未来真正执行版不能直接复用当前脚本
+## 4. 未来真正执行版不能直接复用当前 staged draft 脚本
 
 未来如果要真正执行 Base Sepolia rc3 Stage 1，不能直接把当前 staged draft 脚本改个环境变量就运行。
 
@@ -97,7 +156,7 @@ stage1AddressCollision=false
 未来真正执行版必须另行准备、另行审阅、另行批准。
 在新的执行版脚本或命令出现前，不能广播。
 
-## 4. 未来真正执行版必须满足的字段
+## 5. 未来真正执行版必须满足的字段
 
 未来真正执行版如果被单独准备，必须满足：
 
@@ -116,7 +175,7 @@ stage1AddressCollision=false
 | 真实资金 | 不允许 |
 | 私钥、助记词、恢复词 | 不允许出现在聊天、文档或命令文本里 |
 
-## 5. 未来真正执行版最多只能做的 12 笔交易
+## 6. 未来真正执行版最多只能做的 12 笔交易
 
 | 顺序 | 操作 | 是否允许进入 Stage 1 |
 | ---: | --- | --- |
@@ -135,7 +194,7 @@ stage1AddressCollision=false
 
 Stage 1 之外的任何动作都不允许混入。
 
-## 6. 未来真正执行版必须禁止的内容
+## 7. 未来真正执行版必须禁止的内容
 
 如果未来命令或脚本出现以下任意内容，立即停止：
 
@@ -157,9 +216,10 @@ renounce
 私钥明文
 助记词
 恢复词
+--private-key
 ```
 
-## 7. 签名边界
+## 8. 签名边界
 
 Codex 不会做以下事情：
 
@@ -176,7 +236,7 @@ Codex 不会做以下事情：
 未来如果真的广播测试网 Stage 1，签名只能发生在操作员自己的本地钱包环境中。
 本文件不记录任何签名秘密。
 
-## 8. 未来真正执行版出现前的最后人工确认
+## 9. 未来真正执行版出现前的最后人工确认
 
 未来真正执行版出现前，owner 必须再次明确确认：
 
@@ -196,7 +256,7 @@ Codex 不会做以下事情：
 停止。不准备真正执行版。
 ```
 
-## 9. Stage 1 如果未来成功后的第一件事
+## 10. Stage 1 如果未来成功后的第一件事
 
 如果未来 Stage 1 真的广播成功，第一件事不是 Stage 2。
 
@@ -220,10 +280,11 @@ Stage 1 后复核没有全部通过：
 停止。不能准备 Stage 2。
 ```
 
-## 10. 当前结论
+## 11. 当前结论
 
 ```text
 Stage 1 执行版命令草案（不广播）已准备
+Stage 1-only 执行脚本草案已准备
 当前只提供不广播的只读复核命令
 当前不提供真正广播命令
 当前没有广播
@@ -232,14 +293,15 @@ Stage 1 执行版命令草案（不广播）已准备
 当前没有使用真实资金
 ```
 
-## 11. 下一步建议
+## 12. 下一步建议
 
 下一步仍然不是广播。
 
 建议下一步只做：
 
 ```text
-owner 人工阅读本草案
-决定是否只准备真正 Stage 1 执行版脚本/命令
-在新的明确确认前，不生成真正广播命令
+运行 Stage 1-only 执行脚本草案的 Base Sepolia 只读预检
+不加 --broadcast
+不启用执行开关
+不使用私钥
 ```

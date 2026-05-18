@@ -1427,6 +1427,70 @@ Stage 1 执行版命令草案（不广播）已创建
 当前没有使用真实资金
 ```
 
+## Day 1 补充 - rc3 Stage 1-only 执行脚本草案
+
+### 1. 本次目标
+
+根据 owner “可以开始”的确认，新增真正 Stage 1-only 执行脚本草案。当前只创建脚本和测试，不跑 Base Sepolia 广播、不部署、不需要私钥。
+
+### 2. 新增文件
+
+```text
+script/PrepareBaseSepoliaRc3Stage1ExecutionDraft.s.sol
+test/hooks/base/BaseSepoliaRc3Stage1ExecutionDraft.t.sol
+```
+
+### 3. 脚本边界
+
+```text
+只覆盖 Stage 1
+计划交易数=12
+默认 executeRequested=false
+默认 broadcastAllowed=false
+默认 executionBlocked=true
+拒绝 Base 主网
+拒绝 PRIVATE_KEY 环境变量非空
+拒绝未确认执行
+不包含 Stage 2
+不包含 Stage 3
+不部署 Hook
+不建池
+不初始化池
+不加流动性
+不 swap
+不 renounce
+```
+
+### 4. 测试结果
+
+```text
+forge test --match-contract BaseSepoliaRc3Stage1ExecutionDraftTest --threads 1 --isolate
+7 passed, 0 failed
+```
+
+测试覆盖：
+
+```text
+默认状态只生成阻断计划，不部署
+本地显式确认执行时只部署 5 个 Stage 1 合约并完成 7 个基础配置动作
+拒绝未确认执行
+拒绝 PRIVATE_KEY 环境变量非空
+拒绝 Base 主网
+Base Sepolia 必须显式确认
+Base Sepolia 未启用执行时仍保持阻断
+```
+
+### 5. 当前结论
+
+```text
+Stage 1-only 执行脚本草案已创建
+当前没有运行 Base Sepolia 广播
+当前没有部署 rc3 Stage 1 合约
+当前没有使用私钥
+当前没有使用真实资金
+下一步只能先跑 Base Sepolia 只读预检
+```
+
 ## 停止条件
 
 出现任一情况立即停止：

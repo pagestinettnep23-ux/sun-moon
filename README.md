@@ -58,6 +58,7 @@
 - 2026-05-18 已在 Stage 1-only 人工批准后重新跑通 Base Sepolia rc3 Stage 1 最终广播前只读检查：`chainId=84532`、`selectedStage=1`、`selectedStageTxs=12`、`SEPOLIA_DEPLOYER nonce=16`、`broadcastAllowed=false`、`executionBlocked=true`、`privateKeyPresent=false`、`stage1AddressCollision=false`；未广播、未部署、未用私钥。
 - Base Sepolia rc3 Stage 1 执行版命令审阅清单已新增，作为未来出现任何执行版命令前的最后人工检查表；当前仍不提供可复制执行命令，仍不广播、不部署、不需要私钥。
 - Base Sepolia rc3 Stage 1 执行版命令草案（不广播）已新增，明确当前只提供不广播的只读复核命令，真正执行版必须另行准备、另行批准、另行复核；当前仍未广播、未部署、未用私钥。
+- Base Sepolia rc3 Stage 1-only 执行脚本草案已新增：`PrepareBaseSepoliaRc3Stage1ExecutionDraft`，只覆盖 12 笔 Stage 1 核心部署/基础配置动作，默认 `executionBlocked=true`；拒绝 Base 主网、拒绝 `PRIVATE_KEY` 环境变量、拒绝未确认执行，专项测试 7 passed，0 failed；当前未广播、未部署。
 - Base Sepolia rc3 Stage 1 广播后复核清单草案已新增，列出未来如果 Stage 1 真的广播成功后需要只读检查的 code、owner、minter、曲线配置和停止条件；当前仍未广播。
 - Base Sepolia rc3 Stage 2 测试网广播草案已新增，把 Hook 部署、SunCurve 绑定、两个池白名单和两个池初始化拆成 6 笔小白清单；当前仍不广播、不部署、不需要私钥。
 - Base Sepolia rc3 Stage 2 广播后复核清单草案已新增，列出未来如果 Stage 2 真的广播成功后需要只读检查的 Hook 配置、白名单、slot0 和 liquidity；当前仍未广播。
