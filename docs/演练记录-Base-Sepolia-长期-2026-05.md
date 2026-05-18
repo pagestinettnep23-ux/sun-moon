@@ -707,6 +707,105 @@ Stage 1/2/3 总闸门清单已创建
 如需继续，也应先重新跑 Base Sepolia fork 只读检查
 ```
 
+## Day 1 补充 - rc3 总闸门后分阶段 fork 只读复查
+
+### 1. 本次目标
+
+根据总闸门清单要求，重新跑一次 Base Sepolia fork 只读检查，确认分阶段草案仍然能生成计划，并且执行仍然被锁住。
+
+本次不执行：
+
+```text
+不加 --broadcast
+不部署测试网合约
+不部署主网合约
+不使用真实资金
+不索要私钥
+```
+
+### 2. 执行命令
+
+```powershell
+$env:CONFIRM_BASE_SEPOLIA_RC3_STAGED_BROADCAST_DRAFT="1"
+$env:BASE_SEPOLIA_RC3_BROADCAST_STAGE="0"
+$env:EXECUTE_BASE_SEPOLIA_RC3_STAGE="0"
+$env:PRIVATE_KEY=""
+forge script script/PrepareBaseSepoliaRc3SunMoonUsdcStagedBroadcastDraft.s.sol --rpc-url https://sepolia.base.org --rpc-timeout 120 --slow
+```
+
+### 3. 结果记录
+
+```text
+script_result=Script ran successfully
+chainId=84532
+stagedDraftConfirmed=true
+selectedStage=0
+executeRequested=false
+privateKeyPresent=false
+broadcastAllowed=false
+executionBlocked=true
+simulationOnly=true
+stage1CoreDeploymentTxs=12
+stage2HookAndPoolTxs=6
+stage3RenounceTxs=1
+selectedStageTxs=19
+totalTransactionsPlanned=19
+stage1AddressCollision=false
+stage2HookCollision=false
+```
+
+预测地址和池：
+
+```text
+PREDICTED_SUN_TOKEN=0xb5287fBbAD0e25B12f18497209fDac7e0ACf7293
+PREDICTED_SUN_CURVE=0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4
+PREDICTED_MOON_TOKEN=0x92dC3B8056cA62A7dbc5c1C339891B45463bEe71
+PREDICTED_MOON_CURVE=0x095c91aB279121300Ac16c57D1ecebB9ceEa1cd8
+PREDICTED_CREATE2_HOOK_DEPLOYER=0x6E34D98e1925eaf6680941213E49741b8764DdfE
+HOOK_SALT=0x0000000000000000000000000000000000000000000000000000000000002a9c
+PREDICTED_HOOK=0x675D7a468d4d3b8d02d530539867F9e5feEFc0cc
+SUN_USDC_POOL_ID=0xdbf2bf05916b4f79d43e3ee74fa48b36301e8e8c13805335e186648b792451dc
+MOON_USDC_POOL_ID=0x5b2a79878be8e421c919a9acb8d853731d6d61b8053aa25bd32e0c994130bdfd
+```
+
+池初始化参数：
+
+```text
+SUN_USDC_INITIAL_TICK=276324
+SUN_USDC_SQRT_PRICE_X96=79228162514264337593543950336000000
+MOON_USDC_INITIAL_TICK=290595
+MOON_USDC_SQRT_PRICE_X96=161723809515207654377831473576838109
+```
+
+锁定检查：
+
+```text
+sunUsdcAllowedAfterDryRun=true
+moonUsdcAllowedAfterDryRun=true
+ownerAfterRenounce=0x0000000000000000000000000000000000000000
+renounceBlocksSunAllowlist=true
+renounceBlocksMoonAllowlist=true
+renounceBlocksProtocolBudget=true
+```
+
+### 4. 当前结论
+
+```text
+总闸门后分阶段 fork 只读复查已通过
+执行仍然被锁住
+尚未允许测试网广播
+尚未允许主网广播
+private_key_requested=false
+real_funds_used=false
+```
+
+说明：
+
+```text
+命令输出中的 Foundry WARN 是源码 trace/cache/etherscan 信息提示，不影响本次脚本成功结论。
+最终判断以 Script ran successfully 和返回的安全开关为准。
+```
+
 ## 停止条件
 
 出现任一情况立即停止：
