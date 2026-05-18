@@ -234,10 +234,13 @@ Hook owner renounce
 Stage 1 广播前最终确认单已经准备完成：
 docs/Base-Sepolia-rc3-Stage1-广播前最终确认单-2026-05-18.md
 
+Stage 1 操作员执行说明草案已经准备完成：
+docs/Base-Sepolia-rc3-Stage1-操作员执行说明草案-2026-05-18.md
+
 Stage 1 后复核清单草案也已经准备完成：
 docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md
 
-下一步只建议 owner 人工阅读 Stage 1 广播前最终确认单
+下一步只建议 owner 人工阅读 Stage 1 广播前最终确认单和操作员执行说明草案
 如需继续，也应先重新跑 Base Sepolia fork 只读检查
-再单独讨论是否允许测试网 Stage 1 广播
+再单独讨论是否需要准备 Stage 1 广播指令草案
 ```

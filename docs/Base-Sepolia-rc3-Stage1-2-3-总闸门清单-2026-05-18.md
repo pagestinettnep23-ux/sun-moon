@@ -44,6 +44,7 @@ Stage 1 批准不等于 Stage 2/3 也批准。
 | 分阶段总复核 | `docs/Base-Sepolia-rc3-分阶段广播人工复核表-2026-05-18.md` |
 | Stage 1 广播草案 | `docs/Base-Sepolia-rc3-Stage1-测试网广播草案-2026-05-18.md` |
 | Stage 1 广播前最终确认 | `docs/Base-Sepolia-rc3-Stage1-广播前最终确认单-2026-05-18.md` |
+| Stage 1 操作员说明 | `docs/Base-Sepolia-rc3-Stage1-操作员执行说明草案-2026-05-18.md` |
 | Stage 1 广播后复核 | `docs/Base-Sepolia-rc3-Stage1-广播后复核清单草案-2026-05-18.md` |
 | Stage 2 广播草案 | `docs/Base-Sepolia-rc3-Stage2-测试网广播草案-2026-05-18.md` |
 | Stage 2 广播后复核 | `docs/Base-Sepolia-rc3-Stage2-广播后复核清单草案-2026-05-18.md` |
@@ -52,7 +53,7 @@ Stage 1 批准不等于 Stage 2/3 也批准。
 
 人工复核：
 
-- [ ] 确认上面 8 份文档都能打开。
+- [ ] 确认上面 9 份文档都能打开。
 - [ ] 确认这些文档都是测试网 rc3 准备资料，不是主网计划。
 - [ ] 确认任何真实广播前都必须重新跑只读检查。
 
@@ -172,6 +173,7 @@ MOON_USDC_SQRT_PRICE_X96=161723809515207654377831473576838109
 - [ ] Stage 1 执行钱包公开地址正确。
 - [ ] Stage 1 文档已读完：`docs/Base-Sepolia-rc3-Stage1-测试网广播草案-2026-05-18.md`。
 - [ ] Stage 1 广播前最终确认单已读完：`docs/Base-Sepolia-rc3-Stage1-广播前最终确认单-2026-05-18.md`。
+- [ ] Stage 1 操作员执行说明草案已读完：`docs/Base-Sepolia-rc3-Stage1-操作员执行说明草案-2026-05-18.md`。
 - [ ] owner 明确知道 Stage 1 只部署核心合约，不部署 Hook、不建池、不加流动性、不 swap、不 renounce。
 - [ ] owner 只批准“Base Sepolia 测试网 Stage 1”，不批准 Stage 2/3，不批准主网。
 
@@ -361,8 +363,11 @@ Hook owner 已经不是预期地址却准备继续
 Stage 1 广播前最终确认单已经准备完成：
 docs/Base-Sepolia-rc3-Stage1-广播前最终确认单-2026-05-18.md
 
-等待 owner 人工阅读总闸门清单和 Stage 1 广播前最终确认单
+Stage 1 操作员执行说明草案已经准备完成：
+docs/Base-Sepolia-rc3-Stage1-操作员执行说明草案-2026-05-18.md
+
+等待 owner 人工阅读总闸门清单、Stage 1 广播前最终确认单和操作员执行说明草案
 如果 owner 后续想继续，也应先重新跑 Base Sepolia fork 只读检查
-然后再单独讨论是否允许测试网 Stage 1 广播
+然后再单独讨论是否需要准备 Stage 1 广播指令草案
 主网仍然不进入
 ```
