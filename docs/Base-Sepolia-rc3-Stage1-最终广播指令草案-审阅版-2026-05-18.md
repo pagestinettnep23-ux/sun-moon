@@ -125,12 +125,20 @@ Stage 1 完成后仍然没有完成 rc3 全流程。
 | --- | --- |
 | 网络 | Base Sepolia |
 | chain-id | `84532` |
-| Stage 1 执行钱包公开地址 | `0x2F6E887c6058deE520f9468a1022E3480A6334D3` |
-| 测试网管理员公开地址 | `0x6E22b2e6fFAA30Fe75B71d53d1eC469b4e97A986` |
-| 测试网协议经费公开地址 | `0x277ba3Cf597CdAaF958C301db3cF6a631F793039` |
+| Stage 1 执行钱包公开地址 | `0x2F6E887c6058deE520f9468a1022E3480A6334D3`，仅 Base Sepolia 测试网，不是主网地址 |
+| 测试网管理员公开地址 | `0x6E22b2e6fFAA30Fe75B71d53d1eC469b4e97A986`，仅 Base Sepolia 测试网，不是主网地址 |
+| 测试网协议经费公开地址 | `0x277ba3Cf597CdAaF958C301db3cF6a631F793039`，仅 Base Sepolia 测试网，不是主网地址 |
 | Base Sepolia PoolManager | `0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408` |
 | Base Sepolia StateView | `0x571291b572ed32ce6751a2Cb2486EbEe8DEfB9B4` |
 | Base Sepolia USDC | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` |
+
+特别说明：
+
+```text
+上面 3 个钱包地址只用于 Base Sepolia 测试网 rc3 演练。
+它们不是 Base 主网正式地址。
+主网正式地址必须另看 MAINNET_DEPLOYER、MAINNET_ADMIN_WALLET、PROTOCOL_BUDGET_WALLET、CREATE2_DEPLOYER_OWNER。
+```
 
 预测地址：
 

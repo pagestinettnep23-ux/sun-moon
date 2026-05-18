@@ -82,10 +82,15 @@ owner 在任何批准前，必须人工读完：
 | --- | --- | --- |
 | 网络只能是 Base Sepolia | `chainId=84532` | [ ] |
 | 不是 Base 主网 | `Base mainnet=false` | [ ] |
-| Stage 1 执行钱包公开地址 | `0x2F6E887c6058deE520f9468a1022E3480A6334D3` | [ ] |
-| 测试网管理员公开地址 | `0x6E22b2e6fFAA30Fe75B71d53d1eC469b4e97A986` | [ ] |
-| 测试网协议经费公开地址 | `0x277ba3Cf597CdAaF958C301db3cF6a631F793039` | [ ] |
+| Stage 1 执行钱包公开地址 | `0x2F6E887c6058deE520f9468a1022E3480A6334D3`，仅 Base Sepolia 测试网，不是主网地址 | [ ] |
+| 测试网管理员公开地址 | `0x6E22b2e6fFAA30Fe75B71d53d1eC469b4e97A986`，仅 Base Sepolia 测试网，不是主网地址 | [ ] |
+| 测试网协议经费公开地址 | `0x277ba3Cf597CdAaF958C301db3cF6a631F793039`，仅 Base Sepolia 测试网，不是主网地址 | [ ] |
 | 私钥不出现在聊天、文档或代码里 | `privateKeyPresent=false` | [ ] |
+
+特别确认：
+
+- [ ] 我确认上面 3 个钱包地址都只是 Base Sepolia 测试网地址，不是 Base 主网正式地址。
+- [ ] 我确认主网正式地址必须另看 `MAINNET_DEPLOYER`、`MAINNET_ADMIN_WALLET`、`PROTOCOL_BUDGET_WALLET`、`CREATE2_DEPLOYER_OWNER` 那组公开参数。
 
 ## 4. Stage 1 允许范围确认
 

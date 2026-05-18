@@ -99,6 +99,13 @@ Stage 1 不包含：
 | 测试网 CREATE2 deployer owner | `0x6E22b2e6fFAA30Fe75B71d53d1eC469b4e97A986` |
 | Base Sepolia USDC | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` |
 
+特别说明：
+
+```text
+上面的钱包地址都是 Base Sepolia 测试网地址，不是 Base 主网正式地址。
+主网正式地址必须另看 MAINNET_DEPLOYER、MAINNET_ADMIN_WALLET、PROTOCOL_BUDGET_WALLET、CREATE2_DEPLOYER_OWNER。
+```
+
 人工确认：
 
 - [ ] 我确认这些是 Base Sepolia 测试网公开地址。
