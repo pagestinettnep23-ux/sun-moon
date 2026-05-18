@@ -178,3 +178,9 @@ Uniswap LP fee=0.3%
 ```
 
 只有当 owner 明确批准“测试网 Stage 1 广播”，才进入真实 Base Sepolia 测试网广播准备。主网仍然不进入。
+
+Stage 1 草案文档：
+
+```text
+docs/Base-Sepolia-rc3-Stage1-测试网广播草案-2026-05-18.md
+```
