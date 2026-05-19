@@ -84,12 +84,12 @@
 - 本地已新增 `BaseSunMoonUsdcFeeV4Hook`，统一支持 `SUN/USDC` 和 `MOON/USDC` 两类 USDC 计费 v4 Hook 池，并覆盖自由转账、SunCurve/MoonCurve mint/burn 兼容、2%/5% 收费、白名单和 renounce 后配置锁定测试。
 - 本地已新增 `RehearseBaseSunMoonUsdcFeeV4Hook` 和对应测试，证明新版统一 Hook 可通过 CREATE2 预测并部署到正确 v4 Hook 权限地址；当前只是本地预演，不广播。
 - 本地已新增 `ComputeBaseSunMoonUsdcPoolIds` 和对应测试，只计算新版 `SUN/USDC`、`MOON/USDC` v4 Hook 池的 `PoolKey -> poolId`、`initialTick`、`sqrtPriceX96`，不广播、不授权、不需要私钥。
-- 使用 Base mainnet 预测地址已算出两个池参数：`SUN_USDC_POOL_ID=0xf0006d5dde476ffd2b43648468d5c6a6a8cf1f40bcac5c0c7d070491587e075a`、`MOON_USDC_POOL_ID=0xcf29a02432e947fe9240fe4378cb871b24691f7cd85e7e8c72464ff89c1c6735`；当前仍是预测计算结果，不是已部署池。
+- 2026-05-19 因 `BaseSunMoonUsdcFeeV4Hook` 空 `hookData` 兼容性修复，Hook 字节码已变化；Base mainnet 当前本地重算池参数为 `SUN_USDC_POOL_ID=0x3138c4c0659267531412664a35564dcf0403d2bd67ef6e5710a6504e273f2ccd`、`MOON_USDC_POOL_ID=0xbc7e8b87d4d43acb33e42348528f5df53ea247b27368d1502c146a486e7583d7`；当前仍是预测计算结果，不是已部署池。
 - Base 正式 USDC adapter 方案仍需按新方向人工 review：当前 `Direct-USDC-only` 草图可作为“只收 USDC 费用”的防呆基础，但主网前还需要用正式参数重新挖 salt、生成正式 poolId、跑 mainnet fork dry-run 和外部 review。
 - `PrepareBaseMainnetDirectUsdcOnlyAdapter` 主网 dry-run 脚本和测试已完成；Base mainnet RPC dry-run 已通过，未广播、未部署、未用私钥。
 - `PrepareBaseMainnetCoreDeployDryRun` 主网核心合约地址预测和配置模拟脚本已完成：本地测试 11 passed，0 failed；Base mainnet fork dry-run 已通过，输出 5 个预测核心地址；不调用 `startBroadcast`，拒绝广播标志。
-- `ComputeBaseMainnetSunMoonUsdcHookSalt` 主网 Hook salt 计算脚本已完成：本地测试 10 passed，0 failed；Base mainnet fork dry-run 已通过，输出 `HOOK_SALT=0x0000000000000000000000000000000000000000000000000000000000001f79` 和 `PREDICTED_HOOK=0x04f968dE5cd57B1EB8215a9a488dC32508Fb80cc`；未广播、未部署、未用私钥。
-- `PrepareBaseMainnetSunMoonUsdcForkDryRun` 只模拟脚本和测试已完成：本地测试 15 passed，0 failed；Base mainnet fork dry-run 已通过，模拟 CREATE2 Hook 部署、两个池白名单、两个池初始化和 renounce 后锁定检查；不调用 `startBroadcast`，拒绝广播标志。
+- `ComputeBaseMainnetSunMoonUsdcHookSalt` 主网 Hook salt 计算脚本已完成：本地测试 10 passed，0 failed；2026-05-19 本地重算输出 `HOOK_SALT=0x0000000000000000000000000000000000000000000000000000000000000d1a` 和 `PREDICTED_HOOK=0x10cd8Ad3b2225842E2791f327e39d51eB4CFC0Cc`；旧 `0x04f968dE5cd57B1EB8215a9a488dC32508Fb80cc` 已作废，未广播、未部署、未用私钥。
+- `PrepareBaseMainnetSunMoonUsdcForkDryRun` 只模拟脚本和测试已完成：本地测试 15 passed，0 failed；2026-05-19 已用新 Hook 字节码和新 poolId 重新跑通 Base mainnet fork dry-run，模拟 CREATE2 Hook 部署、两个池白名单、两个池初始化和 renounce 后锁定检查；不调用 `startBroadcast`，拒绝广播标志。
 
 当前 Base Sepolia 测试网记录：
 

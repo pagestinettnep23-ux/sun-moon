@@ -415,7 +415,8 @@ contract BaseSunMoonUsdcFeeV4Hook is IHooks, ReentrancyGuard {
         pure
         returns (uint256 minUSDCToSunCurve)
     {
-        if (hookData.length == 0) revert InvalidHookData();
+        if (hookData.length == 0) return 1;
+        if (hookData.length < 32) revert InvalidHookData();
 
         UsdcFeeHookData memory feeData = abi.decode(hookData, (UsdcFeeHookData));
         minUSDCToSunCurve = feeData.minUSDCToSunCurve;

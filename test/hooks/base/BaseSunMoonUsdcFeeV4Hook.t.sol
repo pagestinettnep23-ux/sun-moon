@@ -4,6 +4,7 @@ pragma solidity 0.8.26;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Deployers } from "@uniswap/v4-core/test/utils/Deployers.sol";
 import { IHooks } from "@uniswap/v4-core/src/interfaces/IHooks.sol";
+import { CustomRevert } from "@uniswap/v4-core/src/libraries/CustomRevert.sol";
 import { Hooks } from "@uniswap/v4-core/src/libraries/Hooks.sol";
 import { PoolSwapTest } from "@uniswap/v4-core/src/test/PoolSwapTest.sol";
 import { BalanceDelta } from "@uniswap/v4-core/src/types/BalanceDelta.sol";
@@ -213,6 +214,65 @@ contract BaseSunMoonUsdcFeeV4HookTest is Deployers {
         assertEq(sunCurve.curveReserve() - reserveBefore, EXPECTED_MOON_FEE_TO_CURVE);
         assertEq(usdc.balanceOf(protocolBudget) - budgetBefore, EXPECTED_MOON_FEE_TO_PROTOCOL);
         assertEq(usdc.balanceOf(address(hook)), 0);
+    }
+
+    function testEmptyHookDataDefaultsMinUsdcToOneAndSwapSucceeds() public {
+        uint256 reserveBefore = sunCurve.curveReserve();
+        uint256 budgetBefore = usdc.balanceOf(protocolBudget);
+
+        vm.expectEmit(true, true, false, true, address(hook));
+        emit FeeRouted(
+            PoolId.unwrap(sunUsdcKey.toId()),
+            BaseSunMoonUsdcFeeV4Hook.PoolKind.SunUsdc,
+            SWAP_USDC_AMOUNT,
+            EXPECTED_SUN_FEE_TO_CURVE,
+            EXPECTED_SUN_FEE_TO_PROTOCOL,
+            EXPECTED_SUN_FEE_TO_CURVE
+        );
+
+        _swapExactUsdcInputWithHookData(sunUsdcKey, SWAP_USDC_AMOUNT, bytes(""));
+
+        assertEq(sunCurve.curveReserve() - reserveBefore, EXPECTED_SUN_FEE_TO_CURVE);
+        assertEq(usdc.balanceOf(protocolBudget) - budgetBefore, EXPECTED_SUN_FEE_TO_PROTOCOL);
+        assertEq(usdc.balanceOf(address(hook)), 0);
+    }
+
+    function testNonEmptyHookDataWithZeroMinUsdcToSunCurveStillReverts() public {
+        _expectBeforeSwapHookRevert(
+            abi.encodeWithSelector(BaseSunMoonUsdcFeeV4Hook.InvalidMinUSDCToSunCurve.selector)
+        );
+
+        _swapExactUsdcInputWithHookData(sunUsdcKey, SWAP_USDC_AMOUNT, _hookData(0));
+    }
+
+    function testShortNonEmptyHookDataRevertsInvalidHookData() public {
+        _expectBeforeSwapHookRevert(
+            abi.encodeWithSelector(BaseSunMoonUsdcFeeV4Hook.InvalidHookData.selector)
+        );
+
+        _swapExactUsdcInputWithHookData(sunUsdcKey, SWAP_USDC_AMOUNT, hex"01");
+    }
+
+    function testMinUsdcToSunCurveAboveInjectedAmountReverts() public {
+        uint256 minUSDCToSunCurve = EXPECTED_SUN_FEE_TO_CURVE + 1;
+
+        _expectBeforeSwapHookRevert(
+            abi.encodeWithSelector(
+                BaseSunMoonUsdcFeeV4Hook.InsufficientUSDCToSunCurve.selector,
+                EXPECTED_SUN_FEE_TO_CURVE,
+                minUSDCToSunCurve
+            )
+        );
+
+        _swapExactUsdcInputWithHookData(sunUsdcKey, SWAP_USDC_AMOUNT, _hookData(minUSDCToSunCurve));
+    }
+
+    function testTinySwapWithZeroFeeStillRevertsWithEmptyHookData() public {
+        _expectBeforeSwapHookRevert(
+            abi.encodeWithSelector(BaseSunMoonUsdcFeeV4Hook.InvalidAmount.selector)
+        );
+
+        _swapExactUsdcInputWithHookData(sunUsdcKey, 1, bytes(""));
     }
 
     function testFuzzSpecifiedUsdcInputFeeSplits(uint256 sunUsdcSeed, uint256 moonUsdcSeed) public {
@@ -500,11 +560,30 @@ contract BaseSunMoonUsdcFeeV4HookTest is Deployers {
         int256 amountSpecified,
         uint256 minUSDCToSunCurve
     ) private returns (BalanceDelta) {
+        return _swapWithHookData(poolKey, zeroForOne, amountSpecified, _hookData(minUSDCToSunCurve));
+    }
+
+    function _swapExactUsdcInputWithHookData(
+        PoolKey memory poolKey,
+        uint256 usdcIn,
+        bytes memory hookData
+    ) private returns (BalanceDelta) {
+        return _swapWithHookData(
+            poolKey, Currency.unwrap(poolKey.currency0) == address(usdc), -int256(usdcIn), hookData
+        );
+    }
+
+    function _swapWithHookData(
+        PoolKey memory poolKey,
+        bool zeroForOne,
+        int256 amountSpecified,
+        bytes memory hookData
+    ) private returns (BalanceDelta) {
         return swapRouter.swap(
             poolKey,
             _swapParams(zeroForOne, amountSpecified),
             PoolSwapTest.TestSettings({ takeClaims: false, settleUsingBurn: false }),
-            _hookData(minUSDCToSunCurve)
+            hookData
         );
     }
 
@@ -540,6 +619,18 @@ contract BaseSunMoonUsdcFeeV4HookTest is Deployers {
     function _hookData(uint256 minUSDCToSunCurve) private pure returns (bytes memory) {
         return abi.encode(
             BaseSunMoonUsdcFeeV4Hook.UsdcFeeHookData({ minUSDCToSunCurve: minUSDCToSunCurve })
+        );
+    }
+
+    function _expectBeforeSwapHookRevert(bytes memory reason) private {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                CustomRevert.WrappedError.selector,
+                address(hook),
+                IHooks.beforeSwap.selector,
+                reason,
+                abi.encodeWithSelector(Hooks.HookCallFailed.selector)
+            )
         );
     }
 

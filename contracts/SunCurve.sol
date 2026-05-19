@@ -32,7 +32,7 @@ contract SunCurve is Ownable, ReentrancyGuard {
     uint256 public immutable usdtTo18Scale;
 
     uint256 public curveReserve;
-    uint256 public lastMintBlock;
+    mapping(address => uint256) public lastMintBlock;
     address public moonCurve;
     address public moonAMM;
 
@@ -171,7 +171,8 @@ contract SunCurve is Ownable, ReentrancyGuard {
         }
 
         curveReserve = reserveBefore + reserveAdd;
-        lastMintBlock = block.number;
+        lastMintBlock[payer] = block.number;
+        lastMintBlock[receiver] = block.number;
 
         usdt.safeTransferFrom(payer, address(this), usdtIn);
         usdt.safeTransfer(protocolBudget, feeToProtocol);
@@ -186,7 +187,7 @@ contract SunCurve is Ownable, ReentrancyGuard {
     {
         if (receiver == address(0)) revert InvalidAddress();
         if (sunIn == 0) revert InvalidAmount();
-        if (lastMintBlock == block.number) revert SameBlockMintBurn();
+        if (lastMintBlock[payer] == block.number) revert SameBlockMintBurn();
 
         uint256 totalSupply = sunToken.totalSupply();
         if (sunIn > totalSupply) revert BurnAmountExceedsSupply();

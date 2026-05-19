@@ -142,6 +142,23 @@ contract SunCurveTest is Test {
         curve.mintFor(address(0), 100 * USDT_ONE);
     }
 
+    function testSunMintForTracksLastMintBlockForPayerAndReceiver() public {
+        uint256 currentBlock = block.number;
+
+        vm.prank(alice);
+        uint256 minted = curve.mintFor(bob, 100 * USDT_ONE);
+
+        assertEq(curve.lastMintBlock(alice), currentBlock);
+        assertEq(curve.lastMintBlock(bob), currentBlock);
+
+        vm.prank(bob);
+        sun.approve(address(curve), minted);
+
+        vm.prank(bob);
+        vm.expectRevert(SunCurve.SameBlockMintBurn.selector);
+        curve.burn(minted / 2);
+    }
+
     function testSunMintAllowsExactlyTenThousandUsdt() public {
         vm.prank(alice);
         uint256 sunOut = curve.mint(MAX_MINT_USDT);
@@ -240,6 +257,24 @@ contract SunCurveTest is Test {
 
         vm.prank(alice);
         uint256 usdtOut = curve.burn(minted / 2);
+
+        assertGt(usdtOut, 0);
+    }
+
+    function testSunBurnAllowsDifferentPayerWhenAnotherUserMintedSameBlock() public {
+        vm.prank(bob);
+        uint256 bobMinted = curve.mint(100 * USDT_ONE);
+
+        vm.roll(block.number + 1);
+
+        vm.prank(bob);
+        sun.approve(address(curve), bobMinted);
+
+        vm.prank(alice);
+        curve.mint(100 * USDT_ONE);
+
+        vm.prank(bob);
+        uint256 usdtOut = curve.burn(bobMinted / 2);
 
         assertGt(usdtOut, 0);
     }

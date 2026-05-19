@@ -29,7 +29,7 @@ contract MoonCurve is Ownable, ReentrancyGuard {
     uint256 public immutable maxMintUsdtEquiv;
 
     uint256 public sunReserve;
-    uint256 public lastMintBlock;
+    mapping(address => uint256) public lastMintBlock;
 
     event MoonMinted(
         address indexed payer,
@@ -140,7 +140,8 @@ contract MoonCurve is Ownable, ReentrancyGuard {
         MoonCurveMath.MintQuote memory quote = MoonCurveMath.mintQuote(k, s, sunReserve, sunIn);
         moonOut = quote.moonOut;
         sunReserve += quote.sunNet;
-        lastMintBlock = block.number;
+        lastMintBlock[payer] = block.number;
+        lastMintBlock[receiver] = block.number;
 
         sunToken.safeTransferFrom(payer, address(this), sunIn);
         sunToken.safeTransfer(address(sunCurve), quote.feeToSunCurve);
@@ -156,7 +157,7 @@ contract MoonCurve is Ownable, ReentrancyGuard {
         returns (uint256 sunOut)
     {
         if (receiver == address(0)) revert InvalidAddress();
-        if (lastMintBlock == block.number) revert SameBlockMintBurn();
+        if (lastMintBlock[payer] == block.number) revert SameBlockMintBurn();
 
         MoonCurveMath.BurnQuote memory quote = MoonCurveMath.burnQuote(k, s, sunReserve, moonIn);
         sunOut = quote.sunOut;

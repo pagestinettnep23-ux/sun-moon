@@ -190,6 +190,21 @@ contract MoonCurveTest is Test {
         moonCurve.mintFor(address(0), 1 * TOKEN_ONE);
     }
 
+    function testMoonMintForTracksLastMintBlockForPayerAndReceiver() public {
+        _mintSunTo(alice, 2000 * USDT_ONE);
+        uint256 currentBlock = block.number;
+
+        vm.prank(alice);
+        uint256 moonOut = moonCurve.mintFor(bob, 1000 * TOKEN_ONE);
+
+        assertEq(moonCurve.lastMintBlock(alice), currentBlock);
+        assertEq(moonCurve.lastMintBlock(bob), currentBlock);
+
+        vm.prank(bob);
+        vm.expectRevert(MoonCurve.SameBlockMintBurn.selector);
+        moonCurve.burn(moonOut / 2);
+    }
+
     function testMoonMintRejectsWithoutSunApproval() public {
         address charlie = makeAddr("charlie");
         usdt.mint(charlie, 1000 * USDT_ONE);
@@ -320,6 +335,25 @@ contract MoonCurveTest is Test {
 
         vm.prank(alice);
         uint256 sunOut = moonCurve.burn(moonOut / 2);
+
+        assertGt(sunOut, 0);
+    }
+
+    function testMoonBurnAllowsDifferentPayerWhenAnotherUserMintedSameBlock() public {
+        _mintSunTo(bob, 2000 * USDT_ONE);
+
+        vm.prank(bob);
+        uint256 bobMoonOut = moonCurve.mint(1000 * TOKEN_ONE);
+
+        vm.roll(block.number + 1);
+
+        _mintSunTo(alice, 2000 * USDT_ONE);
+
+        vm.prank(alice);
+        moonCurve.mint(1000 * TOKEN_ONE);
+
+        vm.prank(bob);
+        uint256 sunOut = moonCurve.burn(bobMoonOut / 2);
 
         assertGt(sunOut, 0);
     }
