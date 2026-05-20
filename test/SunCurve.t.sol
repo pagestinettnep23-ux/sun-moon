@@ -7,6 +7,27 @@ import { SunCurve } from "../contracts/SunCurve.sol";
 import { SunToken } from "../contracts/SunToken.sol";
 import { MockUSDT } from "../contracts/mocks/MockUSDT.sol";
 
+contract SunMintForProxy {
+    function approveUsdt(MockUSDT usdt, SunCurve curve) external {
+        usdt.approve(address(curve), type(uint256).max);
+    }
+
+    function approveSun(SunToken sun, SunCurve curve) external {
+        sun.approve(address(curve), type(uint256).max);
+    }
+
+    function mintFor(SunCurve curve, address receiver, uint256 usdtIn)
+        external
+        returns (uint256 sunOut)
+    {
+        return curve.mintFor(receiver, usdtIn);
+    }
+
+    function burn(SunCurve curve, uint256 sunIn) external returns (uint256 usdtOut) {
+        return curve.burn(sunIn);
+    }
+}
+
 contract SunCurveTest is Test {
     uint256 internal constant SUN_ONE = 1e18;
     uint256 internal constant USDT_ONE = 1e6;
@@ -336,6 +357,62 @@ contract SunCurveTest is Test {
         assertGt(usdtOut, 0);
     }
 
+    function testR04SunProxyMintForVictimSameBlockAllowsVictimBurnAndBlocksProxyBurn() public {
+        SunMintForProxy proxy = new SunMintForProxy();
+        uint256 proxySun = _mintSunToProxy(proxy, 1000 * USDT_ONE);
+
+        vm.prank(alice);
+        uint256 victimSun = curve.mint(1000 * USDT_ONE);
+
+        vm.roll(block.number + 1);
+
+        vm.prank(alice);
+        sun.approve(address(curve), victimSun);
+
+        vm.prank(bob);
+        uint256 dustSun = proxy.mintFor(curve, alice, 1);
+
+        assertGt(dustSun, 0);
+        assertLt(curve.lastMintBlock(alice), block.number);
+        assertEq(curve.lastMintBlock(address(proxy)), block.number);
+
+        vm.prank(alice);
+        uint256 usdtOut = curve.burn(victimSun / 2);
+
+        assertGt(usdtOut, 0);
+
+        vm.expectRevert(SunCurve.SameBlockMintBurn.selector);
+        proxy.burn(curve, proxySun / 2);
+    }
+
+    function testR04SunProxyMintForVictimSameBlockAllowsVictimBurnToAndBlocksProxyBurn() public {
+        SunMintForProxy proxy = new SunMintForProxy();
+        uint256 proxySun = _mintSunToProxy(proxy, 1000 * USDT_ONE);
+
+        vm.prank(alice);
+        uint256 victimSun = curve.mint(1000 * USDT_ONE);
+
+        vm.roll(block.number + 1);
+
+        vm.prank(alice);
+        sun.approve(address(curve), victimSun);
+
+        vm.prank(bob);
+        uint256 dustSun = proxy.mintFor(curve, alice, 1);
+
+        assertGt(dustSun, 0);
+        assertLt(curve.lastMintBlock(alice), block.number);
+        assertEq(curve.lastMintBlock(address(proxy)), block.number);
+
+        vm.prank(alice);
+        uint256 usdtOut = curve.burnTo(bob, victimSun / 2);
+
+        assertGt(usdtOut, 0);
+
+        vm.expectRevert(SunCurve.SameBlockMintBurn.selector);
+        proxy.burn(curve, proxySun / 2);
+    }
+
     function testSunBurnRejectsWithoutApproval() public {
         vm.prank(alice);
         uint256 minted = curve.mint(100 * USDT_ONE);
@@ -421,5 +498,15 @@ contract SunCurveTest is Test {
         vm.prank(moonCurve);
         vm.expectRevert(SunCurve.InvalidAmount.selector);
         curve.burnAndRetain(0);
+    }
+
+    function _mintSunToProxy(SunMintForProxy proxy, uint256 usdtIn)
+        internal
+        returns (uint256 sunOut)
+    {
+        usdt.mint(address(proxy), usdtIn + 1);
+        proxy.approveUsdt(usdt, curve);
+        sunOut = proxy.mintFor(curve, address(proxy), usdtIn);
+        proxy.approveSun(sun, curve);
     }
 }

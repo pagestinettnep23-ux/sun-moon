@@ -9,6 +9,23 @@ import { SunToken } from "../contracts/SunToken.sol";
 import { MoonCurveMath } from "../contracts/libraries/MoonCurveMath.sol";
 import { MockUSDT } from "../contracts/mocks/MockUSDT.sol";
 
+contract MoonMintForProxy {
+    function approveSun(SunToken sun, MoonCurve moonCurve) external {
+        sun.approve(address(moonCurve), type(uint256).max);
+    }
+
+    function mintFor(MoonCurve moonCurve, address receiver, uint256 sunIn)
+        external
+        returns (uint256 moonOut)
+    {
+        return moonCurve.mintFor(receiver, sunIn);
+    }
+
+    function burn(MoonCurve moonCurve, uint256 moonIn) external returns (uint256 sunOut) {
+        return moonCurve.burn(moonIn);
+    }
+}
+
 contract MoonCurveTest is Test {
     uint256 internal constant TOKEN_ONE = 1e18;
     uint256 internal constant USDT_ONE = 1e6;
@@ -414,6 +431,60 @@ contract MoonCurveTest is Test {
         assertGt(sunOut, 0);
     }
 
+    function testR04MoonProxyMintForVictimSameBlockAllowsVictimBurnAndBlocksProxyBurn() public {
+        MoonMintForProxy proxy = new MoonMintForProxy();
+        uint256 proxyMoon = _mintMoonToProxy(proxy);
+
+        _mintSunTo(alice, 5000 * USDT_ONE);
+
+        vm.prank(alice);
+        uint256 victimMoon = moonCurve.mint(1000 * TOKEN_ONE);
+
+        vm.roll(block.number + 1);
+
+        vm.prank(bob);
+        uint256 dustMoon = proxy.mintFor(moonCurve, alice, 1e12);
+
+        assertGt(dustMoon, 0);
+        assertLt(moonCurve.lastMintBlock(alice), block.number);
+        assertEq(moonCurve.lastMintBlock(address(proxy)), block.number);
+
+        vm.prank(alice);
+        uint256 sunOut = moonCurve.burn(victimMoon / 2);
+
+        assertGt(sunOut, 0);
+
+        vm.expectRevert(MoonCurve.SameBlockMintBurn.selector);
+        proxy.burn(moonCurve, proxyMoon / 2);
+    }
+
+    function testR04MoonProxyMintForVictimSameBlockAllowsVictimBurnToAndBlocksProxyBurn() public {
+        MoonMintForProxy proxy = new MoonMintForProxy();
+        uint256 proxyMoon = _mintMoonToProxy(proxy);
+
+        _mintSunTo(alice, 5000 * USDT_ONE);
+
+        vm.prank(alice);
+        uint256 victimMoon = moonCurve.mint(1000 * TOKEN_ONE);
+
+        vm.roll(block.number + 1);
+
+        vm.prank(bob);
+        uint256 dustMoon = proxy.mintFor(moonCurve, alice, 1e12);
+
+        assertGt(dustMoon, 0);
+        assertLt(moonCurve.lastMintBlock(alice), block.number);
+        assertEq(moonCurve.lastMintBlock(address(proxy)), block.number);
+
+        vm.prank(alice);
+        uint256 sunOut = moonCurve.burnTo(bob, victimMoon / 2);
+
+        assertGt(sunOut, 0);
+
+        vm.expectRevert(MoonCurve.SameBlockMintBurn.selector);
+        proxy.burn(moonCurve, proxyMoon / 2);
+    }
+
     function testMoonBurnRejectsWhenUserHasNoMoon() public {
         _mintSunTo(alice, 2000 * USDT_ONE);
 
@@ -443,5 +514,13 @@ contract MoonCurveTest is Test {
     function _mintSunTo(address user, uint256 usdtIn) internal returns (uint256 sunOut) {
         vm.prank(user);
         return sunCurve.mint(usdtIn);
+    }
+
+    function _mintMoonToProxy(MoonMintForProxy proxy) internal returns (uint256 moonOut) {
+        vm.prank(alice);
+        sunCurve.mintFor(address(proxy), 5000 * USDT_ONE);
+
+        proxy.approveSun(sun, moonCurve);
+        return proxy.mintFor(moonCurve, address(proxy), 1000 * TOKEN_ONE);
     }
 }
