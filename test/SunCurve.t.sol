@@ -279,6 +279,46 @@ contract SunCurveTest is Test {
         assertGt(usdtOut, 0);
     }
 
+    function testR04SunMintForVictimSameBlockBlocksVictimBurn() public {
+        vm.prank(alice);
+        uint256 victimSun = curve.mint(1000 * USDT_ONE);
+
+        vm.roll(block.number + 1);
+
+        vm.prank(alice);
+        sun.approve(address(curve), victimSun);
+
+        vm.prank(bob);
+        uint256 dustSun = curve.mintFor(alice, 1);
+
+        assertGt(dustSun, 0);
+        assertEq(curve.lastMintBlock(alice), block.number);
+
+        vm.prank(alice);
+        vm.expectRevert(SunCurve.SameBlockMintBurn.selector);
+        curve.burn(victimSun / 2);
+    }
+
+    function testR04SunMintForVictimSameBlockBlocksVictimBurnTo() public {
+        vm.prank(alice);
+        uint256 victimSun = curve.mint(1000 * USDT_ONE);
+
+        vm.roll(block.number + 1);
+
+        vm.prank(alice);
+        sun.approve(address(curve), victimSun);
+
+        vm.prank(bob);
+        uint256 dustSun = curve.mintFor(alice, 1);
+
+        assertGt(dustSun, 0);
+        assertEq(curve.lastMintBlock(alice), block.number);
+
+        vm.prank(alice);
+        vm.expectRevert(SunCurve.SameBlockMintBurn.selector);
+        curve.burnTo(bob, victimSun / 2);
+    }
+
     function testSunBurnRejectsWithoutApproval() public {
         vm.prank(alice);
         uint256 minted = curve.mint(100 * USDT_ONE);
