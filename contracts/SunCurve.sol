@@ -172,7 +172,6 @@ contract SunCurve is Ownable, ReentrancyGuard {
 
         curveReserve = reserveBefore + reserveAdd;
         lastMintBlock[payer] = block.number;
-        lastMintBlock[receiver] = block.number;
 
         usdt.safeTransferFrom(payer, address(this), usdtIn);
         usdt.safeTransfer(protocolBudget, feeToProtocol);

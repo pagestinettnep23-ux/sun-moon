@@ -141,7 +141,6 @@ contract MoonCurve is Ownable, ReentrancyGuard {
         moonOut = quote.moonOut;
         sunReserve += quote.sunNet;
         lastMintBlock[payer] = block.number;
-        lastMintBlock[receiver] = block.number;
 
         sunToken.safeTransferFrom(payer, address(this), sunIn);
         sunToken.safeTransfer(address(sunCurve), quote.feeToSunCurve);

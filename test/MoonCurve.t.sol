@@ -190,7 +190,7 @@ contract MoonCurveTest is Test {
         moonCurve.mintFor(address(0), 1 * TOKEN_ONE);
     }
 
-    function testMoonMintForTracksLastMintBlockForPayerAndReceiver() public {
+    function testMoonMintForTracksLastMintBlockForPayerOnly() public {
         _mintSunTo(alice, 2000 * USDT_ONE);
         uint256 currentBlock = block.number;
 
@@ -198,11 +198,12 @@ contract MoonCurveTest is Test {
         uint256 moonOut = moonCurve.mintFor(bob, 1000 * TOKEN_ONE);
 
         assertEq(moonCurve.lastMintBlock(alice), currentBlock);
-        assertEq(moonCurve.lastMintBlock(bob), currentBlock);
+        assertEq(moonCurve.lastMintBlock(bob), 0);
 
         vm.prank(bob);
-        vm.expectRevert(MoonCurve.SameBlockMintBurn.selector);
-        moonCurve.burn(moonOut / 2);
+        uint256 sunOut = moonCurve.burn(moonOut / 2);
+
+        assertGt(sunOut, 0);
     }
 
     function testMoonMintRejectsWithoutSunApproval() public {
@@ -339,6 +340,17 @@ contract MoonCurveTest is Test {
         assertGt(sunOut, 0);
     }
 
+    function testMoonBurnToRejectsSameBlockAfterMint() public {
+        _mintSunTo(alice, 2000 * USDT_ONE);
+
+        vm.prank(alice);
+        uint256 moonOut = moonCurve.mint(1000 * TOKEN_ONE);
+
+        vm.prank(alice);
+        vm.expectRevert(MoonCurve.SameBlockMintBurn.selector);
+        moonCurve.burnTo(bob, moonOut / 2);
+    }
+
     function testMoonBurnAllowsDifferentPayerWhenAnotherUserMintedSameBlock() public {
         _mintSunTo(bob, 2000 * USDT_ONE);
 
@@ -358,7 +370,7 @@ contract MoonCurveTest is Test {
         assertGt(sunOut, 0);
     }
 
-    function testR04MoonMintForVictimSameBlockBlocksVictimBurn() public {
+    function testR04MoonMintForVictimSameBlockAllowsVictimBurn() public {
         _mintSunTo(alice, 2000 * USDT_ONE);
         _mintSunTo(bob, 2000 * USDT_ONE);
 
@@ -371,14 +383,16 @@ contract MoonCurveTest is Test {
         uint256 dustMoon = moonCurve.mintFor(alice, 1e12);
 
         assertGt(dustMoon, 0);
-        assertEq(moonCurve.lastMintBlock(alice), block.number);
+        assertLt(moonCurve.lastMintBlock(alice), block.number);
+        assertEq(moonCurve.lastMintBlock(bob), block.number);
 
         vm.prank(alice);
-        vm.expectRevert(MoonCurve.SameBlockMintBurn.selector);
-        moonCurve.burn(victimMoon / 2);
+        uint256 sunOut = moonCurve.burn(victimMoon / 2);
+
+        assertGt(sunOut, 0);
     }
 
-    function testR04MoonMintForVictimSameBlockBlocksVictimBurnTo() public {
+    function testR04MoonMintForVictimSameBlockAllowsVictimBurnTo() public {
         _mintSunTo(alice, 2000 * USDT_ONE);
         _mintSunTo(bob, 2000 * USDT_ONE);
 
@@ -391,11 +405,13 @@ contract MoonCurveTest is Test {
         uint256 dustMoon = moonCurve.mintFor(alice, 1e12);
 
         assertGt(dustMoon, 0);
-        assertEq(moonCurve.lastMintBlock(alice), block.number);
+        assertLt(moonCurve.lastMintBlock(alice), block.number);
+        assertEq(moonCurve.lastMintBlock(bob), block.number);
 
         vm.prank(alice);
-        vm.expectRevert(MoonCurve.SameBlockMintBurn.selector);
-        moonCurve.burnTo(bob, victimMoon / 2);
+        uint256 sunOut = moonCurve.burnTo(bob, victimMoon / 2);
+
+        assertGt(sunOut, 0);
     }
 
     function testMoonBurnRejectsWhenUserHasNoMoon() public {
