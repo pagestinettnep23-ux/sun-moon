@@ -26,6 +26,7 @@ script/PrepareBaseMainnetSunMoonUsdcBroadcastDraft.s.sol
 
 当前状态：仍然只做文档、只读检查和 Base Sepolia 前端预览；不部署 Base 主网、不广播、不接触真实资金、不收集私钥。
 
+- AI 审计问题跟踪表：`docs/Base-主网AI审计问题跟踪表-2026-05-20.md`
 - 最终红线清单：`docs/Base-主网部署前最终红线清单-2026-05-20.md`
 - 最终只读复核记录：`docs/Base-主网最终只读复核记录-2026-05-20.md`
 - 逐笔广播草案安全计划：`docs/Base-主网逐笔广播草案-2026-05-20.md`
