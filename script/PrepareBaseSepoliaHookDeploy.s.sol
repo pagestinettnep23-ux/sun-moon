@@ -12,6 +12,9 @@ import { BaseV4HookAddressMiner } from "../contracts/hooks/base/BaseV4HookAddres
 import { Create2HookDeployer } from "../contracts/hooks/base/Create2HookDeployer.sol";
 import { SunCurve } from "../contracts/SunCurve.sol";
 
+// DEPRECATED / LEGACY BaseMoonAmmFeeV4Hook path.
+// Old Base Sepolia-only Hook deployment helper; do not use for rc4 or Base mainnet.
+// Current rc4/mainnet path uses BaseSunMoonUsdcFeeV4Hook.
 contract PrepareBaseSepoliaHookDeploy is Script {
     bytes32 internal constant LABEL_CREATE2_DEPLOYER = "CREATE2_DEPLOYER";
     bytes32 internal constant LABEL_POOL_MANAGER = "POOL_MANAGER";
@@ -60,6 +63,8 @@ contract PrepareBaseSepoliaHookDeploy is Script {
     error UnexpectedPredictedHook(address expected, address actual);
 
     function run() external returns (Deployment memory deployment) {
+        console2.log("DEPRECATED LEGACY SCRIPT: old BaseMoonAmmFeeV4Hook path; not for rc4/mainnet");
+
         deployment = _loadDeployment();
         _validateRun(deployment);
 

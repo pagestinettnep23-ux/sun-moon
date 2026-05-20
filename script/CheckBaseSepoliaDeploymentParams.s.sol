@@ -5,8 +5,13 @@ import { Script, console2 } from "forge-std/Script.sol";
 import { BaseDeploymentPreflight } from "../contracts/hooks/base/BaseDeploymentPreflight.sol";
 import { BaseV4Addresses } from "../contracts/hooks/base/BaseV4Addresses.sol";
 
+// DEPRECATED / LEGACY BaseMoonAmmFeeV4Hook path.
+// Old Base Sepolia-only parameter checker; do not use for rc4 or Base mainnet.
+// Current rc4/mainnet path uses BaseSunMoonUsdcFeeV4Hook.
 contract CheckBaseSepoliaDeploymentParams is Script {
     function run() external view {
+        console2.log("DEPRECATED LEGACY SCRIPT: old BaseMoonAmmFeeV4Hook path; not for rc4/mainnet");
+
         BaseDeploymentPreflight.BaseMoonV2DeploymentParams memory params =
             BaseDeploymentPreflight.BaseMoonV2DeploymentParams({
                 chainId: vm.envOr("BASE_CHAIN_ID", BaseV4Addresses.BASE_SEPOLIA_CHAIN_ID),

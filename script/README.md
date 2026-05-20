@@ -2,6 +2,25 @@
 
 这里后续放部署脚本和辅助脚本。
 
+## rc4 / mainnet 安全入口
+
+当前 rc4 / Base mainnet 上线路径只允许使用新版统一 Hook：
+
+```text
+BaseSunMoonUsdcFeeV4Hook
+```
+
+主网上线前只读 / dry-run 应使用：
+
+```text
+script/PrepareBaseMainnetCoreDeployDryRun.s.sol
+script/ComputeBaseMainnetSunMoonUsdcHookSalt.s.sol
+script/ComputeBaseSunMoonUsdcPoolIds.s.sol
+script/PrepareBaseMainnetSunMoonUsdcForkDryRun.s.sol
+```
+
+旧 `BaseMoonAmmFeeV4Hook`、`FindBaseMoonAmmFeeV4HookSalt.s.sol`、`PrepareBaseSepoliaHookDeploy.s.sol`、旧 `TinyMoonUsdc` 演练脚本均为 deprecated / legacy：旧方案，不用于 rc4/mainnet。
+
 ## 当前脚本
 
 ### `DeployLocal.s.sol`
@@ -44,6 +63,8 @@ MOON_LAUNCH_DELAY=0
 ```
 
 ### `FindBaseMoonAmmFeeV4HookSalt.s.sol`
+
+Deprecated / legacy：旧 `BaseMoonAmmFeeV4Hook` salt 脚本，只保留历史 Base Sepolia / 本地测试参考；旧方案，不用于 rc4/mainnet。rc4/mainnet 使用 `ComputeBaseMainnetSunMoonUsdcHookSalt.s.sol`。
 
 用途：
 
@@ -130,6 +151,8 @@ forge test --match-contract BaseV4HookAddressMinerTest
 - 在用户明确批准 Base Sepolia 广播前，本合约只停留在本地草图和测试阶段。
 
 ### `RehearseCreate2HookDeployer.s.sol`
+
+Deprecated / legacy：旧 `BaseMoonAmmFeeV4Hook` 本地预演脚本，只保留历史参考；旧方案，不用于 rc4/mainnet。rc4/mainnet 使用 `RehearseBaseSunMoonUsdcFeeV4Hook.s.sol` 和主网 dry-run 脚本。
 
 用途：
 
@@ -579,6 +602,8 @@ CREATE2_DEPLOYER_TX=0x87c9033101907c8e24aa13714154a212431a677837027191b023c00e70
 
 ### `CheckBaseSepoliaDeploymentParams.s.sol`
 
+Deprecated / legacy：旧 `BaseMoonAmmFeeV4Hook` 参数检查脚本，只保留历史 Base Sepolia 记录；旧方案，不用于 rc4/mainnet。
+
 用途：
 
 - 本地检查 Base Sepolia 测试网前的关键部署参数。
@@ -612,7 +637,7 @@ PREDICTED_HOOK=
 说明：
 
 - 官方 Base Sepolia 地址有默认值；项目地址没有默认值，必须显式填写。
-- `PREDICTED_HOOK` 应来自 `FindBaseMoonAmmFeeV4HookSalt.s.sol` 的输出。
+- Deprecated / legacy only：旧测试网 `PREDICTED_HOOK` 才来自 `FindBaseMoonAmmFeeV4HookSalt.s.sol`；rc4/mainnet 必须使用 `ComputeBaseMainnetSunMoonUsdcHookSalt.s.sol`。
 - 预检脚本通过不等于已经部署成功，只代表参数形态可以进入下一轮人工复核。
 - `StateView` 和 `Quoter` 已记录在 `BaseV4Addresses` 中，当前用于后续查询/报价准备，不是 Hook 构造参数。
 - 公开地址来源：Uniswap v4 deployments 和 Circle USDC contract addresses；广播前必须再次打开官方来源复核。
@@ -626,6 +651,8 @@ actualHookMask=204
 ```
 
 ### `PrepareBaseSepoliaHookDeploy.s.sol`
+
+Deprecated / legacy：旧 `BaseMoonAmmFeeV4Hook` Base Sepolia 部署脚本，只保留历史测试网记录；旧方案，不用于 rc4/mainnet。rc4/mainnet 使用 `BaseSunMoonUsdcFeeV4Hook` 的主网 dry-run 路径。
 
 用途：
 
@@ -713,6 +740,8 @@ HOOK_OWNER_NONCE_AFTER=1
 
 ### `PrepareBaseSepoliaHookBinding.s.sol`
 
+Deprecated / legacy：旧 `BaseMoonAmmFeeV4Hook` Base Sepolia 绑定脚本，只保留历史测试网记录；旧方案，不用于 rc4/mainnet。
+
 用途：
 
 - 准备 Base Sepolia Hook 权限绑定脚本。
@@ -778,6 +807,8 @@ sunCurveMoonAMMAfter=0xF612828Ba9dE01CF16Fae2D8EE187B0cA59100Cc
 
 ### `PrepareBaseSepoliaControlledMoonPool.s.sol`
 
+Deprecated / legacy：旧 `BaseMoonAmmFeeV4Hook` 的 `MOON/USDC` 测试池脚本，只保留历史 Base Sepolia 记录；旧方案，不用于 rc4/mainnet。
+
 用途：
 
 - 准备 Base Sepolia 受控 `MOON/USDC` 测试池。
@@ -841,6 +872,8 @@ allowedMoonPools(poolId)=true
 ```
 
 ### `PrepareBaseSepoliaControlledMoonPoolInitialize.s.sol`
+
+Deprecated / legacy：旧 `BaseMoonAmmFeeV4Hook` 的 `MOON/USDC` 测试池初始化脚本，只保留历史 Base Sepolia 记录；旧方案，不用于 rc4/mainnet。
 
 用途：
 
@@ -922,6 +955,8 @@ transactionsPlanned=0
 ```
 
 ### `PrepareBaseSepoliaTinyMoonUsdcRehearsal.s.sol`
+
+Deprecated / legacy：旧 `BaseMoonAmmFeeV4Hook` 的 `MOON/USDC` 小额演练脚本，只保留历史 Base Sepolia 记录；旧方案，不用于 rc4/mainnet。
 
 用途：
 
@@ -1038,6 +1073,8 @@ transactionsExecuted=0
 
 ### `PrecheckBaseSepoliaTinyMoonUsdcQuote.s.sol`
 
+Deprecated / legacy：旧 `BaseMoonAmmFeeV4Hook` 的 `MOON/USDC` 报价预检脚本，只保留历史 Base Sepolia 记录；旧方案，不用于 rc4/mainnet。
+
 用途：
 
 - 在 Base Sepolia fork 本地模拟极小额 `MOON/USDC` 加流动性和 swap 报价。
@@ -1078,6 +1115,8 @@ readyForTinyBroadcast=true
 说明：这一步证明小额流动性和报价路径可以在 fork 中跑通。后续已继续准备真实广播命令草案和 dry-run，不直接进入 Base 主网，也不接真实资金。
 
 ### `PrepareBaseSepoliaTinyMoonUsdcBroadcast.s.sol`
+
+Deprecated / legacy：旧 `BaseMoonAmmFeeV4Hook` 的 `MOON/USDC` 小额广播草案脚本，只保留历史 Base Sepolia 记录；旧方案，不用于 rc4/mainnet。
 
 用途：
 

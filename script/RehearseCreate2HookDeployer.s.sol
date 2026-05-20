@@ -10,6 +10,9 @@ import { BaseV4HookAddressMiner } from "../contracts/hooks/base/BaseV4HookAddres
 import { Create2HookDeployer } from "../contracts/hooks/base/Create2HookDeployer.sol";
 import { SunCurve } from "../contracts/SunCurve.sol";
 
+// DEPRECATED / LEGACY BaseMoonAmmFeeV4Hook path.
+// Old local rehearsal helper; do not use for rc4 or Base mainnet.
+// Current rc4/mainnet path uses BaseSunMoonUsdcFeeV4Hook.
 contract RehearseCreate2HookDeployer is Script {
     struct Rehearsal {
         Create2HookDeployer create2Deployer;
@@ -20,6 +23,8 @@ contract RehearseCreate2HookDeployer is Script {
     }
 
     function run() external returns (Rehearsal memory rehearsal) {
+        console2.log("DEPRECATED LEGACY SCRIPT: old BaseMoonAmmFeeV4Hook path; not for rc4/mainnet");
+
         address create2Owner = vm.envOr("CREATE2_DEPLOYER_OWNER", address(0));
         address hookOwner = vm.envOr("HOOK_OWNER", msg.sender);
         if (create2Owner == address(0)) {

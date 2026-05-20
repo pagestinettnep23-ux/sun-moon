@@ -8,6 +8,9 @@ import { BaseV4Addresses } from "../contracts/hooks/base/BaseV4Addresses.sol";
 import { BaseV4HookAddressMiner } from "../contracts/hooks/base/BaseV4HookAddressMiner.sol";
 import { SunCurve } from "../contracts/SunCurve.sol";
 
+// DEPRECATED / LEGACY BaseMoonAmmFeeV4Hook path.
+// Old Base Sepolia-only binding helper; do not use for rc4 or Base mainnet.
+// Current rc4/mainnet path uses BaseSunMoonUsdcFeeV4Hook.
 contract PrepareBaseSepoliaHookBinding is Script {
     bytes32 internal constant LABEL_HOOK_OWNER = "HOOK_OWNER";
     bytes32 internal constant LABEL_HOOK = "HOOK";
@@ -37,6 +40,8 @@ contract PrepareBaseSepoliaHookBinding is Script {
     error UnexpectedParameter(bytes32 label, address expected, address actual);
 
     function run() external returns (Binding memory binding) {
+        console2.log("DEPRECATED LEGACY SCRIPT: old BaseMoonAmmFeeV4Hook path; not for rc4/mainnet");
+
         binding = _loadBinding();
         _validateRun(binding);
 

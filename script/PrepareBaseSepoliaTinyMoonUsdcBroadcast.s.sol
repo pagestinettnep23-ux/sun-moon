@@ -22,6 +22,9 @@ interface IUniversalRouter {
         payable;
 }
 
+// DEPRECATED / LEGACY BaseMoonAmmFeeV4Hook path.
+// Old Base Sepolia-only tiny MOON/USDC broadcast helper; do not use for rc4 or Base mainnet.
+// Current rc4/mainnet path uses BaseSunMoonUsdcFeeV4Hook.
 contract PrepareBaseSepoliaTinyMoonUsdcBroadcast is Script {
     uint256 internal constant BPS = 10_000;
     uint256 internal constant DEFAULT_SLIPPAGE_BPS = 1000;
@@ -113,6 +116,8 @@ contract PrepareBaseSepoliaTinyMoonUsdcBroadcast is Script {
     error UnexpectedParameter(bytes32 label, address expected, address actual);
 
     function run() external returns (TinyBroadcastPlan memory result) {
+        console2.log("DEPRECATED LEGACY SCRIPT: old BaseMoonAmmFeeV4Hook path; not for rc4/mainnet");
+
         PrepareBaseSepoliaTinyMoonUsdcRehearsal rehearsalScript =
             new PrepareBaseSepoliaTinyMoonUsdcRehearsal();
         PrepareBaseSepoliaTinyMoonUsdcRehearsal.TinyRehearsalPlan memory rehearsal =

@@ -15,6 +15,9 @@ import { BaseV4Addresses } from "../contracts/hooks/base/BaseV4Addresses.sol";
 import { BaseV4HookAddressMiner } from "../contracts/hooks/base/BaseV4HookAddressMiner.sol";
 import { SunCurve } from "../contracts/SunCurve.sol";
 
+// DEPRECATED / LEGACY BaseMoonAmmFeeV4Hook path.
+// Old Base Sepolia-only tiny MOON/USDC rehearsal helper; do not use for rc4 or Base mainnet.
+// Current rc4/mainnet path uses BaseSunMoonUsdcFeeV4Hook.
 contract PrepareBaseSepoliaTinyMoonUsdcRehearsal is Script {
     using PoolIdLibrary for PoolKey;
 
@@ -137,6 +140,8 @@ contract PrepareBaseSepoliaTinyMoonUsdcRehearsal is Script {
     error UnexpectedPoolFee(uint24 expectedFee, uint24 actualFee);
 
     function run() external view returns (TinyRehearsalPlan memory plan) {
+        console2.log("DEPRECATED LEGACY SCRIPT: old BaseMoonAmmFeeV4Hook path; not for rc4/mainnet");
+
         uint256 chainId = block.chainid;
         bool baseSepoliaConfirmed =
             vm.envOr("CONFIRM_BASE_SEPOLIA_TINY_REHEARSAL_RUN", uint256(0)) == 1;

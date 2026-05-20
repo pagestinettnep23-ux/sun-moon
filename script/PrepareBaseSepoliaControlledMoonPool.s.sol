@@ -10,6 +10,9 @@ import { BaseMoonAmmFeeV4Hook } from "../contracts/hooks/base/BaseMoonAmmFeeV4Ho
 import { BaseV4Addresses } from "../contracts/hooks/base/BaseV4Addresses.sol";
 import { BaseV4HookAddressMiner } from "../contracts/hooks/base/BaseV4HookAddressMiner.sol";
 
+// DEPRECATED / LEGACY BaseMoonAmmFeeV4Hook path.
+// Old Base Sepolia-only MOON/USDC pool helper; do not use for rc4 or Base mainnet.
+// Current rc4/mainnet path uses BaseSunMoonUsdcFeeV4Hook.
 contract PrepareBaseSepoliaControlledMoonPool is Script {
     using PoolIdLibrary for PoolKey;
 
@@ -53,6 +56,8 @@ contract PrepareBaseSepoliaControlledMoonPool is Script {
     error UnexpectedParameter(bytes32 label, address expected, address actual);
 
     function run() external returns (ControlledPool memory pool) {
+        console2.log("DEPRECATED LEGACY SCRIPT: old BaseMoonAmmFeeV4Hook path; not for rc4/mainnet");
+
         pool = _loadPool();
         pool = _prepare(pool);
     }

@@ -12,6 +12,25 @@
 不把测试网地址当主网地址
 ```
 
+## 0. rc4 / mainnet Hook 路径防误用
+
+当前 rc4 / Base mainnet 上线路径只允许使用：
+
+```text
+BaseSunMoonUsdcFeeV4Hook
+```
+
+主网上线前只读 / dry-run 只使用：
+
+```text
+script/PrepareBaseMainnetCoreDeployDryRun.s.sol
+script/ComputeBaseMainnetSunMoonUsdcHookSalt.s.sol
+script/ComputeBaseSunMoonUsdcPoolIds.s.sol
+script/PrepareBaseMainnetSunMoonUsdcForkDryRun.s.sol
+```
+
+旧 `BaseMoonAmmFeeV4Hook`、`FindBaseMoonAmmFeeV4HookSalt.s.sol`、`PrepareBaseSepoliaHookDeploy.s.sol` 和旧 `TinyMoonUsdc` 演练脚本均为 deprecated / legacy：旧方案，不用于 rc4/mainnet。
+
 ## 1. 已确认的公开钱包地址
 
 这 4 个都是普通钱包公开地址，可以写进文档，但仍需最终复核：

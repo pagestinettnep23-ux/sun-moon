@@ -6,12 +6,31 @@
 
 阶段 2：Base + Uniswap v4 Hook/AMM 技术预研。
 
+## rc4 / Base mainnet 安全入口
+
+当前 rc4 / Base mainnet 上线路径只允许使用新版统一 Hook：
+
+```text
+BaseSunMoonUsdcFeeV4Hook
+```
+
+主网上线前只读 / dry-run 应使用：
+
+```text
+script/PrepareBaseMainnetCoreDeployDryRun.s.sol
+script/ComputeBaseMainnetSunMoonUsdcHookSalt.s.sol
+script/ComputeBaseSunMoonUsdcPoolIds.s.sol
+script/PrepareBaseMainnetSunMoonUsdcForkDryRun.s.sol
+```
+
+旧 `BaseMoonAmmFeeV4Hook` 和旧 Base Sepolia `Moon/USDC` 演练脚本只保留为历史资料。旧方案，不用于 rc4/mainnet。
+
 当前已完成：
 
 - SUN/MOON 曲线合约、数学测试和本地 Anvil 交互验证。
 - SUN AMM 加池守卫历史原型和 MOON AMM 费用路由 Mock 测试。
 - Base + Uniswap v4 技术路线、官方地址检查和最小 Hook callback 验证。
-- `BaseMoonAmmFeeV4Hook` v2 return delta 收费适配。
+- 历史旧版 `BaseMoonAmmFeeV4Hook` v2 return delta 收费适配已完成；该旧 Hook 仅保留历史参考，legacy，不用于 rc4/mainnet。
 - CREATE2 Hook 地址预检、Base Sepolia 参数预检和测试版 USDC adapter。
 - 本地 `Create2HookDeployer` 草图和 CREATE2 Hook 部署保护测试。
 - 本地 `Create2HookDeployer` 完整预演脚本：部署 deployer、挖 salt、部署 Hook 并复核地址。

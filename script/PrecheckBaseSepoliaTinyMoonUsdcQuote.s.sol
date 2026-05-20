@@ -16,6 +16,9 @@ import {
     PrepareBaseSepoliaTinyMoonUsdcRehearsal
 } from "./PrepareBaseSepoliaTinyMoonUsdcRehearsal.s.sol";
 
+// DEPRECATED / LEGACY BaseMoonAmmFeeV4Hook path.
+// Old Base Sepolia-only quote precheck helper; do not use for rc4 or Base mainnet.
+// Current rc4/mainnet path uses BaseSunMoonUsdcFeeV4Hook.
 contract PrecheckBaseSepoliaTinyMoonUsdcQuote is Script {
     uint256 internal constant BPS = 10_000;
     uint256 internal constant DEFAULT_SLIPPAGE_BPS = 1000;
@@ -64,6 +67,8 @@ contract PrecheckBaseSepoliaTinyMoonUsdcQuote is Script {
     error ReadinessFailed();
 
     function run() external returns (QuotePrecheck memory result) {
+        console2.log("DEPRECATED LEGACY SCRIPT: old BaseMoonAmmFeeV4Hook path; not for rc4/mainnet");
+
         PrepareBaseSepoliaTinyMoonUsdcRehearsal prep = new PrepareBaseSepoliaTinyMoonUsdcRehearsal();
         PrepareBaseSepoliaTinyMoonUsdcRehearsal.TinyRehearsalPlan memory plan = prep.run();
 

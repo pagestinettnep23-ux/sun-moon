@@ -9,8 +9,13 @@ import { BaseMoonAmmFeeV4Hook } from "../contracts/hooks/base/BaseMoonAmmFeeV4Ho
 import { BaseV4HookAddressMiner } from "../contracts/hooks/base/BaseV4HookAddressMiner.sol";
 import { SunCurve } from "../contracts/SunCurve.sol";
 
+// DEPRECATED / LEGACY BaseMoonAmmFeeV4Hook path.
+// Old Base Sepolia-only salt helper; do not use for rc4 or Base mainnet.
+// Current rc4/mainnet path uses BaseSunMoonUsdcFeeV4Hook.
 contract FindBaseMoonAmmFeeV4HookSalt is Script {
     function run() external view returns (bytes32 salt, address hookAddress) {
+        console2.log("DEPRECATED LEGACY SCRIPT: old BaseMoonAmmFeeV4Hook path; not for rc4/mainnet");
+
         address create2Deployer = vm.envOr("CREATE2_DEPLOYER", msg.sender);
         uint256 startSalt = vm.envOr("HOOK_SALT_START", uint256(0));
         uint256 maxIterations = vm.envOr("HOOK_MAX_SALT_SEARCH", uint256(200_000));
