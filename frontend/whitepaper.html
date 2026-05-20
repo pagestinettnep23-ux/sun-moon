@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sun/moon Whitepaper</title>
+    <style>
+      :root {
+        --bg: #111419;
+        --panel: #171a20;
+        --panel-2: #1d2229;
+        --line: #24262a;
+        --text: #e7e2d6;
+        --muted: #87828f;
+        --faint: #56525e;
+        --green: #00d6ff;
+        --yellow: #ffd35a;
+      }
+
+      * { box-sizing: border-box; }
+      html { background: var(--bg); }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        background: var(--bg);
+        font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
+        letter-spacing: 0;
+      }
+
+      .page {
+        width: min(1120px, calc(100% - 64px));
+        margin: 0 auto;
+        padding: 22px 0 48px;
+      }
+
+      .topbar {
+        height: 58px;
+        border: 1px solid var(--line);
+        display: flex;
+        align-items: stretch;
+        margin-bottom: 24px;
+        background: var(--panel);
+      }
+
+      .mark,
+      .wordmark,
+      .nav-link {
+        height: 58px;
+        display: grid;
+        place-items: center;
+        border-right: 1px solid var(--line);
+      }
+
+      .mark {
+        width: 58px;
+      }
+
+      .wordmark {
+        min-width: 180px;
+        padding: 0 18px;
+      }
+
+      .nav-link {
+        min-width: 132px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        transition: color .15s ease;
+      }
+
+      .nav-link:hover {
+        color: var(--text);
+      }
+
+      .doc {
+        border: 1px solid var(--line);
+        background: var(--panel);
+      }
+
+      .doc-head {
+        border-bottom: 1px solid var(--line);
+        padding: 28px 32px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(30px, 5vw, 58px);
+        font-weight: 500;
+        line-height: 1;
+        color: var(--text);
+      }
+
+      .tagline {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .content {
+        padding: 8px 32px 34px;
+      }
+
+      section {
+        border-bottom: 1px solid var(--line);
+        padding: 24px 0;
+      }
+
+      section:last-child {
+        border-bottom: 0;
+      }
+
+      h2 {
+        margin: 0 0 14px;
+        color: var(--green);
+        font-size: 17px;
+        font-weight: 500;
+        text-transform: lowercase;
+      }
+
+      p {
+        max-width: 84ch;
+        margin: 0 0 14px;
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.75;
+      }
+
+      p:last-child {
+        margin-bottom: 0;
+      }
+
+      pre {
+        max-width: 84ch;
+        margin: 16px 0;
+        padding: 16px 18px;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        background: var(--panel-2);
+        color: var(--yellow);
+        font-size: 13px;
+        line-height: 1.65;
+      }
+
+      code {
+        font: inherit;
+      }
+
+      @media (max-width: 760px) {
+        .page {
+          width: calc(100% - 24px);
+          padding-top: 12px;
+        }
+
+        .topbar {
+          height: auto;
+          flex-wrap: wrap;
+        }
+
+        .mark,
+        .wordmark,
+        .nav-link {
+          height: 56px;
+        }
+
+        .wordmark {
+          min-width: calc(100% - 58px);
+          border-right: 0;
+        }
+
+        .nav-link {
+          min-width: 50%;
+          border-top: 1px solid var(--line);
+        }
+
+        .doc-head,
+        .content {
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="topbar">
+        <div class="mark">s/m</div>
+        <div class="wordmark">sun/moon</div>
+        <a class="nav-link" href="index.html">terminal</a>
+        <a class="nav-link" href="whitepaper.html">whitepaper</a>
+      </header>
+
+      <article class="doc">
+        <div class="doc-head">
+          <h1>sun / moon</h1>
+          <p class="tagline">mathematics gives the rule. philosophy gives the shape.</p>
+        </div>
+
+        <div class="content">
+          <section>
+            <p>sun / moon is a two-token curve system. sun is the reserve. moon is the scarcity. one stores value through usdc reserve. the other measures scarcity through sun.</p>
+            <p>the protocol is built with uniswap v4 hooks and is designed to run on base. its supported sun/usdc and moon/usdc paths are base v4 hook pools.</p>
+            <p>there is no premine, no operator mint, no pause, no upgrade, no discretionary curve control. after deployment binding, minters are locked to the curve contracts and the system runs by fixed rules.</p>
+            <p>code is the law. math is the nature.</p>
+          </section>
+
+          <section>
+            <h2>the pair</h2>
+            <p>sun is minted with usdc and burned back to usdc. its curve price is:</p>
+            <pre><code>sun price = curve reserve / sun supply</code></pre>
+            <p>each mint and each burn leaves a small part inside the reserve. reserve and supply move together, but not symmetrically. the residue is the quiet force. it is why the sun curve price is designed to be non-decreasing.</p>
+            <p>moon is minted with sun and burned back to sun. its curve is exponential:</p>
+            <pre><code>moon supply       = K * (1 - exp(-sun reserve / S))
+moon price in sun = (S / K) * exp(sun reserve / S)
+moon price in usdc = moon price in sun * sun price</code></pre>
+            <p>moon has no direct usdc mint path. the path is always:</p>
+            <pre><code>usdc -&gt; sun -&gt; moon
+moon -&gt; sun -&gt; usdc</code></pre>
+          </section>
+
+          <section>
+            <h2>issuance</h2>
+            <p>sun has no premine and no fixed maximum supply. it is issued only when usdc enters the sun curve, and it is destroyed when redeemed back to usdc.</p>
+            <pre><code>sun issuance = curve-minted sun - burned sun
+sun fixed cap = none
+single sun mint cap = 10,000 usdc</code></pre>
+            <p>moon has no premine. its curve target is fixed at deployment.</p>
+            <pre><code>moon curve target K = 5,000,000 moon
+moon issuance = curve-minted moon - burned moon
+single moon mint cap = 10,000 usdc worth of sun</code></pre>
+            <p>K is an asymptotic target. the curve approaches it through math; no operator can mint around it.</p>
+          </section>
+
+          <section>
+            <h2>opposition</h2>
+            <p>mint and burn are opposites. buy and sell are opposites.</p>
+            <p>the protocol does not choose one side. it lets both sides exist under the same math. expansion adds reserve. contraction removes supply. both leave a trace inside the system.</p>
+            <p>this is the first principle: opposition does not break the model. it feeds it.</p>
+          </section>
+
+          <section>
+            <h2>balance</h2>
+            <p>sun balances protocol reserve against circulating supply.</p>
+            <p>moon balances scarce supply against sun reserve.</p>
+            <p>the two curves are separate, but they are not isolated. moon is priced in sun; sun is priced in usdc. when sun becomes stronger, moon's curve basis becomes stronger too.</p>
+            <p>there is no oracle mood, no admin quote, no manual market defense. the quote is read from contract storage.</p>
+          </section>
+
+          <section>
+            <h2>the flywheel</h2>
+            <p>moon activity pushes value back into sun.</p>
+            <pre><code>moon mint / burn / supported trade
+  -&gt; fee returns to the sun curve
+  -&gt; sun is burned or usdc is injected
+  -&gt; sun price basis rises
+  -&gt; moon curve price rises in usdc terms
+  -&gt; moon becomes harder to mint
+  -&gt; scarcity strengthens
+  -&gt; activity returns to the system</code></pre>
+            <p>this is the flywheel. not a promise of market price. not a ponzi equation. a cycle of reserve, burn, scarcity, and repricing.</p>
+          </section>
+
+          <section>
+            <h2>fees</h2>
+            <p>sun mint and burn charge 2%.</p>
+            <pre><code>1.5% stays in the sun curve
+0.5% goes to the protocol budget</code></pre>
+            <p>moon mint and burn charge 5%.</p>
+            <pre><code>3% returns to the sun curve through burnAndRetain
+2% goes to the protocol budget</code></pre>
+            <p>supported sun/usdc and moon/usdc v4 pools may route fees back into the same sun curve. third-party pools can exist, but they are market paths, not protocol prices.</p>
+          </section>
+
+          <section>
+            <h2>limits</h2>
+            <p>sun mint has a per-transaction cap of 10,000 usdc.</p>
+            <p>moon mint has a per-transaction cap equal to 10,000 usdc worth of sun.</p>
+            <p>burns have no protocol-side size cap. moon mint can be time-gated at launch, but after launch the curve remains open. it does not need a human to start, stop, or graduate it.</p>
+          </section>
+
+          <section>
+            <h2>no operator</h2>
+            <p>the protocol is meant to have no active operator after setup.</p>
+            <pre><code>no owner mint
+no reserve withdrawal
+no pause switch
+no upgrade switch
+no manual price setting
+no arbitrary curve rewrite</code></pre>
+            <p>mathematics is the engine. philosophy is the direction.</p>
+            <p>code is law. math is nature.</p>
+          </section>
+        </div>
+      </article>
+    </main>
+  </body>
+</html>

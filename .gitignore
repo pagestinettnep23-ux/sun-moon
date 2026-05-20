@@ -18,6 +18,13 @@ frontend/dist/
 frontend/.vite/
 frontend/tsconfig.tsbuildinfo
 
+# Legacy Next.js frontend scaffold is not used by the static 127.0.0.1:4173 preview
+frontend/app/
+frontend/next-env.d.ts
+frontend/next.config.ts
+frontend/postcss.config.mjs
+frontend/tsconfig.json
+
 # Local frontend backups generated during design iterations
 frontend/*.backup-*.html
 frontend/*.before-*.html

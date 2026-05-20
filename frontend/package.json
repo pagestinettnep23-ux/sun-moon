@@ -1,0 +1,12 @@
+{
+  "name": "sun-moon-terminal",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node static-server.mjs",
+    "preview": "node static-server.mjs",
+    "start": "node static-server.mjs",
+    "build": "echo Static HTML build: no build step required",
+    "lint": "echo Static HTML lint: no lint configured"
+  }
+}

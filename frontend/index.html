@@ -1,0 +1,2287 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sun/moon Curves</title>
+    <style>
+      :root {
+        --bg: #111419;
+        --panel: #171a20;
+        --panel-2: #1d2229;
+        --line: #24262a;
+        --line-soft: #191b1e;
+        --text: #e7e2d6;
+        --muted: #87828f;
+        --faint: #56525e;
+        --green-bg: #08242c;
+        --green: #00d6ff;
+        --red-bg: #2a0d12;
+        --red: #ff5c5c;
+        --yellow: #ffd35a;
+        --cyan: #00d6ff;
+        --sun-bg: #2a2108;
+        --sun: #ffd35a;
+        --moon: #a8d8ff;
+      }
+
+      body.light {
+        --bg: #f3f0e8;
+        --panel: #fbf8f0;
+        --panel-2: #f7f2e8;
+        --line: #cbc4b6;
+        --line-soft: #ded7c9;
+        --text: #151515;
+        --muted: #6f6a61;
+        --faint: #928b7d;
+        --green-bg: #d9f4fb;
+        --green: #007ea0;
+        --red-bg: #f1dcda;
+        --red: #b33a3a;
+        --yellow: #9c7316;
+        --cyan: #007ea0;
+        --sun-bg: #f7ecd0;
+        --sun: #8f6714;
+        --moon: #3f79a6;
+      }
+
+      * { box-sizing: border-box; }
+      html { background: var(--bg); }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        background: var(--bg);
+        font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
+        letter-spacing: 0;
+      }
+
+      button, input { font: inherit; }
+
+      .page {
+        width: min(1680px, calc(100% - 64px));
+        margin: 0 auto;
+        padding: 22px 0 32px;
+      }
+
+      .page > .topbar {
+        width: 100vw;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+      }
+
+      .topbar {
+        height: 58px;
+        border: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 0;
+        margin-bottom: 24px;
+        background: #171a20;
+      }
+
+      body.light .topbar { background: #fbf8f0; }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        color: var(--text);
+        font-size: 16px;
+      }
+
+      .mark {
+        width: 58px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        border-right: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .wordmark {
+        height: 58px;
+        min-width: 180px;
+        display: grid;
+        place-items: center;
+        border-right: 1px solid var(--line);
+      }
+
+      .nav-link {
+        height: 58px;
+        min-width: 132px;
+        display: grid;
+        place-items: center;
+        border-right: 1px solid var(--line);
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        transition: color .15s ease;
+      }
+
+      .nav-link:hover {
+        color: var(--text);
+      }
+
+      .wallet {
+        height: 58px;
+        border: 0;
+        border-left: 1px solid var(--line);
+        background: transparent;
+        color: var(--muted);
+        padding: 0 22px;
+        cursor: pointer;
+      }
+
+      .top-actions {
+        display: flex;
+        height: 58px;
+      }
+
+
+      .asset-strip {
+        min-width: 0;
+        height: 58px;
+        display: flex;
+        align-items: stretch;
+        justify-content: flex-end;
+        overflow-x: auto;
+      }
+
+      .asset {
+        min-width: 118px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        border-left: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .asset b {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .theme-toggle {
+        height: 58px;
+        min-width: 118px;
+        border: 0;
+        border-left: 1px solid var(--line);
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+      }
+
+      .grid {
+        display: grid;
+        gap: 24px;
+      }
+
+      .token-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 386px;
+        gap: 16px;
+        align-items: stretch;
+      }
+
+      .box {
+        border: 1px solid var(--line);
+        background: var(--panel);
+      }
+
+      .chart-box {
+        min-height: 520px;
+        padding: 14px 24px;
+      }
+
+      .box-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        min-height: 34px;
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      .legend {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .legend i {
+        display: inline-block;
+        width: 18px;
+        height: 2px;
+        vertical-align: middle;
+        margin-right: 8px;
+      }
+
+      .legend .supply-line { background: var(--cyan); }
+      .legend .price-line { background: var(--yellow); }
+
+      .live {
+        display: flex;
+        gap: 28px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .live b {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .live .green { color: var(--green); }
+      .live .red { color: var(--red); }
+      .live .pink { color: var(--moon); }
+
+      .pill {
+        border: 1px solid var(--line);
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+
+      .chart-wrap {
+        position: relative;
+        height: 430px;
+        margin-top: 14px;
+      }
+
+      .chart {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .tank-view {
+        min-height: 460px;
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .tank-card {
+        position: relative;
+        min-height: 460px;
+        border: 1px solid var(--line);
+        background:
+          linear-gradient(to bottom, transparent 0, transparent calc(100% - 1px), rgba(255,255,255,.04) calc(100% - 1px)),
+          var(--panel);
+        overflow: hidden;
+      }
+
+      .tank-scale {
+        position: absolute;
+        inset: 158px 24px 48px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        pointer-events: none;
+        z-index: 3;
+      }
+
+      .tank-scale span {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--faint);
+        font-size: 11px;
+      }
+
+      .tank-scale span::before {
+        content: "";
+        width: 32px;
+        height: 1px;
+        background: var(--line);
+      }
+
+      .tank-liquid {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: var(--level, 0%);
+        transition: height 260ms ease;
+        opacity: .88;
+      }
+
+      .tank-liquid::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(255,255,255,.05), transparent 72%);
+      }
+
+      .tank-liquid::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 1px;
+        background: rgba(255,255,255,.72);
+        box-shadow: 0 0 14px currentColor;
+      }
+
+      .tank-liquid.usdc {
+        color: var(--green);
+        background: linear-gradient(to top, rgba(0, 214, 255, .44), rgba(0, 214, 255, .22));
+      }
+
+      .tank-liquid.sun {
+        color: var(--yellow);
+        background: linear-gradient(to top, rgba(255, 211, 90, .46), rgba(255, 211, 90, .24));
+      }
+
+      .tank-data {
+        position: relative;
+        z-index: 4;
+        min-height: 132px;
+        padding: 20px 20px 18px;
+        display: grid;
+        gap: 10px;
+        background: linear-gradient(to bottom, var(--panel) 0%, rgba(23,26,32,.94) 88%, transparent 100%);
+      }
+
+      body.light .tank-data {
+        background: linear-gradient(to bottom, var(--panel) 0%, rgba(251,248,240,.86) 80%, transparent 100%);
+      }
+
+      .tank-label {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .tank-value {
+        color: var(--text);
+        font-size: 26px;
+      }
+
+      .tank-value.usdc-value { color: var(--green); }
+      .tank-value.sun-value { color: var(--yellow); }
+
+      .tank-caption {
+        color: var(--faint);
+        font-size: 12px;
+        line-height: 1.55;
+        max-width: 32em;
+      }
+
+      .chart-hotspot {
+        fill: transparent;
+        cursor: crosshair;
+      }
+
+      .chart-tooltip {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 120ms ease;
+      }
+
+      .chart-tooltip.visible {
+        opacity: 1;
+      }
+
+      .tooltip-box {
+        fill: rgba(23, 26, 32, .92);
+        stroke: #3a3d44;
+        stroke-width: 1;
+      }
+
+      body.light .tooltip-box {
+        fill: rgba(251, 248, 240, .94);
+        stroke: #b8b0a2;
+      }
+
+      .note {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .note b {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .trade {
+        min-height: 520px;
+        padding: 14px 24px;
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid var(--line);
+        height: 54px;
+      }
+
+      .tabs button {
+        border: 0;
+        border-right: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .tabs button:last-child { border-right: 0; }
+      .tabs button.mint-active {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .tabs button.burn-active {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+
+      .tabs button:not(.mint-active):not(.burn-active):hover {
+        background: var(--panel);
+      }
+
+      .tabs button[data-mode="mint"]:not(.mint-active):hover,
+      .tabs button[data-mode="burn"]:not(.burn-active):hover {
+        color: var(--text);
+      }
+
+      .field {
+        margin-top: 18px;
+      }
+
+      .field-head {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 7px;
+      }
+
+      .input-box {
+        border: 1px solid var(--line-soft);
+        min-height: 66px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 14px;
+        align-items: center;
+        padding: 0 18px;
+      }
+
+      .input-box input {
+        min-width: 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--text);
+        font-size: 30px;
+      }
+
+      .input-box input::placeholder {
+        color: var(--faint);
+        opacity: .72;
+      }
+
+      .token {
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      .max {
+        color: var(--green);
+        margin-right: 12px;
+        cursor: pointer;
+      }
+
+      .quote-box {
+        margin-top: 26px;
+        border: 1px solid var(--line);
+        padding: 14px 18px;
+        min-height: 132px;
+      }
+
+      .quote-line {
+        color: var(--muted);
+        font-size: 19px;
+        line-height: 1.6;
+      }
+
+      .quote-line .action-mint { color: var(--green); }
+      .quote-line .action-burn { color: var(--red); }
+      .quote-line b {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .impact {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .submit {
+        margin-top: 16px;
+        width: 100%;
+        min-height: 56px;
+        border: 1px solid var(--line);
+        background: #1a1b1f;
+        color: var(--muted);
+        font-size: 20px;
+        cursor: pointer;
+      }
+
+      .submit.mint {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+
+      .submit.burn {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+
+      .submit:disabled {
+        background: #1a1b1f;
+        color: var(--faint);
+        cursor: not-allowed;
+      }
+
+      .route {
+        margin-top: 12px;
+        color: var(--faint);
+        font-size: 12px;
+        text-align: center;
+        line-height: 1.6;
+      }
+
+      .route a {
+        color: var(--faint);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        transition: color .15s ease;
+      }
+
+      .route a:hover {
+        color: var(--green);
+      }
+
+      .mini-metrics {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      .metric {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        padding: 16px;
+        min-height: 92px;
+      }
+
+      .metric label {
+        display: block;
+        color: var(--faint);
+        font-size: 12px;
+        margin-bottom: 16px;
+      }
+
+      .metric div {
+        color: var(--text);
+        font-size: 18px;
+      }
+
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .status-card {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        padding: 16px;
+        min-height: 188px;
+      }
+
+      .status-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+        color: var(--text);
+        font-size: 14px;
+      }
+
+      .status-pill {
+        border: 1px solid var(--line);
+        padding: 5px 8px;
+        color: var(--faint);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .status-pill.ok {
+        border-color: color-mix(in srgb, var(--green) 48%, var(--line));
+        background: var(--green-bg);
+        color: var(--green);
+      }
+
+      .status-pill.warn {
+        border-color: color-mix(in srgb, var(--yellow) 48%, var(--line));
+        background: var(--sun-bg);
+        color: var(--yellow);
+      }
+
+      .status-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+      }
+
+      .status-list div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-top: 1px solid var(--line-soft);
+        padding-top: 10px;
+      }
+
+      .status-list dt,
+      .status-list dd {
+        margin: 0;
+        font-size: 12px;
+      }
+
+      .status-list dt {
+        color: var(--faint);
+      }
+
+      .status-list dd {
+        color: var(--text);
+        text-align: right;
+        word-break: break-word;
+      }
+
+      .tx-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .tx-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border: 1px solid var(--line-soft);
+        padding: 10px;
+        color: var(--text);
+        text-decoration: none;
+        font-size: 12px;
+        transition: border-color .15s ease, color .15s ease;
+      }
+
+      .tx-link span:last-child {
+        color: var(--faint);
+      }
+
+      .tx-link:hover {
+        border-color: var(--green);
+        color: var(--green);
+      }
+
+      @media (max-width: 1180px) {
+        .token-row { grid-template-columns: 1fr; }
+        .mini-metrics { grid-template-columns: repeat(3, 1fr); }
+        .status-grid { grid-template-columns: repeat(2, 1fr); }
+        .chart-box, .trade { min-height: auto; }
+        .tank-view { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 720px) {
+        .page { width: min(100% - 24px, 1680px); padding-top: 12px; }
+        .page > .topbar { width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+        .topbar { height: auto; grid-template-columns: 1fr; }
+        .mark, .wordmark, .wallet, .theme-toggle, .top-actions, .asset-strip, .asset { height: 56px; }
+        .wordmark { min-width: 128px; }
+        .nav-link { height: 56px; min-width: 118px; }
+        .theme-toggle { min-width: 82px; }
+        .asset-strip { justify-content: flex-start; border-top: 1px solid var(--line); }
+        .asset { min-width: 33.333%; }
+        .top-actions { border-top: 1px solid var(--line); }
+        .top-actions button:first-child { border-left: 0; }
+        .chart-box, .trade { padding: 14px; }
+        .box-head { align-items: flex-start; flex-direction: column; font-size: 13px; }
+        .chart-wrap { height: 360px; }
+        .tank-view { min-height: auto; }
+        .tank-card { min-height: 340px; }
+        .tank-scale { inset: 146px 18px 38px 18px; }
+        .tank-data { min-height: 124px; }
+        .tank-value { font-size: 22px; }
+        .mini-metrics { grid-template-columns: 1fr 1fr; gap: 10px; }
+        .status-grid { grid-template-columns: 1fr; gap: 10px; }
+        .input-box input { font-size: 24px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="topbar">
+        <div class="brand"><span class="mark">s/m</span><span class="wordmark">Base Sepolia 测试网</span><a class="nav-link" href="whitepaper.html">whitepaper</a></div>
+        <div class="asset-strip" aria-label="temporary test wallet assets">
+          <span class="asset">usdc <b id="asset-usdt">0 usdc</b></span>
+          <span class="asset">sun <b id="asset-sun">0 sun</b></span>
+          <span class="asset">moon <b id="asset-moon">0 moon</b></span>
+        </div>
+        <div class="top-actions">
+          <button class="theme-toggle" id="claim-button" onclick="claimTestUsdc()">Base Sepolia</button>
+          <button class="theme-toggle" id="chain-button" onclick="switchAnvilChain()">read only</button>
+          <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="toggle light and dark theme" title="toggle theme">☀</button>
+          <button class="wallet" id="wallet-button" onclick="connectWallet()">refresh</button>
+        </div>
+      </header>
+
+      <section class="grid">
+        <div class="token-row">
+          <section class="box chart-box sun-chart-box">
+            <div class="box-head">
+              <div class="legend">
+                <span>sun curve — reserve view</span>
+              </div>
+              <div class="live">
+                <span>supply <b class="green" id="sun-supply-live">19.6m</b> of <b id="sun-supply-max">20.3m</b></span>
+                <span>SUN curve price <b class="pink" id="sun-price-live">--</b></span>
+                <span class="pill">burn <b class="red" id="sun-burn-live">$0.8531</b> / mint <b class="green" id="sun-mint-live">$1.89</b></span>
+              </div>
+            </div>
+            <div class="tank-view sun-container-view" aria-label="sun reserve container view">
+              <div class="tank-card">
+                <div class="tank-data">
+                  <div class="tank-label">usdc reserve</div>
+                  <div class="tank-value usdc-value" id="sun-tank-usdc-value">0 usdc</div>
+                  <div class="tank-caption">segmented log scale: 0 / 10k / 100k / 1m / 10m / 100m / 1b. 1b visual reference, not cap.</div>
+                </div>
+                <div class="tank-scale" aria-hidden="true">
+                  <span>1b</span><span>100m</span><span>10m</span><span>1m</span><span>100k</span><span>10k</span><span>0</span>
+                </div>
+                <div class="tank-liquid usdc" id="sun-tank-usdc-liquid"></div>
+              </div>
+              <div class="tank-card">
+                <div class="tank-data">
+                  <div class="tank-label">sun supply</div>
+                  <div class="tank-value sun-value" id="sun-tank-supply-value">0 sun</div>
+                  <div class="tank-caption">segmented log scale: 0 / 10k / 100k / 1m / 10m / 100m / 1b. 1b visual reference, not cap.</div>
+                </div>
+                <div class="tank-scale" aria-hidden="true">
+                  <span>1b</span><span>100m</span><span>10m</span><span>1m</span><span>100k</span><span>10k</span><span>0</span>
+                </div>
+                <div class="tank-liquid sun" id="sun-tank-supply-liquid"></div>
+              </div>
+            </div>
+            <div class="note"><b>1b</b> visual reference only. reserve and supply use segmented log scale: 0 / 10k / 100k / 1m / 10m / 100m / 1b.</div>
+          </section>
+
+          <aside class="box trade" data-token="SUN">
+            <div class="tabs">
+              <button class="mint-active" data-mode="mint" onclick="setMode(this, 'SUN', 'mint')">mint</button>
+              <button data-mode="burn" onclick="setMode(this, 'SUN', 'burn')">burn</button>
+            </div>
+            <div class="field">
+              <div class="field-head"><span class="pay-label">pay</span><span>bal:</span></div>
+              <div class="input-box">
+                <input placeholder="read only" disabled />
+                <div class="token"><span class="max"></span><span class="pay-token">usdc</span></div>
+              </div>
+            </div>
+            <div class="quote-box">
+              <div class="quote-line"><span class="mode-word action-mint">minting</span> <b>0.00</b> <span class="receive-token">sun</span></div>
+              <div class="impact">price impact: 0.00%</div>
+            </div>
+            <button class="submit mint" disabled>read only</button>
+            <div class="route">calls SunCurve contract<br /><a id="sun-contract-link" href="https://sepolia.basescan.org/address/0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4" target="_blank" rel="noopener">0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4</a></div>
+          </aside>
+        </div>
+
+        <div class="token-row">
+          <section class="box chart-box">
+            <div class="box-head">
+              <div class="legend">
+                <span>moon curve</span>
+                <span><i class="supply-line"></i>supply</span>
+                <span><i class="price-line"></i>price</span>
+              </div>
+              <div class="live">
+                <span>supply <b class="green" id="moon-supply-live">3.4m</b> of <b id="moon-supply-max">5.0m</b></span>
+                <span>AMM price <b class="pink" id="moon-price-live">--</b></span>
+                <span class="pill">burn <b class="red" id="moon-burn-live">$0.00</b> / mint <b class="green" id="moon-mint-live">$0.00</b></span>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <svg class="chart interactive-chart" data-token="MOON" viewBox="0 0 1280 520" preserveAspectRatio="none" aria-label="moon bonding curve chart"></svg>
+            </div>
+            <div class="note"><b>5m</b> max supply curve. moon uses K=5,000,000 and S=1,200,000 sun; current point uses sunReserve.</div>
+          </section>
+
+          <aside class="box trade" data-token="MOON">
+            <div class="tabs">
+              <button class="mint-active" data-mode="mint" onclick="setMode(this, 'MOON', 'mint')">mint</button>
+              <button data-mode="burn" onclick="setMode(this, 'MOON', 'burn')">burn</button>
+            </div>
+            <div class="field">
+              <div class="field-head"><span class="pay-label">pay</span><span>bal:</span></div>
+              <div class="input-box">
+                <input placeholder="read only" disabled />
+                <div class="token"><span class="max"></span><span class="pay-token">sun</span></div>
+              </div>
+            </div>
+            <div class="quote-box">
+              <div class="quote-line"><span class="mode-word action-mint">minting</span> <b>0.00</b> <span class="receive-token">moon</span></div>
+              <div class="impact">price impact: 0.00%</div>
+            </div>
+            <button class="submit mint" disabled>read only</button>
+            <div class="route">calls MoonCurve contract<br /><a id="moon-contract-link" href="https://sepolia.basescan.org/address/0x095c91aB279121300Ac16c57D1ecebB9ceEa1cd8" target="_blank" rel="noopener">0x095c91aB279121300Ac16c57D1ecebB9ceEa1cd8</a></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="mini-metrics">
+        <div class="metric"><label>sun reserve</label><div id="sun-reserve-metric">3.88m usdc</div></div>
+        <div class="metric"><label>sun curve price</label><div id="sun-price-metric">--</div></div>
+        <div class="metric"><label>sun supply</label><div id="sun-supply-metric">391k sun</div></div>
+        <div class="metric"><label>moon reserve</label><div id="moon-reserve-metric">1.38m sun</div></div>
+        <div class="metric"><label>moon mint price (sun)</label><div id="moon-price-sun-metric">96k moon</div></div>
+        <div class="metric"><label>moon curve mint price (usdc)</label><div id="moon-price-usdt-metric">--</div></div>
+      </section>
+
+      <section class="status-grid" aria-label="Base Sepolia deployment status">
+        <article class="status-card">
+          <div class="status-head"><span>Hook status</span><b class="status-pill" id="hook-health">--</b></div>
+          <dl class="status-list">
+            <div><dt>owner</dt><dd id="hook-owner">--</dd></div>
+            <div><dt>budget</dt><dd id="hook-protocol-budget">--</dd></div>
+            <div><dt>adapter</dt><dd id="hook-swap-adapter">--</dd></div>
+            <div><dt>MOON/USDC pool</dt><dd id="hook-allowed-pool">--</dd></div>
+            <div><dt>paused</dt><dd id="hook-paused">--</dd></div>
+          </dl>
+        </article>
+
+        <article class="status-card">
+          <div class="status-head"><span>Adapter status</span><b class="status-pill" id="adapter-health">--</b></div>
+          <dl class="status-list">
+            <div><dt>authorized hook</dt><dd id="adapter-authorized-hook">--</dd></div>
+            <div><dt>paused</dt><dd id="adapter-paused">--</dd></div>
+            <div><dt>adapter</dt><dd id="adapter-address">--</dd></div>
+          </dl>
+        </article>
+
+        <article class="status-card">
+          <div class="status-head"><span>Position NFT</span><b class="status-pill" id="position-health">--</b></div>
+          <dl class="status-list">
+            <div><dt>token id</dt><dd id="position-token-id">--</dd></div>
+            <div><dt>owner</dt><dd id="position-owner">--</dd></div>
+            <div><dt>wallet positions</dt><dd id="position-count">--</dd></div>
+          </dl>
+        </article>
+
+        <article class="status-card">
+          <div class="status-head"><span>Test txs</span><b class="status-pill ok">Base Sepolia</b></div>
+          <div class="tx-list">
+            <a class="tx-link" href="https://sepolia.basescan.org/tx/0xfe02164163403e2e0467d8462cce2269bfa1f1690d0dfefe545a35f48e1704ba" target="_blank" rel="noopener">
+              <span>liquidity</span><span>0xfe02...04ba</span>
+            </a>
+            <a class="tx-link" href="https://sepolia.basescan.org/tx/0x0489a4f77f42009f5b50d542d21b0d92b754ec0fc1b79757487dd94f5932912d" target="_blank" rel="noopener">
+              <span>swap</span><span>0x0489...912d</span>
+            </a>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      var chainState = {
+        SUN: {
+          curveReserve: 0,
+          totalSupply: 0,
+          maxSupply: 21e6,
+          ammPrice: 1,
+          priceRaw: 0n,
+          maxMintUsdt: 10000n * 1000000n,
+          unit: "$",
+          xLabel: "cumulative usdc",
+          yTicks: ["21m", "15m", "10m", "0"],
+          pTicks: ["$16.40", "$10.93", "$5.47", "$0"]
+        },
+        MOON: {
+          sunReserve: 0,
+          K: 5e6,
+          S: 1.2e6,
+          currentSupply: 0,
+          ammPrice: 0.24,
+          poolPriceUsdt: 0,
+          maxMintUsdtEquiv: 10000n * 1000000n,
+          mintQuotePrice: 0,
+          burnQuotePrice: 0,
+          unit: "sun",
+          xLabel: "cumulative sun",
+          yTicks: ["5m", "3m", "1m", "0"],
+          pTicks: ["8 sun", "5 sun", "2 sun", "0"]
+        }
+      };
+
+      var CONTRACTS = {
+        usdt: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+        sunToken: "0xb5287fBbAD0e25B12f18497209fDac7e0ACf7293",
+        sunCurve: "0xe8D048aB83727419b00F4e30F4898C6B3bB91aD4",
+        moonToken: "0x92dC3B8056cA62A7dbc5c1C339891B45463bEe71",
+        moonCurve: "0x095c91aB279121300Ac16c57D1ecebB9ceEa1cd8",
+        hook: "0x6c40A03313A097dDe45694dc9E769392a0f940Cc",
+        swapAdapter: "0x50f232d1B40D9EF523cc53f958f8C80766aF35a7",
+        protocolBudget: "0x277ba3Cf597CdAaF958C301db3cF6a631F793039",
+        stateView: "0x571291b572ed32ce6751a2Cb2486EbEe8DEfB9B4",
+        positionManager: "0x4B2C77d209D3405F41a037Ec6c77F7F5b8e2ca80",
+        moonUsdcPoolId: "0x710ab2d815645e13484f0aeca86b754e56f29d4c93d9623bb8f6e5a079da51e5",
+        tinyPositionTokenId: 22719
+      };
+
+      var LOCAL_CHAIN = {
+        chainId: "0x14a34",
+        chainName: "Base Sepolia 测试网",
+        rpcUrls: ["https://sepolia.base.org"],
+        blockExplorerUrls: ["https://sepolia.basescan.org"],
+        nativeCurrency: {
+          name: "Ether",
+          symbol: "ETH",
+          decimals: 18
+        }
+      };
+
+      var BASE_SEPOLIA_TEST_WALLET = "0x6E22b2e6fFAA30Fe75B71d53d1eC469b4e97A986";
+      var READ_ONLY_MODE = true;
+
+      var SELECTORS = {
+        balanceOf: "0x70a08231",
+        allowance: "0xdd62ed3e",
+        totalSupply: "0x18160ddd",
+        approve: "0x095ea7b3",
+        mint: "0xa0712d68",
+        mockMint: "0x40c10f19",
+        burn: "0x42966c68",
+        getSunPrice: "0xde143f9f",
+        curveReserve: "0xbefdcf9b",
+        sunReserve: "0xfc1ba38e",
+        currentFairSupply: "0xccbe3455",
+        getMintPriceInSUN: "0xd9fa7594",
+        getMintPriceInUSDT: "0x654aa2dc",
+        quoteMint: "0x665216c6",
+        quoteBurn: "0xdecb2c99",
+        maxMintUsdt: "0xa2f345d2",
+        maxMintUsdtEquiv: "0x63850654",
+        launchTime: "0x790ca413",
+        timeUntilLaunch: "0x82670c4b",
+        k: "0xb4f40c61",
+        s: "0x86b714e2",
+        getSlot0: "0xc815641c",
+        getLiquidity: "0xfa6793d5",
+        owner: "0x8da5cb5b",
+        protocolBudget: "0x334b0458",
+        swapAdapter: "0x77bb1eb9",
+        paused: "0x5c975abb",
+        allowedMoonPools: "0xfe856819",
+        authorizedHook: "0xc0762af5",
+        ownerOf: "0x6352211e"
+      };
+
+      var ONE_E18 = 1000000000000000000n;
+      var ONE_E6 = 1000000n;
+      var SUN_INITIAL_PRICE = 1;
+      var SUN_MAX_SUPPLY = 21000000;
+      var MOON_MAX_SUPPLY = 5000000;
+      var MAX_UINT256 = (1n << 256n) - 1n;
+      var rpcRequestId = 1;
+      var walletState = {
+        account: "",
+        chainId: 0,
+        usdtBalance: 0n,
+        sunBalance: 0n,
+        moonBalance: 0n,
+        usdtAllowance: 0n,
+        sunAllowanceMoon: 0n,
+        sunAllowanceBurn: 0n
+      };
+      var tradePanels = [];
+
+      function hexToBigInt(hex) {
+        if (!hex || hex === "0x") return 0n;
+        return BigInt(hex);
+      }
+
+      function decodeUintWords(hex) {
+        var clean = (hex || "0x").replace(/^0x/, "");
+        var words = [];
+        for (var i = 0; i < clean.length; i += 64) {
+          words.push(BigInt("0x" + clean.slice(i, i + 64)));
+        }
+        return words;
+      }
+
+      function toHex(value) {
+        return "0x" + BigInt(value).toString(16);
+      }
+
+      function pad64(value) {
+        return value.replace(/^0x/, "").padStart(64, "0");
+      }
+
+      function encodeAddress(value) {
+        return pad64(value.toLowerCase());
+      }
+
+      function encodeUint(value) {
+        return pad64(toHex(value));
+      }
+
+      function encodeCall(selector, args) {
+        var payload = selector.replace(/^0x/, "");
+        for (var i = 0; i < args.length; i++) {
+          var arg = args[i];
+          payload += arg.type === "address" ? encodeAddress(arg.value) : encodeUint(arg.value);
+        }
+        return "0x" + payload;
+      }
+
+      function readText(id, value) {
+        var node = document.getElementById(id);
+        if (node) node.textContent = value;
+      }
+
+      function formatTokenCount(value, decimals, suffix, precision) {
+        var display = Number(value) / Math.pow(10, decimals);
+        if (!isFinite(display)) return "--";
+        var fixed = display >= 10 ? display.toFixed(2) : display.toFixed(precision || 4);
+        return fixed.replace(/\.?0+$/, "") + suffix;
+      }
+
+      function formatCurrency(value, precision) {
+        if (!isFinite(value) || value <= 0) return "--";
+        var digits = value >= 10 ? 2 : (precision || 4);
+        return "$" + value.toFixed(digits).replace(/\.?0+$/, "");
+      }
+
+      function formatDisplayAmount(value, suffix, precision) {
+        if (!isFinite(value) || value <= 0) return "0 " + suffix;
+        var digits = value >= 10 ? 2 : (precision || 4);
+        return value.toFixed(digits).replace(/\.?0+$/, "") + " " + suffix;
+      }
+
+      function formatDisplayPrice(value, suffix, precision) {
+        if (!isFinite(value) || value <= 0) return "--";
+        var digits = value >= 10 ? 2 : (precision || 4);
+        return value.toFixed(digits).replace(/\.?0+$/, "") + " " + suffix;
+      }
+
+      function formatSunAmount(value) {
+        return formatTokenCount(value, 18, " sun", 4);
+      }
+
+      function formatMoonAmount(value) {
+        return formatTokenCount(value, 18, " moon", 4);
+      }
+
+      function formatUsdtAmount(value) {
+        return formatTokenCount(value, 6, " usdc", 2);
+      }
+
+      function displayTokenName(token) {
+        if (token === "USDT") return "usdc";
+        if (token === "SUN") return "sun";
+        if (token === "MOON") return "moon";
+        return String(token || "").toLowerCase();
+      }
+
+      function formatAllowanceAmount(token, value) {
+        return token === "USDT" ? formatUsdtAmount(value) : formatSunAmount(value);
+      }
+
+      function parseTradeAmount(raw, token) {
+        var text = String(raw || "").replace(/,/g, "").trim();
+        if (!text || text === ".") return 0n;
+        if (!/^\d*(\.\d*)?$/.test(text)) return 0n;
+        var parts = text.split(".");
+        var whole = parts[0] ? BigInt(parts[0]) : 0n;
+        var fraction = parts[1] || "";
+        var decimals = token === "USDT" ? 6 : 18;
+        if (fraction.length > decimals) return 0n;
+        var scale = 10n ** BigInt(decimals);
+        var wholeValue = whole * scale;
+        var fractionValue = fraction ? BigInt(fraction.padEnd(decimals, "0")) : 0n;
+        return wholeValue + fractionValue;
+      }
+
+      function formatTradeAmount(value, token) {
+        if (token === "USDT") return formatUsdtAmount(value);
+        if (token === "MOON") return formatMoonAmount(value);
+        return formatSunAmount(value);
+      }
+
+      function formatTradeNumber(value, token) {
+        var text = formatTradeAmount(value, token);
+        return text.replace(/\s+(usdc|USDT|SUN|MOON)$/i, "");
+      }
+
+      function formatInputAmount(value, token) {
+        var decimals = token === "USDT" ? 6 : 18;
+        var display = Number(value) / Math.pow(10, decimals);
+        if (!isFinite(display)) return "0";
+        return display.toFixed(decimals === 6 ? 2 : 4).replace(/\.?0+$/, "");
+      }
+
+      function getTradeConfig(token, mode) {
+        if (token === "SUN" && mode === "mint") {
+          return { payToken: "USDT", receiveToken: "SUN", to: CONTRACTS.sunCurve, selector: SELECTORS.approve, action: "mint", spender: CONTRACTS.sunCurve, needsApproval: true };
+        }
+        if (token === "SUN" && mode === "burn") {
+          return { payToken: "SUN", receiveToken: "USDT", to: CONTRACTS.sunCurve, selector: SELECTORS.approve, action: "burn", spender: CONTRACTS.sunCurve, needsApproval: true };
+        }
+        if (token === "MOON" && mode === "mint") {
+          return { payToken: "SUN", receiveToken: "MOON", to: CONTRACTS.moonCurve, selector: SELECTORS.approve, action: "mint", spender: CONTRACTS.moonCurve, needsApproval: true };
+        }
+        return { payToken: "MOON", receiveToken: "SUN", to: CONTRACTS.moonCurve, selector: SELECTORS.approve, action: "burn", spender: CONTRACTS.moonCurve, needsApproval: false };
+      }
+
+      function getTradeMode(panel) {
+        return panel.dataset.mode || "mint";
+      }
+
+      function getTradeAmountToken(token, mode) {
+        if (token === "SUN" && mode === "mint") return "USDT";
+        if (token === "SUN" && mode === "burn") return "SUN";
+        if (token === "MOON" && mode === "mint") return "SUN";
+        return "MOON";
+      }
+
+      function getPayBalance(token, mode) {
+        if (token === "SUN" && mode === "mint") return walletState.usdtBalance;
+        if (token === "SUN" && mode === "burn") return walletState.sunBalance;
+        if (token === "MOON" && mode === "mint") return walletState.sunBalance;
+        return walletState.moonBalance;
+      }
+
+      function getAllowance(token, mode) {
+        if (token === "SUN" && mode === "mint") return walletState.usdtAllowance;
+        if (token === "SUN" && mode === "burn") return walletState.sunAllowanceBurn;
+        if (token === "MOON" && mode === "mint") return walletState.sunAllowanceMoon;
+        return 0n;
+      }
+
+      function minBigInt(a, b) {
+        return a < b ? a : b;
+      }
+
+      function getPerTxLimit(token, mode) {
+        if (mode !== "mint") return null;
+        if (token === "SUN") return chainState.SUN.maxMintUsdt || (10000n * ONE_E6);
+        if (token === "MOON") {
+          var maxUsdt = chainState.MOON.maxMintUsdtEquiv || (10000n * ONE_E6);
+          var sunPrice = chainState.SUN.priceRaw || 0n;
+          if (sunPrice <= 0n) return null;
+          return (maxUsdt * ONE_E18) / sunPrice;
+        }
+        return null;
+      }
+
+      function getMaxInputAmount(token, mode) {
+        var balance = getPayBalance(token, mode);
+        var perTxLimit = getPerTxLimit(token, mode);
+        return perTxLimit === null ? balance : minBigInt(balance, perTxLimit);
+      }
+
+      function clampMintInput(panel) {
+        var token = panel.dataset.token;
+        var mode = getTradeMode(panel);
+        var payToken = getTradeAmountToken(token, mode);
+        var perTxLimit = getPerTxLimit(token, mode);
+        var input = panel.querySelector("input");
+        if (!input || perTxLimit === null) return;
+        var amount = parseTradeAmount(input.value, payToken);
+        if (amount > perTxLimit) {
+          input.value = formatInputAmount(perTxLimit, payToken);
+        }
+      }
+
+      function getTradeValidation(token, mode, amount, quote) {
+        var balance = getPayBalance(token, mode);
+        var perTxLimit = getPerTxLimit(token, mode);
+        if (!walletState.account) return { disabled: true };
+        if (walletState.chainId !== 84532) return { disabled: true };
+        if (!amount || amount <= 0n) return { disabled: true };
+        if (amount > balance) return { disabled: true };
+        if (perTxLimit !== null && amount > perTxLimit) return { disabled: true };
+        if (!quote.receive || quote.receive <= 0n) return { disabled: true };
+        return { disabled: false };
+      }
+
+      function setFieldText(panel, selector, value) {
+        var node = panel.querySelector(selector);
+        if (node) node.textContent = value;
+      }
+
+      function getTradeQuote(token, mode, amount) {
+        if (!amount || amount <= 0n) return { receive: 0n, impact: 0 };
+        if (token === "SUN" && mode === "mint") {
+          var sunReserve = chainState.SUN.curveReserve;
+          var sunSupply = chainState.SUN.totalSupply;
+          var usdtIn = Number(amount) / 1e6;
+          var usdtNet = usdtIn * 0.98;
+          var receiveSun = sunSupply === 0 || sunReserve === 0 ? usdtNet : sunSupply * usdtNet / sunReserve;
+          return { receive: BigInt(Math.max(0, Math.floor(receiveSun * 1e18))), impact: 2 };
+        }
+        if (token === "SUN" && mode === "burn") {
+          var sunIn = Number(amount) / 1e18;
+          if (chainState.SUN.totalSupply === 0) return { receive: 0n, impact: 0 };
+          var gross = chainState.SUN.curveReserve * sunIn / chainState.SUN.totalSupply;
+          var receiveUsdt = gross * 0.98;
+          return { receive: BigInt(Math.max(0, Math.floor(receiveUsdt * 1e6))), impact: 2 };
+        }
+        if (token === "MOON" && mode === "mint") {
+          var sunIn = Number(amount) / 1e18;
+          var currentFair = chainState.MOON.currentSupply;
+          var sunNetMoon = sunIn * 0.95;
+          var nextFair = moonSupply(chainState.MOON.sunReserve + sunNetMoon, chainState.MOON.K, chainState.MOON.S);
+          var moonOut = Math.max(0, nextFair - currentFair);
+          return { receive: BigInt(Math.max(0, Math.floor(moonOut * 1e18))), impact: 5 };
+        }
+        var moonIn = Number(amount) / 1e18;
+        var fairSupply = chainState.MOON.currentSupply;
+        if (moonIn > fairSupply) return { receive: 0n, impact: 0 };
+        var remaining = chainState.MOON.K - fairSupply;
+        if (remaining <= 0) return { receive: 0n, impact: 0 };
+        var grossSun = chainState.MOON.S * Math.log((remaining + moonIn) / remaining);
+        var receiveSun = grossSun * 0.95;
+        return { receive: BigInt(Math.max(0, Math.floor(receiveSun * 1e18))), impact: 5 };
+      }
+
+      function refreshTradePanel(panel) {
+        var token = panel.dataset.token;
+        var mode = getTradeMode(panel);
+        var input = panel.querySelector("input");
+        var submit = panel.querySelector(".submit");
+        var modeWord = panel.querySelector(".mode-word");
+        var payToken = panel.querySelector(".pay-token");
+        var payTokenInline = panel.querySelector(".pay-token-inline");
+        var receiveToken = panel.querySelector(".receive-token");
+        var balanceLine = panel.querySelector(".field-head span:last-child");
+        var impact = panel.querySelector(".impact");
+        var quoteAmounts = panel.querySelectorAll(".quote-line b");
+        var payTokenName = getTradeAmountToken(token, mode);
+        var amount = parseTradeAmount(input.value, payTokenName);
+        var quote = getTradeQuote(token, mode, amount);
+        var validation = getTradeValidation(token, mode, amount, quote);
+        var maxInput = getMaxInputAmount(token, mode);
+
+        if (input) {
+          input.max = formatInputAmount(maxInput, payTokenName);
+        }
+
+        if (submit) {
+          submit.textContent = "read only";
+          submit.disabled = true;
+        }
+        if (modeWord) {
+          modeWord.textContent = mode === "mint" ? "minting" : "burning";
+        }
+        if (payToken) {
+          payToken.textContent = displayTokenName(payTokenName);
+        }
+        if (receiveToken) {
+          receiveToken.textContent = mode === "mint" ? displayTokenName(token) : (token === "SUN" ? "usdc" : "sun");
+        }
+        if (balanceLine) {
+          balanceLine.textContent = "bal: " + getBalanceText(token, mode);
+        }
+        if (quoteAmounts.length >= 1) {
+          quoteAmounts[0].textContent = quote.receive ? formatTradeNumber(quote.receive, mode === "mint" ? token : (token === "SUN" ? "USDT" : "SUN")) : "0.00";
+        }
+        if (impact) {
+          impact.textContent = "price impact: " + quote.impact.toFixed(2) + "%";
+        }
+      }
+
+      function getBalanceText(token, mode) {
+        var payToken = getTradeAmountToken(token, mode);
+        if (payToken === "USDT") return formatUsdtAmount(walletState.usdtBalance);
+        if (payToken === "SUN") return formatSunAmount(walletState.sunBalance);
+        return formatMoonAmount(walletState.moonBalance);
+      }
+
+      function refreshTopAssets(account) {
+        readText("asset-usdt", account ? formatUsdtAmount(walletState.usdtBalance) : "0 usdc");
+        readText("asset-sun", account ? formatSunAmount(walletState.sunBalance) : "0 sun");
+        readText("asset-moon", account ? formatMoonAmount(walletState.moonBalance) : "0 moon");
+
+        var chainButton = document.getElementById("chain-button");
+        if (chainButton) {
+          chainButton.textContent = "read only";
+        }
+
+        var claimButton = document.getElementById("claim-button");
+        if (claimButton) {
+          claimButton.textContent = "Base Sepolia";
+        }
+      }
+
+      function refreshAllTradePanels() {
+        tradePanels = Array.prototype.slice.call(document.querySelectorAll(".trade"));
+        tradePanels.forEach(function (panel) {
+          refreshTradePanel(panel);
+        });
+      }
+
+      async function sendTx() {
+        throw new Error("Base Sepolia readonly mode");
+      }
+
+      async function waitForReceipt(hash) {
+        for (var i = 0; i < 90; i++) {
+          var receipt = await rpc("eth_getTransactionReceipt", [hash]);
+          if (receipt) return receipt;
+          await new Promise(function (resolve) { window.setTimeout(resolve, 1000); });
+        }
+        throw new Error("transaction timeout");
+      }
+
+      async function ensureApproval(token, spender, amount) {
+        if (token === "MOON") return;
+        var allowance = spender === CONTRACTS.sunCurve ? walletState.sunAllowanceBurn : walletState.sunAllowanceMoon;
+        if (token === "USDT") allowance = walletState.usdtAllowance;
+        if (allowance >= amount) return;
+        var source = token === "USDT" ? CONTRACTS.usdt : CONTRACTS.sunToken;
+        var approvalHash = await sendTx(source, encodeCall(SELECTORS.approve, [
+          { type: "address", value: spender },
+          { type: "uint256", value: MAX_UINT256 }
+        ]));
+        await waitForReceipt(approvalHash);
+        await refreshChainData(walletState.account);
+      }
+
+      function getActiveInputValue(panel) {
+        var token = panel.dataset.token;
+        var mode = getTradeMode(panel);
+        var payToken = getTradeAmountToken(token, mode);
+        return parseTradeAmount(panel.querySelector("input").value, payToken);
+      }
+
+      async function submitTrade(panel) {
+        var token = panel.dataset.token;
+        var mode = getTradeMode(panel);
+        var amount = getActiveInputValue(panel);
+        var payToken = getTradeAmountToken(token, mode);
+        if (!amount || amount <= 0n) throw new Error("enter a valid amount");
+        if (amount > getPayBalance(token, mode)) throw new Error("insufficient " + displayTokenName(payToken));
+
+        if (payToken === "USDT") {
+          await ensureApproval("USDT", CONTRACTS.sunCurve, amount);
+        } else if (token === "SUN" && mode === "burn") {
+          await ensureApproval("SUN", CONTRACTS.sunCurve, amount);
+        } else if (token === "MOON" && mode === "mint") {
+          await ensureApproval("SUN", CONTRACTS.moonCurve, amount);
+        }
+
+        var to = token === "SUN" ? CONTRACTS.sunCurve : CONTRACTS.moonCurve;
+        var selector = SELECTORS.mint;
+        if (mode === "burn") selector = SELECTORS.burn;
+
+        var tradeHash = await sendTx(to, encodeCall(selector, [{ type: "uint256", value: amount }]));
+        await waitForReceipt(tradeHash);
+        await refreshChainData(walletState.account);
+      }
+
+      async function claimTestUsdc() {
+        await refreshChainData(BASE_SEPOLIA_TEST_WALLET);
+      }
+
+      function refreshDisplay(account) {
+        var sunPrice = getDisplaySunPrice(chainState.SUN);
+        var sunBurn = chainState.SUN.totalSupply > 0 ? sunPrice * 0.98 : 0;
+        var sunMint = sunPrice > 0 ? sunPrice / 0.98 : 0;
+        var moonPriceSun = chainState.MOON.ammPrice;
+        var moonBurn = chainState.MOON.burnQuotePrice || quoteMoonBurnPerMoon(1, chainState.MOON.currentSupply, chainState.MOON.K, chainState.MOON.S);
+        var moonMint = chainState.MOON.mintQuotePrice || quoteMoonMintPerMoon(1, chainState.MOON.currentSupply, chainState.MOON.K, chainState.MOON.S);
+        var moonPriceUsd = chainState.MOON.poolPriceUsdt || 0;
+        var moonBurnUsd = moonBurn * sunPrice;
+        var moonMintUsd = chainState.MOON.ammPriceUsdt || (moonMint * sunPrice);
+
+        readText("sun-supply-live", (chainState.SUN.totalSupply / 1000000).toFixed(2).replace(/\.?0+$/, "") + "m");
+        readText("sun-supply-max", (SUN_MAX_SUPPLY / 1000000).toFixed(0) + "m");
+        readText("sun-price-live", formatCurrency(sunPrice));
+        readText("sun-burn-live", formatCurrency(sunBurn));
+        readText("sun-mint-live", formatCurrency(sunMint));
+        readText("moon-supply-live", (chainState.MOON.currentSupply / 1000000).toFixed(2).replace(/\.?0+$/, "") + "m");
+        readText("moon-supply-max", (MOON_MAX_SUPPLY / 1000000).toFixed(0) + "m");
+        readText("moon-price-live", formatCurrency(moonPriceUsd));
+        readText("moon-burn-live", formatCurrency(moonBurnUsd));
+        readText("moon-mint-live", formatCurrency(moonMintUsd));
+
+        readText("sun-reserve-metric", formatDisplayAmount(chainState.SUN.curveReserve, "usdc", 2));
+        readText("sun-price-metric", formatCurrency(sunPrice));
+        readText("sun-supply-metric", formatDisplayAmount(chainState.SUN.totalSupply, "sun", 4));
+        readText("moon-reserve-metric", formatDisplayAmount(chainState.MOON.sunReserve, "sun", 4));
+        readText("moon-price-sun-metric", formatDisplayPrice(chainState.MOON.ammPrice, "sun", 6));
+        readText("moon-price-usdt-metric", formatCurrency(chainState.MOON.ammPriceUsdt, 6));
+        updateSunTankView();
+
+        var walletButton = document.getElementById("wallet-button");
+        if (walletButton) {
+          walletButton.textContent = "refresh";
+        }
+      }
+
+      function tankLevel(value, liquidNode) {
+        var maxVisual = 1000000000;
+        var safeValue = Math.max(0, Math.min(maxVisual, Number(value) || 0));
+        var scaleLevel = 0;
+        if (safeValue > 0 && safeValue < 10000) {
+          scaleLevel = safeValue / 10000 * (1 / 6);
+        } else if (safeValue >= 10000) {
+          scaleLevel = Math.min(1, (Math.log10(safeValue) - 3) / 6);
+        }
+
+        var card = liquidNode ? liquidNode.closest(".tank-card") : null;
+        var scale = card ? card.querySelector(".tank-scale") : null;
+        if (!card || !scale || !card.offsetHeight) return scaleLevel * 100;
+
+        var cardRect = card.getBoundingClientRect();
+        var scaleRect = scale.getBoundingClientRect();
+        var scaleTop = scaleRect.top - cardRect.top;
+        var scaleHeight = scaleRect.height;
+        var waterY = scaleTop + (1 - scaleLevel) * scaleHeight;
+        return Math.max(0, Math.min(100, (cardRect.height - waterY) / cardRect.height * 100));
+      }
+
+      function setTankLevel(id, value) {
+        var node = document.getElementById(id);
+        if (node) node.style.setProperty("--level", tankLevel(value, node).toFixed(2) + "%");
+      }
+
+      function updateSunTankView() {
+        readText("sun-tank-usdc-value", formatDisplayAmount(chainState.SUN.curveReserve, "usdc", 2));
+        readText("sun-tank-supply-value", formatDisplayAmount(chainState.SUN.totalSupply, "sun", 4));
+        setTankLevel("sun-tank-usdc-liquid", chainState.SUN.curveReserve);
+        setTankLevel("sun-tank-supply-liquid", chainState.SUN.totalSupply);
+      }
+
+      async function localRpc(method, params) {
+        var response = await fetch(LOCAL_CHAIN.rpcUrls[0], {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: rpcRequestId++,
+            method: method,
+            params: params || []
+          })
+        });
+        var payload = await response.json();
+        if (payload.error) throw new Error(payload.error.message || "rpc error");
+        return payload.result;
+      }
+
+      async function rpc(method, params) {
+        return localRpc(method, params);
+      }
+
+      async function callContract(to, data, from) {
+        var tx = { to: to, data: data };
+        if (from) tx.from = from;
+        return localRpc("eth_call", [tx, "latest"]);
+      }
+
+      async function readUint(to, selector, args, from) {
+        var data = args && args.length ? encodeCall(selector, args) : selector;
+        return hexToBigInt(await callContract(to, data, from));
+      }
+
+      async function readUintWords(to, selector, args, from) {
+        var data = args && args.length ? encodeCall(selector, args) : selector;
+        return decodeUintWords(await callContract(to, data, from));
+      }
+
+      async function readAddress(to, selector) {
+        var raw = await callContract(to, selector);
+        return raw === "0x" ? null : "0x" + raw.slice(26);
+      }
+
+      function decodeAddressResult(raw) {
+        var clean = (raw || "0x").replace(/^0x/, "");
+        if (clean.length < 40) return null;
+        return "0x" + clean.slice(-40);
+      }
+
+      async function readAddressValue(to, selector, args, from) {
+        var data = args && args.length ? encodeCall(selector, args) : selector;
+        return decodeAddressResult(await callContract(to, data, from));
+      }
+
+      async function readBoolValue(to, selector, args, from) {
+        return (await readUint(to, selector, args || [], from)) !== 0n;
+      }
+
+      function sameAddress(left, right) {
+        return String(left || "").toLowerCase() === String(right || "").toLowerCase();
+      }
+
+      function shortAddress(value) {
+        if (!value) return "--";
+        return value.slice(0, 6) + "..." + value.slice(-4);
+      }
+
+      function writeAddress(id, value) {
+        var node = document.getElementById(id);
+        if (!node) return;
+        node.textContent = shortAddress(value);
+        node.title = value || "";
+      }
+
+      function writeStatus(id, label, ok) {
+        var node = document.getElementById(id);
+        if (!node) return;
+        node.textContent = label;
+        node.classList.remove("ok", "warn");
+        node.classList.add(ok ? "ok" : "warn");
+      }
+
+      function writeBool(id, value) {
+        readText(id, value ? "yes" : "no");
+      }
+
+      function ammUsdcPerMoonFromSlot0(slot0Raw) {
+        if (!slot0Raw || slot0Raw === "0x") return 0;
+        var words = decodeUintWords(slot0Raw);
+        var sqrtPriceX96 = words[0] || 0n;
+        if (sqrtPriceX96 <= 0n) return 0;
+
+        var sqrtRatio = Number(sqrtPriceX96) / Math.pow(2, 96);
+        var rawMoonPerUsdc = sqrtRatio * sqrtRatio;
+        if (!isFinite(rawMoonPerUsdc) || rawMoonPerUsdc <= 0) return 0;
+
+        return 1e12 / rawMoonPerUsdc;
+      }
+
+      async function safeRead(label, reader, fallback) {
+        try {
+          return await reader();
+        } catch (error) {
+          console.error(label, error);
+          return fallback;
+        }
+      }
+
+      async function refreshProtocolStatus(currentAccount) {
+        var account = currentAccount || BASE_SEPOLIA_TEST_WALLET;
+        var poolId = BigInt(CONTRACTS.moonUsdcPoolId);
+        var positionTokenId = BigInt(CONTRACTS.tinyPositionTokenId);
+
+        var hookOwner = await safeRead("Hook.owner", function () {
+          return readAddressValue(CONTRACTS.hook, SELECTORS.owner, []);
+        }, null);
+        var hookBudget = await safeRead("Hook.protocolBudget", function () {
+          return readAddressValue(CONTRACTS.hook, SELECTORS.protocolBudget, []);
+        }, null);
+        var hookAdapter = await safeRead("Hook.swapAdapter", function () {
+          return readAddressValue(CONTRACTS.hook, SELECTORS.swapAdapter, []);
+        }, null);
+        var hookPaused = await safeRead("Hook.paused", function () {
+          return readBoolValue(CONTRACTS.hook, SELECTORS.paused, []);
+        }, true);
+        var poolAllowed = await safeRead("Hook.allowedMoonPools", function () {
+          return readBoolValue(CONTRACTS.hook, SELECTORS.allowedMoonPools, [{ type: "uint256", value: poolId }]);
+        }, false);
+        var adapterHook = await safeRead("Adapter.authorizedHook", function () {
+          return readAddressValue(CONTRACTS.swapAdapter, SELECTORS.authorizedHook, []);
+        }, null);
+        var adapterPaused = await safeRead("Adapter.paused", function () {
+          return readBoolValue(CONTRACTS.swapAdapter, SELECTORS.paused, []);
+        }, true);
+        var positionOwner = await safeRead("PositionManager.ownerOf", function () {
+          return readAddressValue(CONTRACTS.positionManager, SELECTORS.ownerOf, [{ type: "uint256", value: positionTokenId }]);
+        }, null);
+        var positionCount = await safeRead("PositionManager.balanceOf", function () {
+          return readUint(CONTRACTS.positionManager, SELECTORS.balanceOf, [{ type: "address", value: account }]);
+        }, 0n);
+
+        var hookOk = sameAddress(hookOwner, BASE_SEPOLIA_TEST_WALLET)
+          && sameAddress(hookBudget, CONTRACTS.protocolBudget)
+          && sameAddress(hookAdapter, CONTRACTS.swapAdapter)
+          && poolAllowed
+          && !hookPaused;
+        var adapterOk = sameAddress(adapterHook, CONTRACTS.hook) && !adapterPaused;
+        var positionOk = sameAddress(positionOwner, account) && positionCount > 0n;
+
+        writeStatus("hook-health", hookOk ? "healthy" : "check", hookOk);
+        writeAddress("hook-owner", hookOwner);
+        writeAddress("hook-protocol-budget", hookBudget);
+        writeAddress("hook-swap-adapter", hookAdapter);
+        writeBool("hook-allowed-pool", poolAllowed);
+        writeBool("hook-paused", hookPaused);
+
+        writeStatus("adapter-health", adapterOk ? "healthy" : "check", adapterOk);
+        writeAddress("adapter-authorized-hook", adapterHook);
+        writeBool("adapter-paused", adapterPaused);
+        writeAddress("adapter-address", CONTRACTS.swapAdapter);
+
+        writeStatus("position-health", positionOk ? "owned" : "check", positionOk);
+        readText("position-token-id", String(CONTRACTS.tinyPositionTokenId));
+        writeAddress("position-owner", positionOwner);
+        readText("position-count", String(positionCount));
+      }
+
+      async function refreshWalletBalances(currentAccount, chainIdHex) {
+        var usdtBal = 0n;
+        var sunBal = 0n;
+        var moonBal = 0n;
+        var usdtAllowance = 0n;
+        var sunAllowanceMoon = 0n;
+        var sunAllowanceBurn = 0n;
+
+        if (currentAccount) {
+          try {
+            [usdtBal, sunBal, moonBal, usdtAllowance, sunAllowanceMoon, sunAllowanceBurn] = await Promise.all([
+            readUint(CONTRACTS.usdt, SELECTORS.balanceOf, [{ type: "address", value: currentAccount }]),
+            readUint(CONTRACTS.sunToken, SELECTORS.balanceOf, [{ type: "address", value: currentAccount }]),
+            readUint(CONTRACTS.moonToken, SELECTORS.balanceOf, [{ type: "address", value: currentAccount }]),
+            readUint(CONTRACTS.usdt, SELECTORS.allowance, [
+              { type: "address", value: currentAccount },
+              { type: "address", value: CONTRACTS.sunCurve }
+            ]),
+            readUint(CONTRACTS.sunToken, SELECTORS.allowance, [
+              { type: "address", value: currentAccount },
+              { type: "address", value: CONTRACTS.moonCurve }
+            ]),
+            readUint(CONTRACTS.sunToken, SELECTORS.allowance, [
+              { type: "address", value: currentAccount },
+              { type: "address", value: CONTRACTS.sunCurve }
+            ])
+            ]);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+
+        walletState = {
+          account: currentAccount,
+          chainId: Number(chainIdHex),
+          usdtBalance: usdtBal,
+          sunBalance: sunBal,
+          moonBalance: moonBal,
+          usdtAllowance: usdtAllowance,
+          sunAllowanceMoon: sunAllowanceMoon,
+          sunAllowanceBurn: sunAllowanceBurn
+        };
+
+        refreshTopAssets(currentAccount);
+        refreshAllTradePanels();
+      }
+
+      async function refreshChainData(account) {
+        var currentAccount = account || "";
+        var chainIdHex = await localRpc("eth_chainId", []);
+        walletState.chainId = Number(chainIdHex);
+        if (!currentAccount) {
+          if (READ_ONLY_MODE) {
+            currentAccount = BASE_SEPOLIA_TEST_WALLET;
+          } else {
+            var accounts = await rpc("eth_accounts", []);
+            currentAccount = accounts && accounts.length ? accounts[0] : "";
+          }
+        }
+
+        walletState = Object.assign({}, walletState, {
+          account: currentAccount,
+          chainId: Number(chainIdHex)
+        });
+        refreshDisplay(currentAccount);
+        refreshTopAssets(currentAccount);
+        refreshAllTradePanels();
+        await refreshWalletBalances(currentAccount, chainIdHex);
+
+        var results;
+        try {
+          results = [
+            await safeRead("SunCurve.getSunPrice", function () {
+              return readUint(CONTRACTS.sunCurve, SELECTORS.getSunPrice, []);
+            }, 0n),
+            await safeRead("SunCurve.curveReserve", function () {
+              return readUint(CONTRACTS.sunCurve, SELECTORS.curveReserve, []);
+            }, 0n),
+            await safeRead("SUN.totalSupply", function () {
+              return readUint(CONTRACTS.sunToken, SELECTORS.totalSupply, []);
+            }, 0n),
+            await safeRead("MoonCurve.sunReserve", function () {
+              return readUint(CONTRACTS.moonCurve, SELECTORS.sunReserve, []);
+            }, 0n),
+            await safeRead("MOON.totalSupply", function () {
+              return readUint(CONTRACTS.moonToken, SELECTORS.totalSupply, []);
+            }, 0n),
+            await safeRead("MoonCurve.getMintPriceInSUN", function () {
+              return readUint(CONTRACTS.moonCurve, SELECTORS.getMintPriceInSUN, []);
+            }, 0n),
+            await safeRead("MoonCurve.getMintPriceInUSDT", function () {
+              return readUint(CONTRACTS.moonCurve, SELECTORS.getMintPriceInUSDT, []);
+            }, 0n),
+            0n,
+            await safeRead("MoonCurve.timeUntilLaunch", function () {
+              return readUint(CONTRACTS.moonCurve, SELECTORS.timeUntilLaunch, []);
+            }, 0n),
+            5000000n * ONE_E18,
+            1200000n * ONE_E18,
+            0n,
+            0n,
+            CONTRACTS.protocolBudget,
+            await safeRead("StateView.getSlot0", function () {
+              return callContract(CONTRACTS.stateView, encodeCall(SELECTORS.getSlot0, [{ type: "uint256", value: BigInt(CONTRACTS.moonUsdcPoolId) }]));
+            }, "0x")
+          ];
+        } catch (error) {
+          console.error(error);
+          readText("chain-button", "测试网数据读取失败");
+          readText("wallet-button", "refresh");
+          refreshDisplay(currentAccount);
+          await refreshWalletBalances(currentAccount, chainIdHex);
+          await refreshProtocolStatus(currentAccount);
+          return;
+        }
+
+        var sunPriceWei = results[0];
+        var sunReserve = results[1];
+        var sunSupply = results[2];
+        var moonReserve = results[3];
+        var moonFairSupply = results[4];
+        var moonMintPriceSun = results[5];
+        var moonMintPriceUsdt = results[6];
+        var moonLaunchTime = results[7];
+        var moonTimeUntilLaunch = results[8];
+        var moonK = results[9];
+        var moonS = results[10];
+        var sunMaxMintUsdt = results[11];
+        var moonMaxMintUsdtEquiv = results[12];
+        var protocolBudget = results[13];
+        var slot0Raw = results[14];
+
+        chainState.SUN.curveReserve = Number(sunReserve) / Number(ONE_E6);
+        chainState.SUN.totalSupply = Number(sunSupply) / Number(ONE_E18);
+        chainState.SUN.maxSupply = SUN_MAX_SUPPLY;
+        chainState.SUN.priceRaw = sunPriceWei;
+        chainState.SUN.maxMintUsdt = sunMaxMintUsdt;
+        chainState.SUN.ammPrice = Number(sunPriceWei) / Number(ONE_E6);
+        chainState.MOON.sunReserve = Number(moonReserve) / Number(ONE_E18);
+        chainState.MOON.K = Number(moonK) / Number(ONE_E18);
+        chainState.MOON.S = Number(moonS) / Number(ONE_E18);
+        chainState.MOON.currentSupply = Number(moonFairSupply) / Number(ONE_E18);
+        chainState.MOON.ammPrice = Number(moonMintPriceSun) / Number(ONE_E18);
+        chainState.MOON.ammPriceUsdt = Number(moonMintPriceUsdt) / Number(ONE_E6);
+        chainState.MOON.poolPriceUsdt = ammUsdcPerMoonFromSlot0(slot0Raw);
+        chainState.MOON.maxMintUsdtEquiv = moonMaxMintUsdtEquiv;
+        chainState.MOON.mintQuotePrice = 0;
+        chainState.MOON.burnQuotePrice = 0;
+
+        try {
+          var moonMintQuote = await readUintWords(CONTRACTS.moonCurve, SELECTORS.quoteMint, [
+            { type: "uint256", value: ONE_E18 }
+          ]);
+          var moonOutForOneSun = moonMintQuote[5] || 0n;
+          if (moonOutForOneSun > 0n) {
+            chainState.MOON.mintQuotePrice = Number(ONE_E18) / Number(moonOutForOneSun);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+
+        if (moonFairSupply >= ONE_E18) {
+          try {
+            var moonBurnQuote = await readUintWords(CONTRACTS.moonCurve, SELECTORS.quoteBurn, [
+              { type: "uint256", value: ONE_E18 }
+            ]);
+            chainState.MOON.burnQuotePrice = Number(moonBurnQuote[4] || 0n) / Number(ONE_E18);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+
+        drawChart(document.querySelector('.interactive-chart[data-token="MOON"]'));
+
+        void protocolBudget;
+        void moonLaunchTime;
+        void moonTimeUntilLaunch;
+        refreshDisplay(currentAccount);
+        await refreshWalletBalances(currentAccount, chainIdHex);
+        await refreshProtocolStatus(currentAccount);
+      }
+
+      function getSunPrice(reserve, supply) {
+        return supply === 0 ? 0 : reserve / supply;
+      }
+
+      function getDisplaySunPrice(state) {
+        return state.ammPrice || 0;
+      }
+
+      function quoteSunMint(usdtIn, reserve, supply) {
+        var usdtNet = usdtIn * 0.98;
+        return supply === 0 ? usdtNet * 1e12 : supply * usdtNet / reserve;
+      }
+
+      function quoteSunBurn(sunIn, reserve, supply) {
+        var usdtGross = reserve * sunIn / supply;
+        return usdtGross * 0.98;
+      }
+
+      function moonSupply(e, K, S) {
+        return K * (1 - Math.exp(-e / S));
+      }
+
+      function moonPrice(e, K, S) {
+        return (S / K) * Math.exp(e / S);
+      }
+
+      function quoteMoonMintPerMoon(moonOut, currentSupply, K, S) {
+        if (!isFinite(moonOut) || moonOut <= 0) return 0;
+        var remaining = K - currentSupply;
+        if (remaining <= 0 || moonOut >= remaining) return Infinity;
+        var netSun = S * Math.log(remaining / (remaining - moonOut));
+        return netSun / 0.95;
+      }
+
+      function quoteMoonBurnPerMoon(moonIn, currentSupply, K, S) {
+        if (!isFinite(moonIn) || moonIn <= 0 || currentSupply <= 0) return 0;
+        var burnAmount = Math.min(moonIn, currentSupply);
+        var remaining = K - currentSupply;
+        if (remaining <= 0) return 0;
+        var grossSun = S * Math.log((remaining + burnAmount) / remaining);
+        return grossSun * 0.95;
+      }
+
+      function formatAxisAmount(value, suffix) {
+        if (!isFinite(value) || value <= 0) return "0";
+        if (value >= 1000000) return (value / 1000000).toFixed(value >= 10000000 ? 0 : 1).replace(/\.?0+$/, "") + "m";
+        if (value >= 1000) return (value / 1000).toFixed(value >= 10000 ? 0 : 1).replace(/\.?0+$/, "") + "k";
+        return value.toFixed(value >= 10 ? 0 : 2).replace(/\.?0+$/, "") + (suffix || "");
+      }
+
+      function formatAxisPrice(value, unit) {
+        if (!isFinite(value) || value <= 0) return unit === "$" ? "$0" : "0";
+        if (unit === "$") return "$" + value.toFixed(value >= 10 ? 2 : 4).replace(/\.?0+$/, "");
+        return value.toFixed(value >= 10 ? 2 : 3).replace(/\.?0+$/, "") + " " + unit;
+      }
+
+      function buildAxisTicks(maxValue, unit, includeInfinity) {
+        var top = includeInfinity ? "∞" : formatAxisPrice(maxValue, unit);
+        return [
+          top,
+          formatAxisPrice(maxValue * 2 / 3, unit),
+          formatAxisPrice(maxValue / 3, unit),
+          unit === "$" ? "$0" : "0"
+        ];
+      }
+
+      function buildReserveTicks(maxValue, includeInfinity) {
+        var ticks = [];
+        for (var i = 0; i <= 5; i++) {
+          ticks.push({
+            ratio: i / 5,
+            label: includeInfinity && i === 5 ? "∞" : formatAxisAmount(maxValue * i / 5)
+          });
+        }
+        return ticks;
+      }
+
+      function sunSupplyFromReserve(reserve, maxSupply) {
+        if (!isFinite(reserve) || reserve <= 0) return 0;
+        var seedReserve = 0.995;
+        var seedSupply = 0.98;
+        var mintReserveShare = 0.995;
+        var mintSupplyShare = 0.98;
+        var exponent = mintSupplyShare / mintReserveShare;
+        if (reserve <= seedReserve) {
+          return reserve * seedSupply / seedReserve;
+        }
+        return Math.min(maxSupply, seedSupply * Math.pow(reserve / seedReserve, exponent));
+      }
+
+      function sunReserveForSupply(supply) {
+        if (!isFinite(supply) || supply <= 0) return 0;
+        var seedReserve = 0.995;
+        var seedSupply = 0.98;
+        var exponent = 0.98 / 0.995;
+        if (supply <= seedSupply) {
+          return supply * seedReserve / seedSupply;
+        }
+        return seedReserve * Math.pow(supply / seedSupply, 1 / exponent);
+      }
+
+      function sampleSunCurve(state) {
+        var maxReserve = Math.max(sunReserveForSupply(state.maxSupply), state.curveReserve * 1.18, 1);
+        var maxPrice = Math.max(getSunPrice(maxReserve, state.maxSupply), getDisplaySunPrice(state), SUN_INITIAL_PRICE);
+        var points = [];
+        for (var i = 0; i <= 96; i++) {
+          var t = i / 96;
+          var reserve = maxReserve * t;
+          var supply = sunSupplyFromReserve(reserve, state.maxSupply);
+          var price = supply === 0 ? SUN_INITIAL_PRICE : getSunPrice(reserve, supply);
+          points.push({ cum: reserve, supply: supply, price: price, cap: supply / state.maxSupply * 100 });
+        }
+        var currentPrice = getDisplaySunPrice(state);
+        var current = {
+          cum: state.curveReserve,
+          supply: state.totalSupply,
+          price: currentPrice,
+          burn: currentPrice * 0.98,
+          amm: state.ammPrice,
+          mint: currentPrice / 0.98,
+          cap: state.totalSupply / state.maxSupply * 100
+        };
+        return {
+          maxCap: state.maxSupply / 1e6,
+          maxPrice: maxPrice,
+          maxCum: maxReserve,
+          xLabel: state.xLabel,
+          xTicks: buildReserveTicks(maxReserve, false),
+          yTicks: [state.maxSupply, state.maxSupply * 2 / 3, state.maxSupply / 3, 0].map(function (v) { return formatAxisAmount(v); }),
+          pTicks: buildAxisTicks(maxPrice, "$", false),
+          unit: state.unit,
+          marketUnit: "m",
+          points: points,
+          current: current,
+          note: "sun follows contract state: price = curveReserve / totalSupply; mint adds 99.5% to reserve and mints from 98% net usdc."
+        };
+      }
+
+      function sampleMoonCurve(state) {
+        var sunUsd = getDisplaySunPrice(chainState.SUN);
+        var maxPrice = 23.96;
+        var topPriceSun = maxPrice / Math.max(sunUsd, 0.000001);
+        var reserveAtTopPrice = state.S * Math.log(Math.max(topPriceSun / (state.S / state.K), 1.0001));
+        var maxReserve = Math.max(reserveAtTopPrice, state.sunReserve * 1.25, 1);
+        var points = [];
+        for (var i = 0; i <= 96; i++) {
+          var t = i / 96;
+          var e = maxReserve * t;
+          var supply = i === 96 ? state.K : moonSupply(e, state.K, state.S);
+          var price = i === 96 ? maxPrice : Math.min(moonPrice(e, state.K, state.S) * sunUsd, maxPrice);
+          points.push({ cum: e, supply: supply, price: price, cap: supply / state.K * 100 });
+        }
+        var currentSupply = moonSupply(state.sunReserve, state.K, state.S);
+        var currentPriceSun = moonPrice(state.sunReserve, state.K, state.S);
+        var currentPrice = state.ammPriceUsdt || (currentPriceSun * sunUsd);
+        var current = {
+          cum: state.sunReserve,
+          supply: currentSupply,
+          price: Math.min(currentPrice, maxPrice),
+          burn: Math.min(quoteMoonBurnPerMoon(1, currentSupply, state.K, state.S) * sunUsd, maxPrice),
+          amm: Math.min(currentPrice, maxPrice),
+          mint: Math.min(quoteMoonMintPerMoon(1, currentSupply, state.K, state.S) * sunUsd, maxPrice),
+          cap: currentSupply / state.K * 100
+        };
+        return {
+          maxCap: state.K / 1e6,
+          maxPrice: maxPrice,
+          maxCum: maxReserve,
+          xLabel: state.xLabel,
+          xTicks: buildReserveTicks(maxReserve, true),
+          yTicks: [state.K, state.K * 2 / 3, state.K / 3, 0].map(function (v) { return formatAxisAmount(v); }),
+          pTicks: ["∞", "$18.82", "$11.88", "$5.94", "$0"],
+          unit: "$",
+          marketUnit: "m",
+          points: points,
+          current: current,
+          note: "moon follows q(e)=K*(1-exp(-e/S)); mint adds 95% net sun to reserve and burn returns 95% after fees."
+        };
+      }
+
+      var svgNS = "http://www.w3.org/2000/svg";
+      var chartBox = { left: 78, right: 1212, top: 34, bottom: 474 };
+      var chartW = chartBox.right - chartBox.left;
+      var chartH = chartBox.bottom - chartBox.top;
+
+      function el(name, attrs) {
+        var node = document.createElementNS(svgNS, name);
+        Object.keys(attrs || {}).forEach(function (key) { node.setAttribute(key, attrs[key]); });
+        return node;
+      }
+
+      function smoothPath(points, kind) {
+        if (!points.length) return "";
+        var d = "M" + points[0].x.toFixed(1) + " " + points[0][kind].toFixed(1);
+        for (var i = 0; i < points.length - 1; i++) {
+          var current = points[i];
+          var next = points[i + 1];
+          var previous = points[i - 1] || current;
+          var following = points[i + 2] || next;
+          var cp1x = current.x + (next.x - previous.x) / 6;
+          var cp1y = current[kind] + (next[kind] - previous[kind]) / 6;
+          var cp2x = next.x - (following.x - current.x) / 6;
+          var cp2y = next[kind] - (following[kind] - current[kind]) / 6;
+          d += " C" + cp1x.toFixed(1) + " " + cp1y.toFixed(1) + " " + cp2x.toFixed(1) + " " + cp2y.toFixed(1) + " " + next.x.toFixed(1) + " " + next[kind].toFixed(1);
+        }
+        return d;
+      }
+
+      function interp(points, x, key) {
+        for (var i = 0; i < points.length - 1; i++) {
+          var a = points[i];
+          var b = points[i + 1];
+          if (x >= a.x && x <= b.x) {
+            var t = (x - a.x) / (b.x - a.x);
+            return a[key] + (b[key] - a[key]) * t;
+          }
+        }
+        return points[points.length - 1][key];
+      }
+
+      function formatPrice(value, unit) {
+        if (unit === "$") return "$" + value.toFixed(value >= 10 ? 2 : 4);
+        return value.toFixed(value >= 10 ? 2 : 3) + " " + unit;
+      }
+
+      function drawChart(svg) {
+        if (!svg) return;
+        var token = svg.dataset.token;
+        var cfg = token === "SUN" ? sampleSunCurve(chainState.SUN) : sampleMoonCurve(chainState.MOON);
+        var maxCum = cfg.maxCum;
+        var gradId = token.toLowerCase() + "Fill";
+        svg.innerHTML = "";
+
+        var defs = el("defs");
+        var grad = el("linearGradient", { id: gradId, x1: "0", y1: "0", x2: "0", y2: "1" });
+        grad.appendChild(el("stop", { offset: "0%", "stop-color": "#00d6ff", "stop-opacity": "0.18" }));
+        grad.appendChild(el("stop", { offset: "100%", "stop-color": "#00d6ff", "stop-opacity": "0.02" }));
+        defs.appendChild(grad);
+        svg.appendChild(defs);
+
+        var points = cfg.points.map(function (d) {
+          var x = chartBox.left + (d.cum / maxCum) * chartW;
+          return Object.assign({}, d, {
+            x: x,
+            supplyY: chartBox.bottom - (d.supply / (cfg.maxCap * 1e6)) * chartH,
+            priceY: chartBox.bottom - (d.price / cfg.maxPrice) * chartH,
+          });
+        });
+        var current = Object.assign({}, cfg.current, {
+          x: chartBox.left + (cfg.current.cum / maxCum) * chartW,
+          supplyY: chartBox.bottom - (cfg.current.supply / (cfg.maxCap * 1e6)) * chartH,
+          priceY: chartBox.bottom - (cfg.current.price / cfg.maxPrice) * chartH,
+          burnY: chartBox.bottom - (cfg.current.burn / cfg.maxPrice) * chartH,
+          ammY: chartBox.bottom - (cfg.current.amm / cfg.maxPrice) * chartH,
+          mintY: chartBox.bottom - (cfg.current.mint / cfg.maxPrice) * chartH
+        });
+
+        svg.appendChild(el("path", { d: "M" + chartBox.left + " " + chartBox.bottom + " L" + chartBox.left + " " + chartBox.top + " M" + chartBox.left + " " + chartBox.bottom + " L" + chartBox.right + " " + chartBox.bottom, stroke: "#303238", "stroke-width": "1", fill: "none" }));
+        var yGridPath = cfg.yTicks.map(function (_, i) {
+          var y = chartBox.top + chartH * i / Math.max(cfg.yTicks.length - 1, 1);
+          return "M" + chartBox.left + " " + y.toFixed(1) + " H" + chartBox.right;
+        }).join(" ");
+        svg.appendChild(el("path", { d: yGridPath, stroke: "#24262a", "stroke-width": "1", "stroke-dasharray": "3 7", fill: "none" }));
+        cfg.yTicks.forEach(function (tick, i) {
+          var yTickStart = chartBox.top + 6;
+          var yTickEnd = chartBox.bottom + 4;
+          var y = yTickStart + (yTickEnd - yTickStart) * i / Math.max(cfg.yTicks.length - 1, 1);
+          svg.appendChild(el("text", { x: "66", y: y.toFixed(1), fill: "#00d6ff", "font-size": "14", "text-anchor": "end" })).textContent = tick;
+        });
+        cfg.pTicks.forEach(function (tick, i) {
+          var priceYStart = chartBox.top + 6;
+          var priceYEnd = chartBox.bottom + 4;
+          var priceY = priceYStart + (priceYEnd - priceYStart) * i / Math.max(cfg.pTicks.length - 1, 1);
+          svg.appendChild(el("text", { x: "1224", y: priceY.toFixed(1), fill: "#ffd35a", "font-size": "14", "text-anchor": "start" })).textContent = tick;
+        });
+        (cfg.xTicks || []).forEach(function (tick, i) {
+          var x = chartBox.left + tick.ratio * chartW;
+          svg.appendChild(el("path", { d: "M" + x.toFixed(1) + " " + chartBox.bottom + " V" + (chartBox.bottom + 8), stroke: "#303238", "stroke-width": "1", fill: "none" }));
+          svg.appendChild(el("text", {
+            x: x,
+            y: chartBox.bottom + 24,
+            fill: "#87828f",
+            "font-size": "12",
+            "text-anchor": i === 0 ? "start" : i === 5 ? "end" : "middle"
+          })).textContent = tick.label;
+        });
+        svg.appendChild(el("text", { x: "640", y: chartBox.bottom + 47, fill: "#87828f", "font-size": "14" })).textContent = cfg.xLabel;
+
+        var fillPoints = points.filter(function (point) { return point.cum <= cfg.current.cum; });
+        if (!fillPoints.length || fillPoints[fillPoints.length - 1].cum !== cfg.current.cum) {
+          fillPoints.push(current);
+        }
+        svg.appendChild(el("path", {
+          d: smoothPath(fillPoints, "supplyY") + " L" + current.x.toFixed(1) + " " + chartBox.bottom + " L" + chartBox.left + " " + chartBox.bottom + " Z",
+          fill: "url(#" + gradId + ")"
+        }));
+        svg.appendChild(el("path", { d: smoothPath(points, "supplyY"), fill: "none", stroke: "#00d6ff", "stroke-width": "2" }));
+        svg.appendChild(el("path", { d: smoothPath(points, "priceY"), fill: "none", stroke: "#ffd35a", "stroke-width": "2" }));
+
+        var dataLayer = el("g", { class: "chart-data-points" });
+        dataLayer.appendChild(el("circle", { cx: current.x, cy: current.supplyY, r: "7", fill: "var(--bg)", stroke: "#00d6ff", "stroke-width": "3" }));
+        dataLayer.appendChild(el("circle", { cx: current.x, cy: current.burnY, r: "5", fill: "#ff8b2b" }));
+        dataLayer.appendChild(el("circle", { cx: current.x, cy: current.ammY, r: "5", fill: "#a8d8ff" }));
+        dataLayer.appendChild(el("circle", { cx: current.x, cy: current.mintY, r: "5", fill: "#00d6ff" }));
+        svg.appendChild(dataLayer);
+
+        var hover = el("g", { class: "chart-hover" });
+        var hoverLine = el("path", { d: "M" + current.x + " " + chartBox.top + " V" + chartBox.bottom, stroke: "#3f4249", "stroke-width": "1.4", "stroke-dasharray": "3 7", fill: "none" });
+        var hoverMarketDot = el("circle", { cx: current.x, cy: current.supplyY, r: "7", fill: "var(--bg)", stroke: "#00d6ff", "stroke-width": "3" });
+        var hoverPriceDot = el("circle", { cx: current.x, cy: current.priceY, r: "5", fill: "#ffd35a" });
+        hover.appendChild(hoverLine);
+        hover.appendChild(hoverMarketDot);
+        hover.appendChild(hoverPriceDot);
+        svg.appendChild(hover);
+
+        var tooltip = el("g", { class: "chart-tooltip visible" });
+        tooltip.appendChild(el("rect", { class: "tooltip-box", x: "0", y: "0", width: "250", height: "122" }));
+        var labels = ["cum.", "supply", "price", "% of cap"];
+        labels.forEach(function (label, i) {
+          tooltip.appendChild(el("text", { x: "16", y: 28 + i * 25, fill: "#87828f", "font-size": "15" })).textContent = label + (i === 0 ? " " + (token === "SUN" ? "usdc" : "sun") : "");
+        });
+        var values = ["cum", "supply", "price", "cap"].map(function (key, i) {
+          return el("text", { x: "236", y: 28 + i * 25, fill: i === 1 ? "#00d6ff" : i === 2 ? "#ffd35a" : "#ffffff", "font-size": "15", "text-anchor": "end" });
+        });
+        values.forEach(function (v) { tooltip.appendChild(v); });
+        svg.appendChild(tooltip);
+
+        function update(rawX) {
+          var x = Math.max(chartBox.left, Math.min(chartBox.right, rawX));
+          var cum = ((x - chartBox.left) / chartW) * maxCum;
+          var supplyY = interp(points, x, "supplyY");
+          var priceY = interp(points, x, "priceY");
+          var supply = cfg.maxCap * 1e6 * (chartBox.bottom - supplyY) / chartH;
+          var price = cfg.maxPrice * (chartBox.bottom - priceY) / chartH;
+          var cap = supply / (cfg.maxCap * 1e6) * 100;
+
+          hoverLine.setAttribute("d", "M" + x.toFixed(1) + " " + chartBox.top + " V" + chartBox.bottom);
+          hoverMarketDot.setAttribute("cx", x); hoverMarketDot.setAttribute("cy", supplyY);
+          hoverPriceDot.setAttribute("cx", x); hoverPriceDot.setAttribute("cy", priceY);
+
+          var tx = x > 930 ? x - 300 : x + 24;
+          var ty = Math.max(chartBox.top + 18, Math.min(chartBox.bottom - 128, priceY - 70));
+          tooltip.setAttribute("transform", "translate(" + tx.toFixed(1) + " " + ty.toFixed(1) + ")");
+          tooltip.setAttribute("class", "chart-tooltip visible");
+          values[0].textContent = Math.round(cum).toLocaleString();
+          values[1].textContent = (supply / 1e6).toFixed(1) + cfg.marketUnit;
+          values[2].textContent = formatPrice(price, cfg.unit);
+          values[3].textContent = cap.toFixed(2) + "%";
+        }
+
+        update(current.x);
+        var hotspot = el("rect", { class: "chart-hotspot", x: chartBox.left, y: chartBox.top, width: chartW, height: chartH });
+        hotspot.addEventListener("mousemove", function (event) {
+          var rect = svg.getBoundingClientRect();
+          var x = (event.clientX - rect.left) / rect.width * 1280;
+          update(x);
+        });
+        hotspot.addEventListener("mouseleave", function () {
+          update(current.x);
+        });
+        svg.appendChild(hotspot);
+      }
+
+      document.querySelectorAll(".interactive-chart").forEach(drawChart);
+
+      function toggleTheme() {
+        var isLight = document.body.classList.toggle("light");
+        var button = document.getElementById("theme-toggle");
+        button.textContent = isLight ? "☾" : "☀";
+      }
+
+      async function switchAnvilChain() {
+        await refreshChainData(BASE_SEPOLIA_TEST_WALLET);
+      }
+
+      async function connectWallet() {
+        await refreshChainData(BASE_SEPOLIA_TEST_WALLET);
+      }
+
+      function setMode(button, token, mode) {
+        var trade = button.closest(".trade");
+        trade.dataset.mode = mode;
+        var buttons = trade.querySelectorAll(".tabs button");
+        var submit = trade.querySelector(".submit");
+        var modeWord = trade.querySelector(".mode-word");
+        var payToken = trade.querySelector(".pay-token");
+        var payTokenInline = trade.querySelector(".pay-token-inline");
+        var receiveToken = trade.querySelector(".receive-token");
+
+        buttons.forEach(function (item) { item.className = ""; });
+
+        if (mode === "burn") {
+          button.className = "burn-active";
+          submit.className = "submit burn";
+          submit.textContent = "read only";
+          modeWord.className = "mode-word action-burn";
+          modeWord.textContent = "burning";
+          payToken.textContent = displayTokenName(token);
+          if (payTokenInline) payTokenInline.textContent = displayTokenName(token);
+          receiveToken.textContent = token === "SUN" ? "usdc" : "sun";
+          refreshTradePanel(trade);
+          return;
+        }
+
+        button.className = "mint-active";
+        submit.className = "submit mint";
+        submit.textContent = "read only";
+        modeWord.className = "mode-word action-mint";
+        modeWord.textContent = "minting";
+        payToken.textContent = token === "SUN" ? "usdc" : "sun";
+        if (payTokenInline) payTokenInline.textContent = token === "SUN" ? "usdc" : "sun";
+        receiveToken.textContent = displayTokenName(token);
+        refreshTradePanel(trade);
+      }
+
+      function initTradePanels() {
+        tradePanels = Array.prototype.slice.call(document.querySelectorAll(".trade"));
+        tradePanels.forEach(function (panel) {
+          panel.dataset.mode = "mint";
+          var input = panel.querySelector("input");
+          var max = panel.querySelector(".max");
+          var submit = panel.querySelector(".submit");
+
+          if (input) {
+            input.disabled = true;
+            input.placeholder = "read only";
+            input.addEventListener("input", function () {
+              refreshTradePanel(panel);
+            });
+          }
+
+          if (max) {
+            max.textContent = "";
+          }
+
+          if (submit) {
+            submit.disabled = true;
+          }
+        });
+        refreshAllTradePanels();
+      }
+
+      if (window.ethereum && window.ethereum.on) {
+        window.ethereum.on("accountsChanged", function (accounts) {
+          var account = accounts && accounts.length ? accounts[0] : "";
+          refreshChainData(account);
+        });
+        window.ethereum.on("chainChanged", function () {
+          refreshChainData("");
+        });
+      }
+
+      window.addEventListener("load", function () {
+        initTradePanels();
+        refreshChainData("");
+      });
+    </script>
+  </body>
+</html>
