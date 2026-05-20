@@ -23,6 +23,17 @@ script/ComputeBaseSunMoonUsdcPoolIds.s.sol
 script/PrepareBaseMainnetSunMoonUsdcForkDryRun.s.sol
 ```
 
+主网只读安全快照 / 文档入口：
+
+- 当前状态：仍然不部署、不广播、不接触真实资金、不收集私钥。
+- 最终红线清单：`docs/Base-主网部署前最终红线清单-2026-05-20.md`
+- 最终只读复核记录：`docs/Base-主网最终只读复核记录-2026-05-20.md`
+- 逐笔广播草案安全计划：`docs/Base-主网逐笔广播草案-2026-05-20.md`
+- 中文白皮书：`docs/sunmoon-whitepaper.zh-CN.md`
+- English whitepaper：`docs/sunmoon-whitepaper.en.md`
+- Base Sepolia 前端只读预览：`frontend/README_OPEN.txt`
+- 已推送安全标签：`mainnet-final-redline-checklist-2026-05-20`、`mainnet-readonly-review-2026-05-20`、`docs-audit-whitepaper-2026-05-20`
+
 旧 `BaseMoonAmmFeeV4Hook` 和旧 Base Sepolia `Moon/USDC` 演练脚本只保留为历史资料。旧方案，不用于 rc4/mainnet。
 
 当前已完成：

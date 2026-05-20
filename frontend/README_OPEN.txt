@@ -16,3 +16,10 @@ http://127.0.0.1:4173/
 - 不要在这里使用真实资金。
 - 不要输入或保存私钥、助记词、恢复词。
 - 上主网前，必须单独更新并复核主网合约地址和 ABI/selector。
+
+文档入口：
+
+- 主网最终红线清单：docs/Base-主网部署前最终红线清单-2026-05-20.md
+- 主网最终只读复核记录：docs/Base-主网最终只读复核记录-2026-05-20.md
+- 中文白皮书：docs/sunmoon-whitepaper.zh-CN.md
+- English whitepaper：docs/sunmoon-whitepaper.en.md

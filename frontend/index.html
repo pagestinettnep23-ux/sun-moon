@@ -610,6 +610,10 @@
         min-height: 188px;
       }
 
+      .status-card.wide {
+        grid-column: span 2;
+      }
+
       .status-head {
         display: flex;
         align-items: center;
@@ -730,6 +734,7 @@
         .tank-value { font-size: 22px; }
         .mini-metrics { grid-template-columns: 1fr 1fr; gap: 10px; }
         .status-grid { grid-template-columns: 1fr; gap: 10px; }
+        .status-card.wide { grid-column: span 1; }
         .input-box input { font-size: 24px; }
       }
     </style>
@@ -903,6 +908,28 @@
               <span>swap</span><span>0x0489...912d</span>
             </a>
           </div>
+        </article>
+
+        <article class="status-card wide" id="readonly-docs">
+          <div class="status-head"><span>Readonly docs</span><b class="status-pill ok">docs only</b></div>
+          <dl class="status-list">
+            <div><dt>redline</dt><dd>docs/Base-主网部署前最终红线清单-2026-05-20.md</dd></div>
+            <div><dt>review</dt><dd>docs/Base-主网最终只读复核记录-2026-05-20.md</dd></div>
+            <div><dt>whitepaper zh</dt><dd>docs/sunmoon-whitepaper.zh-CN.md</dd></div>
+            <div><dt>whitepaper en</dt><dd>docs/sunmoon-whitepaper.en.md</dd></div>
+            <div><dt>preview</dt><dd>frontend/README_OPEN.txt</dd></div>
+          </dl>
+        </article>
+
+        <article class="status-card wide">
+          <div class="status-head"><span>Mainnet safety</span><b class="status-pill warn">not live</b></div>
+          <dl class="status-list">
+            <div><dt>current mode</dt><dd>Base Sepolia readonly preview</dd></div>
+            <div><dt>mainnet</dt><dd>documentation and dry-run records only</dd></div>
+            <div><dt>broadcast</dt><dd>disabled</dd></div>
+            <div><dt>tag</dt><dd>mainnet-final-redline-checklist-2026-05-20</dd></div>
+            <div><dt>tag</dt><dd>mainnet-readonly-review-2026-05-20</dd></div>
+          </dl>
         </article>
       </section>
     </main>
