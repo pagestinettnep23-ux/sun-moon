@@ -17,6 +17,7 @@ script/PrepareBaseMainnetCoreDeployDryRun.s.sol
 script/ComputeBaseMainnetSunMoonUsdcHookSalt.s.sol
 script/ComputeBaseSunMoonUsdcPoolIds.s.sol
 script/PrepareBaseMainnetSunMoonUsdcForkDryRun.s.sol
+script/PrepareBaseMainnetSunMoonUsdcBroadcastDraft.s.sol
 ```
 
 旧 `BaseMoonAmmFeeV4Hook`、`FindBaseMoonAmmFeeV4HookSalt.s.sol`、`PrepareBaseSepoliaHookDeploy.s.sol`、旧 `TinyMoonUsdc` 演练脚本均为 deprecated / legacy：旧方案，不用于 rc4/mainnet。

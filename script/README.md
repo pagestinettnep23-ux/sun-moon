@@ -17,6 +17,7 @@ script/PrepareBaseMainnetCoreDeployDryRun.s.sol
 script/ComputeBaseMainnetSunMoonUsdcHookSalt.s.sol
 script/ComputeBaseSunMoonUsdcPoolIds.s.sol
 script/PrepareBaseMainnetSunMoonUsdcForkDryRun.s.sol
+script/PrepareBaseMainnetSunMoonUsdcBroadcastDraft.s.sol
 ```
 
 旧 `BaseMoonAmmFeeV4Hook`、`FindBaseMoonAmmFeeV4HookSalt.s.sol`、`PrepareBaseSepoliaHookDeploy.s.sol`、旧 `TinyMoonUsdc` 演练脚本均为 deprecated / legacy：旧方案，不用于 rc4/mainnet。
@@ -1547,6 +1548,40 @@ MOON_USDC_INITIAL_USDC_AMOUNT
 
 ```powershell
 forge test --match-contract BaseMainnetSunMoonUsdcForkDryRunPreparationTest
+```
+
+### `PrepareBaseMainnetSunMoonUsdcBroadcastDraft.s.sol`
+
+用途：
+
+- 生成 Base mainnet SUN/MOON USDC 上线 19 笔交易的广播草案，不广播。
+- 内部对齐 core dry-run 和 fork dry-run 的关键校验，再补入 `Tx 16: SunCurve.setMoonAMM(PREDICTED_HOOK)` 的交易计划。
+- 输出每一笔的 `txFrom`、`txTo`、`txLabel`、`txDataHash`，供人工复核。
+- 脚本内部不调用 `startBroadcast`；`broadcastAllowed=false`、`executionBlocked=true`、`simulationOnly=true`。
+- 如果设置 `EXECUTE_BASE_MAINNET_BROADCAST=1` 或存在 `PRIVATE_KEY`，会直接拒绝。
+
+只读运行命令草案，不广播：
+
+```powershell
+$env:CONFIRM_BASE_MAINNET_BROADCAST_DRAFT="1"
+$env:EXECUTE_BASE_MAINNET_BROADCAST="0"
+$env:PRIVATE_KEY=""
+forge script script/PrepareBaseMainnetSunMoonUsdcBroadcastDraft.s.sol --rpc-url $env:BASE_MAINNET_RPC --rpc-timeout 120 --slow
+```
+
+禁止：
+
+```text
+不要加 --broadcast
+不要传 PRIVATE_KEY
+不要使用真实资金
+不要在命令里写带密钥的完整 RPC URL
+```
+
+对应回归测试：
+
+```powershell
+forge test --match-path test/hooks/base/BaseMainnetSunMoonUsdcBroadcastDraft.t.sol -vvv
 ```
 
 2026-05-17 本地测试记录：
