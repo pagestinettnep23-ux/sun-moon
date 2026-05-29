@@ -400,6 +400,78 @@ contract BaseSunMoonUsdcFeeV4HookTest is Deployers {
         );
     }
 
+    function testExactOutputSellSunForSpecifiedUsdcChargesBeforeSwapFeeOnce() public {
+        uint256 exactUsdcOut = 10_000;
+        uint256 expectedFeeToCurve = exactUsdcOut * SUN_FEE_TO_CURVE_BPS / BPS;
+        uint256 expectedFeeToProtocol = exactUsdcOut * SUN_FEE_TO_PROTOCOL_BPS / BPS;
+        uint256 reserveBefore = sunCurve.curveReserve();
+        uint256 budgetBefore = usdc.balanceOf(protocolBudget);
+        uint256 userSunBefore = sun.balanceOf(address(this));
+        uint256 userUsdcBefore = usdc.balanceOf(address(this));
+
+        vm.expectEmit(true, true, false, true, address(hook));
+        emit FeeRouted(
+            PoolId.unwrap(sunUsdcKey.toId()),
+            BaseSunMoonUsdcFeeV4Hook.PoolKind.SunUsdc,
+            exactUsdcOut,
+            expectedFeeToCurve,
+            expectedFeeToProtocol,
+            expectedFeeToCurve
+        );
+
+        BalanceDelta swapDelta = _swapExactUsdcOutput(sunUsdcKey, exactUsdcOut, expectedFeeToCurve);
+
+        uint256 reserveDelta = sunCurve.curveReserve() - reserveBefore;
+        uint256 budgetDelta = usdc.balanceOf(protocolBudget) - budgetBefore;
+        uint256 userSunSpent = userSunBefore - sun.balanceOf(address(this));
+        uint256 userUsdcReceived = usdc.balanceOf(address(this)) - userUsdcBefore;
+
+        assertEq(reserveDelta, expectedFeeToCurve);
+        assertEq(budgetDelta, expectedFeeToProtocol);
+        assertEq(userUsdcReceived, exactUsdcOut);
+        assertEq(_positiveUsdcDelta(sunUsdcKey, swapDelta), exactUsdcOut);
+        assertEq(userSunSpent, _negativeTokenDelta(sunUsdcKey, swapDelta, address(sun)));
+        assertGt(userSunSpent, 0);
+        assertLt(userSunSpent, exactUsdcOut * 2);
+        assertEq(usdc.balanceOf(address(hook)), 0);
+    }
+
+    function testExactOutputSellMoonForSpecifiedUsdcChargesBeforeSwapFeeOnce() public {
+        uint256 exactUsdcOut = 10_000;
+        uint256 expectedFeeToCurve = exactUsdcOut * MOON_FEE_TO_CURVE_BPS / BPS;
+        uint256 expectedFeeToProtocol = exactUsdcOut * MOON_FEE_TO_PROTOCOL_BPS / BPS;
+        uint256 reserveBefore = sunCurve.curveReserve();
+        uint256 budgetBefore = usdc.balanceOf(protocolBudget);
+        uint256 userMoonBefore = moon.balanceOf(address(this));
+        uint256 userUsdcBefore = usdc.balanceOf(address(this));
+
+        vm.expectEmit(true, true, false, true, address(hook));
+        emit FeeRouted(
+            PoolId.unwrap(moonUsdcKey.toId()),
+            BaseSunMoonUsdcFeeV4Hook.PoolKind.MoonUsdc,
+            exactUsdcOut,
+            expectedFeeToCurve,
+            expectedFeeToProtocol,
+            expectedFeeToCurve
+        );
+
+        BalanceDelta swapDelta = _swapExactUsdcOutput(moonUsdcKey, exactUsdcOut, expectedFeeToCurve);
+
+        uint256 reserveDelta = sunCurve.curveReserve() - reserveBefore;
+        uint256 budgetDelta = usdc.balanceOf(protocolBudget) - budgetBefore;
+        uint256 userMoonSpent = userMoonBefore - moon.balanceOf(address(this));
+        uint256 userUsdcReceived = usdc.balanceOf(address(this)) - userUsdcBefore;
+
+        assertEq(reserveDelta, expectedFeeToCurve);
+        assertEq(budgetDelta, expectedFeeToProtocol);
+        assertEq(userUsdcReceived, exactUsdcOut);
+        assertEq(_positiveUsdcDelta(moonUsdcKey, swapDelta), exactUsdcOut);
+        assertEq(userMoonSpent, _negativeTokenDelta(moonUsdcKey, swapDelta, address(moon)));
+        assertGt(userMoonSpent, 0);
+        assertLt(userMoonSpent, exactUsdcOut * 2);
+        assertEq(usdc.balanceOf(address(hook)), 0);
+    }
+
     function testUnallowedSupportedPoolReverts() public {
         vm.prank(owner);
         hook.setAllowedSunUsdcPool(PoolId.unwrap(sunUsdcKey.toId()), false);
@@ -621,6 +693,19 @@ contract BaseSunMoonUsdcFeeV4HookTest is Deployers {
         );
     }
 
+    function _swapExactUsdcOutput(
+        PoolKey memory poolKey,
+        uint256 usdcOut,
+        uint256 minUSDCToSunCurve
+    ) private returns (BalanceDelta) {
+        return _swap(
+            poolKey,
+            Currency.unwrap(poolKey.currency1) == address(usdc),
+            int256(usdcOut),
+            minUSDCToSunCurve
+        );
+    }
+
     function _swap(
         PoolKey memory poolKey,
         bool zeroForOne,
@@ -714,6 +799,18 @@ contract BaseSunMoonUsdcFeeV4HookTest is Deployers {
 
         assertTrue(signedUsdcDelta < 0);
         return uint256(uint128(-signedUsdcDelta));
+    }
+
+    function _negativeTokenDelta(PoolKey memory poolKey, BalanceDelta swapDelta, address token)
+        private
+        pure
+        returns (uint256)
+    {
+        int128 signedTokenDelta =
+            Currency.unwrap(poolKey.currency0) == token ? swapDelta.amount0() : swapDelta.amount1();
+
+        assertTrue(signedTokenDelta < 0);
+        return uint256(uint128(-signedTokenDelta));
     }
 
     function _hookData(uint256 minUSDCToSunCurve) private pure returns (bytes memory) {
